@@ -114,7 +114,7 @@ nocache;
 -- 본인이 확인 할 수 있는 이메일이랑 번호 넣어주세요
 insert into member(mnum,userid,name,email,phone ,birthday,postnum ,address1,address2,point,registerdate ,last_logindate ,last_changepwdate ,status,summoney ,fk_lvnum)
 values(seq_member_mnum.nextval, 'leess', 
-'이순신', '본인이 테스트 할 수 있는 이메일', '본인이 테스트 가능한 번호', add_months(sysdate, -50), 14409, '경기도 부천시 고리울로 64번길 19', '예다움 502호',
+'이순신', 'blue_christmas', '01099821387', add_months(sysdate, -50), 14409, '경기도 부천시 고리울로 64번길 19', '예다움 502호',
 default, default, default, default, default, default, default);
 
 

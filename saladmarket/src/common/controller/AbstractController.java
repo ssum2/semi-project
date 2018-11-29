@@ -1,5 +1,11 @@
 package common.controller;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import admin.model.AdminVO;
+import member.model.MemberVO;
+
 public abstract class AbstractController implements Command {
 	// 추상클래스
 	private boolean isRedirect = false;
@@ -28,5 +34,43 @@ public abstract class AbstractController implements Command {
 	public void setViewPage(String viewPage) {
 		this.viewPage = viewPage;
 	}
-
+	
+//	#현재 세션에 객체가 있는지 없는지 알려주는 메소드 (로그인 유무 검사) --> return MemberVO or null
+	public MemberVO getLoginUser(HttpServletRequest req) {
+		MemberVO loginuser = null;
+		
+		HttpSession session = req.getSession();
+		loginuser = (MemberVO)session.getAttribute("loginuser");
+		
+		if(loginuser == null) { // 로그인 객체가 없을 때
+			String msg = "로그인 후 사용 가능합니다.";
+        	String loc = "javascript:history.back();";
+        	
+        	req.setAttribute("msg", msg);
+        	req.setAttribute("loc", loc);
+        	
+        	isRedirect = false;
+        	viewPage = "/WEB-INF/msg.jsp";
+		}
+		return loginuser;
+	}
+	
+	public AdminVO getAdmin(HttpServletRequest req) {
+		AdminVO admin = null;
+		
+		HttpSession session = req.getSession();
+		admin = (AdminVO)session.getAttribute("admin");
+		
+		if(admin == null) { // 로그인 객체가 없을 때
+			String msg = "로그인 후 사용 가능합니다.";
+        	String loc = "javascript:history.back();";
+        	
+        	req.setAttribute("msg", msg);
+        	req.setAttribute("loc", loc);
+        	
+        	isRedirect = false;
+        	viewPage = "/WEB-INF/msg.jsp";
+		}
+		return admin;
+	}
 }

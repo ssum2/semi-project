@@ -1,8 +1,11 @@
- <%@ page language="java" contentType="text/html; charset=UTF-8"
+<%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ page import="admin.model.AdminVO" %>
+
 <% 
-	String ctxPath = request.getContextPath();
-%>   
+	String ctxPath = request.getContextPath(); %>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -114,12 +117,32 @@ span.psw {
 
 <script type="text/javascript">
 	$(document).ready(function(){
-		
-		
-		
+		$("#userid").focus(); // 해당 페이지에 접근하면 즉각 실행됨
+		$("#pwd").keydown(function(event){
+			if(event.keyCode==13){ // keyCode 13 ; enter
+				goAdminLogin();
+			}
+		});
 	});
 
 	function goAdminLogin(){
+		
+		var loginUserid = $("#userid").val().trim();
+		var loginPwd = $("#pwd").val().trim();
+		
+		if(loginUserid==""){
+			alert("아이디를 입력하세요.");
+			$("#userid").val("");
+			$("#userid").focus();
+			return;
+		}
+		if(loginPwd==""){
+			alert("패스워드를 입력하세요.");
+			$("#pwd").val("");
+			$("#pwd").focus();
+			return;
+		}
+		
 		var frm = document.adminLoginFrm;
 		frm.method ="POST";
 		frm.action="adminLoginEnd.do";
@@ -127,7 +150,6 @@ span.psw {
 	}
 
 </script>
-
 </head>
 <body>
 <div class="row">
@@ -135,21 +157,52 @@ span.psw {
 	<div class="col-md-4">
 	  <form name="adminLoginFrm">
 	    <div class="imgcontainer">
-	      <img src="<%=ctxPath %>/img/main_textlogo.png"/>
+	      <img src="<%= ctxPath %>/img/main_textlogo.png"/>
 	    </div>
 	
 	    <div class="container">
-	   
-	      <label for="userid"><b>아이디</b></label>
-	      <input type="text" placeholder="아이디를 입력하세요" name="userid" required>
+<%	
+AdminVO admin = (AdminVO)session.getAttribute("admin");
+	if(admin == null){
+		Cookie[] cookieArr = request.getCookies();
+		
+		String cookie_key = "";
+		String cookie_value = "";
+		boolean flag = false;
+		if(cookieArr != null){
+			for(Cookie c :cookieArr){
+				cookie_key = c.getName();
+				
+				if("saveid".equals(cookie_key)){
+					cookie_value = c.getValue();
+					flag = true;
+					break;
+				}
+			}
+		}
 	
+%>  
+	      <label for="userid"><b>아이디</b></label>
+	      <input type="text" placeholder="아이디를 입력하세요" name="userid" id="userid" required
+	      <% if(flag){ %>
+				value="<%=cookie_value%>"					
+			<% } %>
+			/>
+		  
 	      <label for="pwd"><b>비밀번호</b></label>
-	      <input type="password" placeholder="비밀번호를 입력하세요" name="pwd" required>
+	      <input type="password" placeholder="비밀번호를 입력하세요" name="pwd" id="pwd" required>
 	        
 	      <button type="button" class="btn" OnClick="goAdminLogin();">Login</button>
+	      	<%	// #아이디저장 체크 여부에 따라서 체크박스 표시를 달리해줌 --> flag 값 이용
+						if(flag == false){ // 체크해제		%>
 	      <label>
-	        <input type="checkbox" checked="checked" name="remember"> 로그인 정보 저장
+	        <input type="checkbox" name="saveid" id="saveid"/> 로그인 정보 저장
 	      </label>
+	       <% } else { %>
+	      <label>
+	        <input type="checkbox" checked="checked" name="saveid" id="saveid" checked/> 로그인 정보 저장
+	      </label>
+	      <% } %>
 	    </div>
 	
 	    <div class="container">
@@ -161,7 +214,7 @@ span.psw {
 	<div class="col-md-4"></div>
 </div>
 <script>
-
+<% }%>
 </script>
 
 </body>

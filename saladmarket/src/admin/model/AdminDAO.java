@@ -69,8 +69,8 @@ public class AdminDAO implements InterAdminDAO {
 	
 //	#관리자 로그인 메소드
 	@Override
-	public boolean AdminLoginCheck(String adminid, String adminpw) throws SQLException {
-		boolean bool = false;
+	public AdminVO AdminLoginCheck(String adminid, String adminpw) throws SQLException {
+		AdminVO adminvo = null;
 		try {
 			conn = ds.getConnection();
 			
@@ -86,13 +86,17 @@ public class AdminDAO implements InterAdminDAO {
 			
 			rs = pstmt.executeQuery();
 			
-			bool = rs.next();
-			if(bool) return bool;
-			else return false;
+			boolean bool = rs.next();
+			if(bool) {
+				adminvo = new AdminVO();
+				String v_adminid = rs.getString("adminid");
+				adminvo.setAdminid(v_adminid);
+			}
+			
 		} finally {
 			close();
 		}
-		
-	}
+		return adminvo;
+	} 
 
-}
+} // end of class

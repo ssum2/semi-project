@@ -1,11 +1,220 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<% String CtxPath = request.getContextPath(); %>
+<% String ctxPath = request.getContextPath(); %>
 <jsp:include page="../header.jsp" />
+
+<script type="text/javascript">
+
+   $(document).ready(function() {
+     
+      
+   }); // end of $(document).ready(---
+         
+   function goRegister(event){
+      
+        if( !$("input:checkbox[id=agree]").is(":checked") ) {
+              alert("이용약관에 동의하셔야 합니다.");
+              return;
+           } 
+   }
+
+</script>
+<script src="http://dmaps.daum.net/map_js_init/postcode.v2.js"></script>
+
+<script type ="text/javascript">
+	$(document).ready(function(){
+		var dt = new Date();
+		var year = dt.getFullYear();
+		
+		// 에러메세지 감추기
+		$(".error").hide();
+		$("#error_passwd").hide();
+		
+		// 첫번째 입력사항(아이디)에 포커스
+		$("#userid").focus();
+		
+	    $("#join").click(function() {
+	        goRegister(event);
+	    }); // end of $("#join").click(---
+	            
+	    $(".requiredinfo").each(function() {
+	         $(this).blur(function() { //blur: 다음 input태그로 커서 이동
+	            var data = $(this).val().trim();
+	            if(data == ""){ // 입력하지 않거나 공백만 입력했을떄
+	               $(this).parent().parent().find(".error").show();
+	            }
+	            else{
+	               $(this).parent().parent().find(".error").hide();
+	            }
+	         });
+
+	      });// end of $(".useridinfo").each(---
+		
+// 		#포커스가 넘어갔을 때의 태스크를 반복문으로 처리; 필수입력사항의 공통 클래스 requiredInfo
+		$(".requiredInfo").each(function(){
+			$(this).blur(function(){
+				var data = $(this).val().trim();
+				if(data==""){ // 입력하지 않거나 공백만 입력했을 경우 
+					$(this).parent().find(".error").show();
+					$(":input").attr("disabled", true).addClass("bgcol");
+					$(this).attr("disabled", false).removeClass("bgcol");
+					$(this).focus();
+				}
+				else {	// 공백이 아닌 글자를 입력했을 경우
+					$(this).parent().find(".error").hide(); // 에러 없앰
+					$(":input").attr("disabled", false).removeClass("bgcol");
+					$(this).next().focus();
+				}
+			});
+		});
+
+//		#아이디 중복검사 
+		$("#userid").bind("keyup", function(){
+			alert("아이디 중복확인 해주세요.");
+			$(this).val("");
+			$(this).focus();
+		});
+		
+//		#아이디 중복검사; 팝업창 띄우기
+		$("#idcheck").click(function(){
+			var url = "idDuplicateCheck.do";
+			window.open(url, "idcheck", "left=500px, top=100px, width=300px, height=230px");
+		});
+
+//		#패스워드 유효성 검사
+		$("#password").blur(function(){
+			var passwd = $(this).val();
+			var regExp_pw = /^.*(?=^.{8,15}$)(?=.*\d)(?=.*[a-zA-Z])(?=.*[^a-zA-Z0-9]).*$/g;
+			var isUsePasswd = regExp_pw.test(passwd);
+			if(!isUsePasswd){
+				$("#error_passwd").show();
+				$(":input").attr("disabled", true).addClass("bgcol");
+				$(this).attr("disabled", false).removeClass("bgcol");
+				$(this).val("");
+				$("#password").focus();
+			}
+			else{
+				$("#error_passwd").hide();
+				$(":input").attr("disabled", false).removeClass("bgcol");
+				$("#pwdcheck").focus();
+			}
+		});
+		
+		$("#pwdcheck").blur(function(){
+			var passwd = $("#pwd").val();
+			var passwdck = $(this).val();
+			
+			if(passwd != passwdck){ // 암호가 일치하지 않을 때
+				$(this).parent().find(".error").show();
+				$(":input").attr("disabled", true).addClass("bgcol");
+				$(this).attr("disabled", false).removeClass("bgcol");
+				$("#pwd").attr("disabled", false).removeClass("bgcol");
+				$(this).val("");
+				$("#pwdcheck").focus();
+			}
+			else{
+				$("#error_passwd").hide();
+				$(":input").attr("disabled", false).removeClass("bgcol");
+			}	
+		});
+		
+		$("#email").blur(function(){
+			var email = $(this).val();
+			var regExp_EMAIL = /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i; 
+			var isUseEmail = regExp_EMAIL.test(email);
+			if(!isUseEmail){
+				$(this).parent().find(".error").show();
+				$(":input").attr("disabled", true).addClass("bgcol");
+				$(this).attr("disabled", false).removeClass("bgcol");
+				$(this).val("");
+				$(this).focus();
+			}
+			else{
+				$("#error_passwd").hide();
+				$(":input").attr("disabled", false).removeClass("bgcol");
+			}	
+		});
+		
+		$("#phone").blur(function(){
+			var phone = $(this).val();
+			var isUsePhone = false;
+			var regExp_Phone = /^[0-9]+$/g;
+
+			isUsePhone = regExp_Phone.test(phone);
+			
+			if(!isUsePhone) {
+				$(this).parent().find(".error").show();
+				$(":input").attr("disabled", true).addClass("bgcol");
+				$(this).attr("disabled", false).removeClass("bgcol");
+				$(this).val("");
+				$(this).focus();
+			}
+			else{
+				$(".error_phone").hide();
+				$(":input").attr("disabled", false).removeClass("bgcol");
+			}	
+		});
+		
+		$("#zipcodeSearch").click(function() {
+			new daum.Postcode({
+				oncomplete: function(data) {
+					$("#postnum").val(data.zonecode);
+				    $("#addr1").val(data.address);
+				    $("#addr2").focus();
+				}
+			}).open();
+		});
+		
+		$(".address").blur(function(){
+			var address = $(this).val().trim();
+			if(address==""){
+				$(this).parent().find(".error").show();
+				$(":input").attr("disabled", true).addClass("bgcol");
+				$(this).attr("disabled", false).removeClass("bgcol");
+				$(this).val("");
+			}
+			else{
+				$(this).parent().find(".error").hide();
+				$(":input").attr("disabled", false).removeClass("bgcol");
+			}
+		});
+		
+	  $("#birthday").datepicker({
+		dateFormat:"yy/mm/dd",
+		dayNamesMin:["일", "월", "화", "수", "목", "금", "토"],
+		monthNames:["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"],
+		onSelect:function( d ){
+ 			var arr = d.split("/");
+			$("#birthday").text(arr[0]);
+			$("#birthday").append(arr[1]);
+			$("#birthday").append(arr[2]);
+		}
+		});
+
+	});
+	
+//	#최종적으로 체크박스/라디오 체크된 다음 submit
+	function goRegister(){
+		var isCheckedGender = $("input:radio[name=gender]").is(":checked");
+		if(!isCheckedGender){
+			alert("성별을 선택하세요.");
+			return;
+		}
+		var isCheckedAgree = $("input:checkbox[id=agree]").is(":checked");
+		if(!isCheckedAgree){
+			alert("이용약관에 동의하셔야 가입 가능합니다.");
+			return;
+		}
+		var frm = document.registerFrm;
+		frm.method = "POST";
+		frm.action = "memberRegisterEnd.do";
+		frm.submit();
+	}
+</script>
 <aside id="colorlib-hero" class="breadcrumbs">
     <div class="flexslider">
        <ul class="slides">
-          <li style="background-image: url(<%=CtxPath %>/store/images/cover-img-1.jpg);">
+          <li style="background-image: url(<%=ctxPath %>/store/images/cover-img-1.jpg);">
              <div class="overlay"></div>
              <div class="container-fluid">
                 <div class="row">
@@ -24,128 +233,116 @@
       
 <div class="container" style="margin-left: 30%;">      
    <div class="col-md-8">
-      <form method="post" class="colorlib-form">
+      <form class="colorlib-form joinFrm" name="joinFrm">
             <div class="form-group">
-                  <div class="col-md-6">
+               <div class="col-md-6">
                   <label for="userid">아이디</label>
-                  <input type="text" id="userid" class="form-control" placeholder="ID">
+                  <input type="text" id="userid" class="form-control requiredinfo" placeholder="ID" required>
                </div>
-               <div class="col-md-3" style="margin-top: 8.5%">
-                  <button class="btn" style="width: 80px; height: 20px; padding: 0%;"><span style="font-size: 2px;">아이디 확인</span></button>
+               <div class="col-md-2" style="margin-top:5.5%">
+                  <button type="button" class="btn btn-outline" style="padding: 2px; font-size: 10pt;" >아이디 확인</button>
                </div>
+               <div class="col-md-4 error" style="margin-top:5.5%">
+                     <span class="error" style="color: blue; font-size: 12px;">아이디를 입력하세요.</span>
+               </div>
+            
             </div>
             <div class="form-group">
                <div class="col-md-6">
                   <label for="password">비밀번호</label>
-                  <input type="password" id="password" class="form-control" placeholder="Password">
+                  <input type="password" id="password" class="form-control requiredinfo" placeholder="Password" required>
+               </div>
+                <div class="col-md-5" style="margin-top:5%">
+                     <span class="error" style="color: blue; font-size: 12px;">비밀번호는 영문자,숫자,특수기호가 혼합된 8~15 글자로만 입력가능합니다.</span>
                </div>
             </div>
             <div class="form-group">
                <div class="col-md-6">
                   <label for="pwdcheck">비밀번호확인</label>
-                  <input type="password" id="pwdcheck" class="form-control" placeholder="Password">
+                  <input type="password" id="pwdcheck" class="form-control requiredinfo" placeholder="Password" required>
+               </div>
+               <div class="col-md-4" style="margin-top:5.5%">
+                     <span class="error" style="color: blue; font-size: 12px;">암호가 일치하지 않습니다.</span>
                </div>
             </div>
             <div class="form-group">
                <div class="col-md-6">
-                  <label for="username">성명</label>
-                  <input type="text" id="username" class="form-control" placeholder="Name">
+                  <label for="name">성명</label>
+                  <input type="text" id="name" class="form-control requiredinfo" placeholder="마켓수" required>
+               </div>
+               <div class="col-md-4" style="margin-top:5.5%">
+                     <span class="error" style="color: blue; font-size: 12px;">성명을 입력하세요.</span>
                </div>
             </div>
             <div class="form-group">
                <div class="col-md-6" >
                   <label for="email">이메일</label>
-                  <input type="text" id="email" class="form-control" placeholder="abc@gmail.com">
+                  <input type="text" id="email" class="form-control requiredinfo" placeholder="marketsue@gmail.com" required>
+               </div>
+               <div class="col-md-5" style="margin-top:5.5%">
+                     <span class="error" style="color: blue; font-size: 12px;">이메일 형식에 맞게 입력하세요.</span>
                </div>
             </div>
             <div class="form-group">   
                <div class="col-md-6">
                   <label for="phone ">연락처</label>
-                  <input type="text" id="phone " class="form-control" placeholder="Phone Number">
-               </div>   
+                  <input type="text" id="phone" name="phone" class="form-control requiredinfo" placeholder="01012345678" required>
+               </div>  
+               <div class="col-md-5" style="margin-top:8%">
+                     <span class="error error_phone" style="color: blue; font-size: 12px;"> - 없이 입력해주세요.</span>
+               </div> 
+               <%-- <div class="col-md-5" style="margin-top:8.5%">
+                     <span class="error error_hp2" style="color: blue; font-size: 12px;"> 휴대폰 형식이 아닙니다.</span>
+               </div>--%>
             </div>
             <div class="form-group">
                <div class="col-md-3">
                   <label for="postnum">우편번호</label>
-                  <input type="text" id="postnum" class="form-control" placeholder="PostNum">
+                  <input type="text" id="postnum" class="form-control" placeholder="우편번호" required>
                </div>
-               <div class="col-md-3" style="margin-top: 4%">
-                  <input type="text" id="zippostalcode" class="form-control" placeholder="PostNum">
+               <div class="col-md-2" style="margin-top: 5%">
+                  <button class="btn btn-outline" id="zipcodeSearch" style="padding: 2px; font-size: 10pt;">우편번호</button>
                </div>
-               <div class="col-md-3" style="margin-top: 8.5%">
-                  <button class="btn" style="width: 80px; height: 20px; padding: 0%;"><span style="font-size: 2pt;">우편번호찾기</span></button>
+               <div class="col-md-4" style="margin-top:5.5%">
+                     <span class="error" style="color: blue; font-size: 12px;">올바른 우편번호 형식이 아닙니다.(예. 12345)</span>
                </div>
             </div>
-            <div class="col-md-6">
-               <div class="form-group">
-                  <label for="fname">주소</label>
-                      <input type="text" id="address" class="form-control" placeholder="Enter Your Address">
-                   </div>
-                  <div class="form-group">
-                         <input type="text" id="address2" class="form-control" placeholder="Second Address">
-                  </div>
+            
+             <div class="form-group">
+               <div class="col-md-6">
+                  <label for="address">주소</label>
+                  <input type="text" id="address1" name="address1" class="form-control" placeholder="우편번호 찾기를 클릭하세요" required>
                </div>
-               <div class="form-group">
-               <div class="col-md-4">
+            </div>
+            <div class="form-group">
+               <div class="col-md-6">
+                  <input type="text" id="address2" name="address2" class="form-control" placeholder="상세주소를 입력하세요" required>
+               </div>
+               <div class="col-md-4" style="margin-top:4%">
+                     <span class="error" style="color: blue; font-size: 12px;">우편번호  찾기를 클릭하세요.</span>
+               </div>
+            </div>
+            <div class="form-group">
+               <div class="col-md-3">
                   <label for="postnum">생년월일</label>
-                  <input type="number" id="birthyyyy" class="form-control" name="birthyyyy" min="1950" max="2050" step="1" value="1995"/>      
+                  <input type="text" id="birthday" class="form-control" name="birthday" required/>      
                </div>
-               <div class="col-md-3" style="margin-top: 4%">
-                  <select id="birthmm" name="birthmm" class="form-control">
-                     <option value ="01">01</option>
-                     <option value ="02">02</option>
-                     <option value ="03">03</option>
-                     <option value ="04">04</option>
-                     <option value ="05">05</option>
-                     <option value ="06">06</option>
-                     <option value ="07">07</option>
-                     <option value ="08">08</option>
-                     <option value ="09">09</option>
-                     <option value ="10">10</option>
-                     <option value ="11">11</option>
-                     <option value ="12">12</option>
-                  </select> 
-               </div>
-               <div class="col-md-3" style="margin-top: 4%">
-                  <select id="birthdd" name="birthdd" class="form-control">
-                  <option value ="01">01</option>
-                  <option value ="02">02</option>
-                  <option value ="03">03</option>
-                  <option value ="04">04</option>
-                  <option value ="05">05</option>
-                  <option value ="06">06</option>
-                  <option value ="07">07</option>
-                  <option value ="08">08</option>
-                  <option value ="09">09</option>
-                  <option value ="10">10</option>
-                  <option value ="11">11</option>
-                  <option value ="12">12</option>
-                  <option value ="13">13</option>
-                  <option value ="14">14</option>
-                  <option value ="15">15</option>
-                  <option value ="16">16</option>
-                  <option value ="17">17</option>
-                  <option value ="18">18</option>
-                  <option value ="19">19</option>
-                  <option value ="20">20</option>
-                  <option value ="21">21</option>
-                  <option value ="22">22</option>
-                  <option value ="23">23</option>
-                  <option value ="24">24</option>
-                  <option value ="25">25</option>
-                  <option value ="26">26</option>
-                  <option value ="27">27</option>
-                  <option value ="28">28</option>
-                  <option value ="29">29</option>
-                  <option value ="30">30</option>
-                  <option value ="31">31</option>
-               </select> 
-            </div>      
+            </div>
+            <div class="col-md-4" style="margin-top:8.5%">
+               <span class="error" style="color: blue; font-size: 12px;">생년월일을 입력하세요.</span>
+            </div> 
+         <div class="row col-md-12">
+            <label for="agree">이용약관에 동의합니다</label>&nbsp;&nbsp;<input type="checkbox" id="agree" />
          </div>
+         
+         <div class="row col-md-12">
+            <iframe src="/saladmarket/store/agree/agree.html" width="100%" height="150px" class="box" ></iframe>
+         </div>
+         
 
          <div class="row">
             <div class="col-md-12" style="margin-left: 35%; margin-top: 5%;" >
-               <p><a href="#" class="btn btn-primary">가입하기</a></p>
+               <p><a href="#" id="join" class="btn btn-primary">가입하기</a></p>
             </div>
          </div>
 

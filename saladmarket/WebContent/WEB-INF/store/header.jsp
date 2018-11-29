@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<% String CtxPath = request.getContextPath(); %>
+<% String ctxPath = request.getContextPath(); %>
 <!DOCTYPE HTML>
 <html>
 	<head>
@@ -23,42 +23,47 @@
 	<meta name="twitter:url" content="" />
 	<meta name="twitter:card" content="" />
 
+	<%-- google web font --%>
+	<link href="https://fonts.googleapis.com/css?family=Nanum+Gothic:400,700,800&amp;subset=korean" rel="stylesheet">
 	<link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700" rel="stylesheet">
 	<!-- jQuery -->
-	<script src="<%=CtxPath %>/store/js/jquery.min.js"></script>
+	<script src="<%=ctxPath %>/store/js/jquery.min.js"></script>
 	
 	<!-- Animate.css -->
-	<link rel="stylesheet" href="<%=CtxPath %>/store/css/animate.css">
+	<link rel="stylesheet" href="<%=ctxPath %>/store/css/animate.css">
 	<!-- Icomoon Icon Fonts-->
-	<link rel="stylesheet" href="<%=CtxPath %>/store/css/icomoon.css">
+	<link rel="stylesheet" href="<%=ctxPath %>/store/css/icomoon.css">
 	<!-- Bootstrap  -->
-	<link rel="stylesheet" href="<%=CtxPath %>/store/css/bootstrap.css">
+	<link rel="stylesheet" href="<%=ctxPath %>/store/css/bootstrap.css">
 
 	<!-- Magnific Popup -->
-	<link rel="stylesheet" href="<%=CtxPath %>/store/css/magnific-popup.css">
+	<link rel="stylesheet" href="<%=ctxPath %>/store/css/magnific-popup.css">
 
 	<!-- Flexslider  -->
-	<link rel="stylesheet" href="<%=CtxPath %>/store/css/flexslider.css">
+	<link rel="stylesheet" href="<%=ctxPath %>/store/css/flexslider.css">
 
 	<!-- Owl Carousel -->
-	<link rel="stylesheet" href="<%=CtxPath %>/store/css/owl.carousel.min.css">
-	<link rel="stylesheet" href="<%=CtxPath %>/store/css/owl.theme.default.min.css">
+	<link rel="stylesheet" href="<%=ctxPath %>/store/css/owl.carousel.min.css">
+	<link rel="stylesheet" href="<%=ctxPath %>/store/css/owl.theme.default.min.css">
 	
 	<!-- Date Picker -->
-	<link rel="stylesheet" href="<%=CtxPath %>/store/css/bootstrap-datepicker.css">
+	<link rel="stylesheet" href="<%=ctxPath %>/store/css/bootstrap-datepicker.css">
 	<!-- Flaticons  -->
-	<link rel="stylesheet" href="<%=CtxPath %>/store/fonts/flaticon/font/flaticon.css">
+	<link rel="stylesheet" href="<%=ctxPath %>/store/fonts/flaticon/font/flaticon.css">
 
 	<!-- Theme style  -->
-	<link rel="stylesheet" href="<%=CtxPath %>/store/css/style.css">
+	<link rel="stylesheet" href="<%=ctxPath %>/store/css/style.css">
 
 	<!-- Modernizr JS -->
-	<script src="<%=CtxPath %>/store/js/modernizr-2.6.2.min.js"></script>
+	<script src="<%=ctxPath %>/store/js/modernizr-2.6.2.min.js"></script>
 	<!-- FOR IE9 below -->
 	<!--[if lt IE 9]>
 	<script src="js/respond.min.js"></script>
+	
 	<![endif]-->
+	
 
+	
 	</head>
 	<body>
 		
@@ -70,24 +75,24 @@
 				<div class="container">
 					<div class="row">
 						<div class="col-xs-2">
-							<div id="colorlib-logo"><a href="index.html"><img src="<%=CtxPath %>/store/images/index/logo.png" width="110%" height="110%"></a></div>
+							<div id="colorlib-logo"><a href="<%=ctxPath %>/index.do"><img src="<%=ctxPath %>/store/images/index/logo.png" width="110%" height="110%"></a></div>
 						</div>
 						<div class="col-xs-10 text-right menu-1">
 							<ul>
-								<li class="active"><a href="index.html">Home</a></li>
-								<li><a href="">로그인</a></li>
-								<li><a href="">로그아웃</a></li>
-								<li><a href="">회원가입</a></li>
+								<li class="active"><a href="<%=ctxPath %>/index.do">Home</a></li>
+								<li><a href="<%=ctxPath %>/memberLogin.do">로그인</a></li>
+								<li><a href="<%=ctxPath %>/memberLogout.do">로그아웃</a></li>
+								<li><a href="<%=ctxPath %>/memberRegister.do">회원가입</a></li>
 								<li><a href=""></a></li>
 								<li class="has-dropdown">
 									<a href="">마이페이지</a>
 									<ul class="dropdown">
-										<li><a href="">회원정보</a></li>
-										<li><a href="">할인쿠폰</a></li>
-										<li><a href="">환불교환</a></li>
-										<li><a href="">주문내역</a></li>
-										<li><a href="">장바구니</a></li>
-										<li><a href="">찜</a></li>
+										<li><a href="<%=ctxPath %>/memberInfomain.do">회원정보</a></li>
+										<li><a href="<%=ctxPath %>/cuponList.do">할인쿠폰</a></li>
+										<li><a href="<%=ctxPath %>/refundChange.do">환불교환</a></li>
+										<li><a href="<%=ctxPath %>/orderList.do">주문내역</a></li>
+										<li><a href="<%=ctxPath %>/cart.do">장바구니</a></li>
+										<li><a href="<%=ctxPath %>/myPickList.do">찜</a></li>
 									</ul>
 								</li>
 								<li class="has-dropdown">

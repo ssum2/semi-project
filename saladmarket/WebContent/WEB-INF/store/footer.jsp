@@ -225,6 +225,9 @@
 	<script src="<%=CtxPath %>/store/js/jquery.stellar.min.js"></script>
 	<!-- Main -->
 	<script src="<%=CtxPath %>/store/js/main.js"></script>
+	<link rel="stylesheet" href="http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" type="text/css" />
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="http://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 
 	</body>
 </html>

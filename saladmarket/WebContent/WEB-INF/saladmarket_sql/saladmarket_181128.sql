@@ -86,7 +86,7 @@ create table member
 ,address1           varchar2(200)         not null  -- 주소
 ,address2           varchar2(200)         not null  -- 상세주소
 ,point              number default 0      not null  -- 포인트
-,registerdate       date default sysdate  not null  -- 가입일자
+--,registerdate       date default sysdate  not null  -- 가입일자
 ,last_logindate     date default sysdate  not null  -- 마지막로그인일자
 ,last_changepwdate  date default sysdate  not null  -- 비밀번호변경일자
 ,status             number default 1      not null  -- 회원탈퇴유무 / 0:탈퇴 1:활동 2:휴면
@@ -101,6 +101,7 @@ create table member
 
 alter table member modify(fk_lvnum number default 1); 
 
+alter table member add(pw varchar2(200));
 
 create sequence seq_member_mnum
 start with 1
@@ -117,6 +118,9 @@ values(seq_member_mnum.nextval, 'leess',
 '이순신', 'blue_christmas', '01099821387', add_months(sysdate, -50), 14409, '경기도 부천시 고리울로 64번길 19', '예다움 502호',
 default, default, default, default, default, default, default);
 
+update member set pw ='qwer1234$' where userid='leess';
+
+commit;
 
 -- 보유쿠폰(my_coupon) 테이블 생성 
 create table my_coupon 
@@ -139,13 +143,17 @@ drop table coupon purge;
 create table login 
 (fk_userid  varchar2(100) not null  -- 회원아이디 
 ,pw         varchar2(200) not null  -- 암호(SHA256 암호화) 
-,name       varchar2(30)  not null  -- 회원명 
+,name       varchar2(30)  not null  -- 회원명
+,last_logindate date default sysdate  not null  -- 가입일자
+,last_logindate     date default sysdate  not null -- 마지막 로그인 일시
 ,constraint PK_login_userid primary key(fk_userid)
 ,constraint FK_login_userid foreign key(fk_userid)
                                   references member(userid)
 );
 
 insert into login values('leess', 'qwer1234$', '이순신');
+
+drop table login purge;
 
 -- 관리자(admin) 테이블 생성 
 create table admin 

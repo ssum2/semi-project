@@ -3,22 +3,6 @@
 <% String ctxPath = request.getContextPath(); %>
 <jsp:include page="../header.jsp" />
 
-<script type="text/javascript">
-
-   $(document).ready(function() {
-     
-      
-   }); // end of $(document).ready(---
-         
-   function goRegister(event){
-      
-        if( !$("input:checkbox[id=agree]").is(":checked") ) {
-              alert("이용약관에 동의하셔야 합니다.");
-              return;
-           } 
-   }
-
-</script>
 <script src="http://dmaps.daum.net/map_js_init/postcode.v2.js"></script>
 
 <script type ="text/javascript">
@@ -28,7 +12,6 @@
 		
 		// 에러메세지 감추기
 		$(".error").hide();
-		$("#error_passwd").hide();
 		
 		// 첫번째 입력사항(아이디)에 포커스
 		$("#userid").focus();
@@ -56,65 +39,81 @@
 				var data = $(this).val().trim();
 				if(data==""){ // 입력하지 않거나 공백만 입력했을 경우 
 					$(this).parent().find(".error").show();
-					$(":input").attr("disabled", true).addClass("bgcol");
-					$(this).attr("disabled", false).removeClass("bgcol");
+					
 					$(this).focus();
 				}
 				else {	// 공백이 아닌 글자를 입력했을 경우
 					$(this).parent().find(".error").hide(); // 에러 없앰
-					$(":input").attr("disabled", false).removeClass("bgcol");
+					
 					$(this).next().focus();
 				}
 			});
 		});
-
-//		#아이디 중복검사 
-		$("#userid").bind("keyup", function(){
-			alert("아이디 중복확인 해주세요.");
-			$(this).val("");
-			$(this).focus();
-		});
-		
-//		#아이디 중복검사; 팝업창 띄우기
+	
+//		#아이디 중복검사; ajax사용
 		$("#idcheck").click(function(){
-			var url = "idDuplicateCheck.do";
-			window.open(url, "idcheck", "left=500px, top=100px, width=300px, height=230px");
+			if($("#userid").val().trim()==""){
+				$(this).parent().find(".error").show();
+				$(this).focus();
+				return;
+			}
+			$.ajax({
+				url: "idDuplicateCheck.do",
+				type: "POST",
+				data: {"userid":$("#userid").val()},
+				dataType: "json",
+				success: function(json){
+					if(json.isUseUserid==0){
+						$("#idcheckerror").empty();
+						$("#idcheckgood").empty().html("사용가능한 아이디 입니다.");
+						
+						$("#userid").attr("readonly", true);
+					}
+					else if(json.isUseUserid==1) {
+						$("#idcheckgood").empty();
+						$("#idcheckerror").empty().html("입력하신 아이디가 이미 존재합니다. 다시 입력하세요.");
+						
+						$("#userid").empty().focus();
+					}
+				},
+				error: function(request, status, error){
+					alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+				}
+			});
+			
+		
 		});
-
 //		#패스워드 유효성 검사
 		$("#password").blur(function(){
 			var passwd = $(this).val();
 			var regExp_pw = /^.*(?=^.{8,15}$)(?=.*\d)(?=.*[a-zA-Z])(?=.*[^a-zA-Z0-9]).*$/g;
 			var isUsePasswd = regExp_pw.test(passwd);
 			if(!isUsePasswd){
+				$(".pwdOK").html.empty();
 				$("#error_passwd").show();
-				$(":input").attr("disabled", true).addClass("bgcol");
-				$(this).attr("disabled", false).removeClass("bgcol");
 				$(this).val("");
 				$("#password").focus();
 			}
 			else{
 				$("#error_passwd").hide();
-				$(":input").attr("disabled", false).removeClass("bgcol");
+				$(".pwdOK").html("사용 가능한 비밀번호 입니다.");
 				$("#pwdcheck").focus();
 			}
 		});
 		
 		$("#pwdcheck").blur(function(){
-			var passwd = $("#pwd").val();
-			var passwdck = $(this).val();
+			var password = $("#password").val();
+			var pwdcheck = $(this).val();
 			
-			if(passwd != passwdck){ // 암호가 일치하지 않을 때
+			if(password != pwdcheck){ // 암호가 일치하지 않을 때
+				$(".pwdcheckOK").html.empty();
 				$(this).parent().find(".error").show();
-				$(":input").attr("disabled", true).addClass("bgcol");
-				$(this).attr("disabled", false).removeClass("bgcol");
-				$("#pwd").attr("disabled", false).removeClass("bgcol");
 				$(this).val("");
 				$("#pwdcheck").focus();
 			}
 			else{
 				$("#error_passwd").hide();
-				$(":input").attr("disabled", false).removeClass("bgcol");
+				$(".pwdcheckOK").html("비밀번호가 일치합니다.");
 			}	
 		});
 		
@@ -124,14 +123,11 @@
 			var isUseEmail = regExp_EMAIL.test(email);
 			if(!isUseEmail){
 				$(this).parent().find(".error").show();
-				$(":input").attr("disabled", true).addClass("bgcol");
-				$(this).attr("disabled", false).removeClass("bgcol");
 				$(this).val("");
 				$(this).focus();
 			}
 			else{
 				$("#error_passwd").hide();
-				$(":input").attr("disabled", false).removeClass("bgcol");
 			}	
 		});
 		
@@ -144,14 +140,11 @@
 			
 			if(!isUsePhone) {
 				$(this).parent().find(".error").show();
-				$(":input").attr("disabled", true).addClass("bgcol");
-				$(this).attr("disabled", false).removeClass("bgcol");
 				$(this).val("");
 				$(this).focus();
 			}
 			else{
 				$(".error_phone").hide();
-				$(":input").attr("disabled", false).removeClass("bgcol");
 			}	
 		});
 		
@@ -159,8 +152,8 @@
 			new daum.Postcode({
 				oncomplete: function(data) {
 					$("#postnum").val(data.zonecode);
-				    $("#addr1").val(data.address);
-				    $("#addr2").focus();
+				    $("#address1").val(data.address);
+				    $("#address2").focus();
 				}
 			}).open();
 		});
@@ -169,13 +162,10 @@
 			var address = $(this).val().trim();
 			if(address==""){
 				$(this).parent().find(".error").show();
-				$(":input").attr("disabled", true).addClass("bgcol");
-				$(this).attr("disabled", false).removeClass("bgcol");
 				$(this).val("");
 			}
 			else{
 				$(this).parent().find(".error").hide();
-				$(":input").attr("disabled", false).removeClass("bgcol");
 			}
 		});
 		
@@ -192,14 +182,9 @@
 		});
 
 	});
-	
 //	#최종적으로 체크박스/라디오 체크된 다음 submit
-	function goRegister(){
-		var isCheckedGender = $("input:radio[name=gender]").is(":checked");
-		if(!isCheckedGender){
-			alert("성별을 선택하세요.");
-			return;
-		}
+	function goRegister(event){
+	
 		var isCheckedAgree = $("input:checkbox[id=agree]").is(":checked");
 		if(!isCheckedAgree){
 			alert("이용약관에 동의하셔야 가입 가능합니다.");
@@ -240,10 +225,14 @@
                   <input type="text" id="userid" class="form-control requiredinfo" placeholder="ID" required>
                </div>
                <div class="col-md-2" style="margin-top:5.5%">
-                  <button type="button" class="btn btn-outline" style="padding: 2px; font-size: 10pt;" >아이디 확인</button>
+                  <button type="button" id="idcheck" class="btn btn-outline" style="padding: 2px; font-size: 10pt;" >아이디 확인</button>
                </div>
                <div class="col-md-4 error" style="margin-top:5.5%">
-                     <span class="error" style="color: blue; font-size: 12px;">아이디를 입력하세요.</span>
+                     <span class="error" id="iderror" style="color: blue; font-size: 12px;">아이디를 입력하세요.</span>
+               </div>
+               <div class="col-md-4" style="margin-top:5.5%">
+               		<span id="idcheckerror" style="color: blue; font-size: 12px;"></span>
+                    <span id="idcheckgood" style="color: green; font-size: 12px;"></span>
                </div>
             
             </div>
@@ -255,6 +244,9 @@
                 <div class="col-md-5" style="margin-top:5%">
                      <span class="error" style="color: blue; font-size: 12px;">비밀번호는 영문자,숫자,특수기호가 혼합된 8~15 글자로만 입력가능합니다.</span>
                </div>
+                <div class="col-md-5" style="margin-top:0">
+                     <span class="pwdOK" style="color: green; font-size: 12px;"></span>
+               </div>
             </div>
             <div class="form-group">
                <div class="col-md-6">
@@ -263,6 +255,9 @@
                </div>
                <div class="col-md-4" style="margin-top:5.5%">
                      <span class="error" style="color: blue; font-size: 12px;">암호가 일치하지 않습니다.</span>
+               </div>
+               <div class="col-md-5" style="margin-top:0">
+                     <span class="pwdcheckOK" style="color: green; font-size: 12px;"></span>
                </div>
             </div>
             <div class="form-group">
@@ -336,7 +331,7 @@
          </div>
          
          <div class="row col-md-12">
-            <iframe src="/saladmarket/store/agree/agree.html" width="100%" height="150px" class="box" ></iframe>
+            <iframe src="/saladmarket/agree/agree.html" width="100%" height="150px" class="box" ></iframe>
          </div>
          
 

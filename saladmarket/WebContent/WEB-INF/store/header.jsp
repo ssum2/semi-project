@@ -1,12 +1,13 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <% String ctxPath = request.getContextPath(); %>
 <!DOCTYPE HTML>
 <html>
 	<head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Store Template</title>
+	<title>Market Sue</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="description" content="" />
 	<meta name="keywords" content="" />
@@ -80,8 +81,12 @@
 						<div class="col-xs-10 text-right menu-1">
 							<ul>
 								<li class="active"><a href="<%=ctxPath %>/index.do">Home</a></li>
+								<c:if test="${SessionScope.loginuser==null }">
 								<li><a href="<%=ctxPath %>/memberLogin.do">로그인</a></li>
+								</c:if>
+								<c:if test="${SessionScope.loginuser!=null }">
 								<li><a href="<%=ctxPath %>/memberLogout.do">로그아웃</a></li>
+								</c:if>
 								<li><a href="<%=ctxPath %>/memberRegister.do">회원가입</a></li>
 								<li><a href=""></a></li>
 								<li class="has-dropdown">

@@ -21,20 +21,20 @@ import javax.servlet.http.HttpServletResponse;
  * Servlet implementation class FrontController
  */
 @WebServlet(
-		description = "»ç¿ëÀÚ°¡ À¥¿¡¼­ *.do¸¦ È£ÃâÇßÀ» ¶§ ¸ÕÀú ÀÀ´äÇÑ´Ù", 
+		description = "ì‚¬ìš©ìê°€ ì›¹ì—ì„œ *.doë¥¼ í˜¸ì¶œí–ˆì„ ë•Œ ë¨¼ì € ì‘ë‹µí•œë‹¤", 
 		urlPatterns = { "*.do" }, 
 		initParams = {
-//		servletÀ» ±¸µ¿ÇÑ ´ÙÀ½¿¡ initParams·Î ´Ü ÇÑ¹ø¸¸ ±¸µ¿µÇ±â ¶§¹®¿¡ properties¿¡¼­ »õ·Î¿î .do¸¦ ¸ÅÇÎ ÇßÀ» ¶§ ÀÎ½Ä X
-//		>> properties¸¦ ¼öÁ¤ÇßÀ» ¶§ WAS ¹× ¼­ºí¸´À» ¹İµå½Ã Àç±¸µ¿ ÇØ¾ßÇÔ
+//		servletì„ êµ¬ë™í•œ ë‹¤ìŒì— initParamsë¡œ ë‹¨ í•œë²ˆë§Œ êµ¬ë™ë˜ê¸° ë•Œë¬¸ì— propertiesì—ì„œ ìƒˆë¡œìš´ .doë¥¼ ë§¤í•‘ í–ˆì„ ë•Œ ì¸ì‹ X
+//		>> propertiesë¥¼ ìˆ˜ì •í–ˆì„ ë•Œ WAS ë° ì„œë¸”ë¦¿ì„ ë°˜ë“œì‹œ ì¬êµ¬ë™ í•´ì•¼í•¨
 				
-				@WebInitParam(name = "propertyConfig", value = "C:/Git/semi-project/saladmarket/WebContent/WEB-INF/Command.properties", description = "*.do°ü·Ã class Mapping Info")
+				@WebInitParam(name = "propertyConfig", value = "C:/Git/semi-project/saladmarket/WebContent/WEB-INF/Command.properties", description = "*.doê´€ë ¨ class Mapping Info")
 		})
 public class FrontController extends HttpServlet {
-//	>>FrontController; ¹èÄ¡¼­¼úÀÚÀÇ ¿ªÇÒ -> ¸ğµç *.do¸¦ ´Ù ¹Ş¾Æ¿Í¼­ ¹Ş¾Æ¿Â .do°¡ ¾î¶² ±â´ÉÀ» ÇÏ´ÂÁö ¾Ë·ÁÁÜ
+//	>>FrontController; ë°°ì¹˜ì„œìˆ ìì˜ ì—­í•  -> ëª¨ë“  *.doë¥¼ ë‹¤ ë°›ì•„ì™€ì„œ ë°›ì•„ì˜¨ .doê°€ ì–´ë–¤ ê¸°ëŠ¥ì„ í•˜ëŠ”ì§€ ì•Œë ¤ì¤Œ
 
 	private static final long serialVersionUID = 1L;
 
-//	#init(config)¿¡¼­ »ı¼ºÇÑ objectµéÀ» ³Ö¾îÁÙ HashMap<keyÅ¸ÀÔ, °´Ã¼Å¸ÀÔ> »ı¼º
+//	#init(config)ì—ì„œ ìƒì„±í•œ objectë“¤ì„ ë„£ì–´ì¤„ HashMap<keyíƒ€ì…, ê°ì²´íƒ€ì…> ìƒì„±
 	HashMap<String, Object> cmdMap = new HashMap<String, Object>();
 	
 	
@@ -42,14 +42,14 @@ public class FrontController extends HttpServlet {
 	 * @see Servlet#init(ServletConfig)
 	 */
 	public void init(ServletConfig config) throws ServletException {
-		// 	.do¸¦ È£ÃâÇßÀ» ¶§ FrontController¿¡¼­ °¡Àå ¸ÕÀú È£ÃâµÇ´Â ¸Ş¼Òµå
-		//	>> ÃÊ±âÈ­ ÆÄ¶ó¹ÌÅÍ ºí·°À¸·Î ÀĞ¾î¿Â Mapping Á¤º¸¿¡ ¼­¼úµÈ .do¿Í ¿¬°üÀÖ´Â Å¬·¡½ºµéÀ» ½ÇÁ¦ °´Ã¼È­ ÇØÁÜ -> ÇÑ¹ø¸¸ ½ÇÇà
-		System.out.println(">> È®ÀÎ¿ë: servlet FrontControllerÀÇ init ¸Ş¼Òµå ½ÇÇà");
+		// 	.doë¥¼ í˜¸ì¶œí–ˆì„ ë•Œ FrontControllerì—ì„œ ê°€ì¥ ë¨¼ì € í˜¸ì¶œë˜ëŠ” ë©”ì†Œë“œ
+		//	>> ì´ˆê¸°í™” íŒŒë¼ë¯¸í„° ë¸”ëŸ­ìœ¼ë¡œ ì½ì–´ì˜¨ Mapping ì •ë³´ì— ì„œìˆ ëœ .doì™€ ì—°ê´€ìˆëŠ” í´ë˜ìŠ¤ë“¤ì„ ì‹¤ì œ ê°ì²´í™” í•´ì¤Œ -> í•œë²ˆë§Œ ì‹¤í–‰
+		System.out.println(">> í™•ì¸ìš©: servlet FrontControllerì˜ init ë©”ì†Œë“œ ì‹¤í–‰");
 		
-		String props = config.getInitParameter("propertyConfig"); // initParams¿¡ ÀÖ´Â valueÀÇ °æ·Î¸¦ ÁöÁ¤µÈ nameÀ¸·Î ºÒ·¯¿È
-		System.out.println(">> È®ÀÎ¿ë: ÃÊ±âÈ­ ÆÄ¶ó¹ÌÅÍ µ¥ÀÌÅÍ°ª; " + props);
+		String props = config.getInitParameter("propertyConfig"); // initParamsì— ìˆëŠ” valueì˜ ê²½ë¡œë¥¼ ì§€ì •ëœ nameìœ¼ë¡œ ë¶ˆëŸ¬ì˜´
+		System.out.println(">> í™•ì¸ìš©: ì´ˆê¸°í™” íŒŒë¼ë¯¸í„° ë°ì´í„°ê°’; " + props);
 		
-		Properties pr = new Properties(); // FileInputStreamÀ¸·Î propertiesÆÄÀÏÀ» ÀĞ¾î¿Í¼­ °´Ã¼È­
+		Properties pr = new Properties(); // FileInputStreamìœ¼ë¡œ propertiesíŒŒì¼ì„ ì½ì–´ì™€ì„œ ê°ì²´í™”
 		
 		FileInputStream fis = null;
 		
@@ -57,29 +57,29 @@ public class FrontController extends HttpServlet {
 			fis = new FileInputStream(props);
 			pr.load(fis);
 			/*
-			 	Properties°´Ã¼.load(initParmas¿¡¼­ ºÒ·¯¿Â value°ª)
-			 	> propertiesÆÄÀÏÀ» ÀĞ¾î¿Í¼­ PropertiesÅ¬·¡½ºÀÇ °´Ã¼¿¡ µ¥ÀÌÅÍ¸¦ ¿Ã·ÁÁÜ
-			 	> ÀĞ¾î¿Â ÆÄÀÏÀÇ ³»¿ë¿¡¼­ '='¸¦ ±âÁØÀ¸·Î ¿ŞÂÊÀº key·Î ÀÎ½Ä, ¿À¸¥ÂÊÀº value·Î ÀÎ½Ä	
+			 	Propertiesê°ì²´.load(initParmasì—ì„œ ë¶ˆëŸ¬ì˜¨ valueê°’)
+			 	> propertiesíŒŒì¼ì„ ì½ì–´ì™€ì„œ Propertiesí´ë˜ìŠ¤ì˜ ê°ì²´ì— ë°ì´í„°ë¥¼ ì˜¬ë ¤ì¤Œ
+			 	> ì½ì–´ì˜¨ íŒŒì¼ì˜ ë‚´ìš©ì—ì„œ '='ë¥¼ ê¸°ì¤€ìœ¼ë¡œ ì™¼ìª½ì€ keyë¡œ ì¸ì‹, ì˜¤ë¥¸ìª½ì€ valueë¡œ ì¸ì‹	
 			*/
-			/*String className = pr.getProperty("/test1.do"); // Properties°´Ã¼.getProperty("key") -> return value
-			System.out.println(">> È®ÀÎ¿ë: properties¿¡ ÀÖ´Â key°ªÀ¸·Î value ºÒ·¯¿À±â;"+className);
+			/*String className = pr.getProperty("/test1.do"); // Propertiesê°ì²´.getProperty("key") -> return value
+			System.out.println(">> í™•ì¸ìš©: propertiesì— ìˆëŠ” keyê°’ìœ¼ë¡œ value ë¶ˆëŸ¬ì˜¤ê¸°;"+className);
 			// className=test.controller.Test1Controller
 			
-			Class<?> cls = Class.forName(className); // ClassÅ¸ÀÔÀÇ °´Ã¼¼³°èµµ
-			// >> Class<?>; ºÒÆ¯Á¤ °´Ã¼Å¸ÀÔ 1°³
+			Class<?> cls = Class.forName(className); // Classíƒ€ì…ì˜ ê°ì²´ì„¤ê³„ë„
+			// >> Class<?>; ë¶ˆíŠ¹ì • ê°ì²´íƒ€ì… 1ê°œ
 			
-			Object obj = cls.newInstance(); // className¿¡ ÀÖ´Â value°ªÀ» Åä´ë·Î °´Ã¼È­
+			Object obj = cls.newInstance(); // classNameì— ìˆëŠ” valueê°’ì„ í† ëŒ€ë¡œ ê°ì²´í™”
 			
 			cmdMap.put("/test1.do", obj);*/
 			
-//			#properties¿¡ ÀÖ´Â key¸¦ ºÒ·¯¿À±â
+//			#propertiesì— ìˆëŠ” keyë¥¼ ë¶ˆëŸ¬ì˜¤ê¸°
 			Enumeration<Object> en = pr.keys();
-// 			>> propertiesÆÄÀÏ¿¡ ¼±¾ğµÇ¾îÀÖ´Â mapping Á¤º¸¿¡¼­ '='À» Áß½ÉÀ¸·Î ¿ŞÂÊ¿¡ ÀÖ´Â ¸ğµç key°ª¸¸ °¡Á®¿È
+// 			>> propertiesíŒŒì¼ì— ì„ ì–¸ë˜ì–´ìˆëŠ” mapping ì •ë³´ì—ì„œ '='ì„ ì¤‘ì‹¬ìœ¼ë¡œ ì™¼ìª½ì— ìˆëŠ” ëª¨ë“  keyê°’ë§Œ ê°€ì ¸ì˜´
 			
 			while(en.hasMoreElements()) {
-//				>> Enumeration°´Ã¼¿¡ ÀÖ´Â Element°¡ ÀÖ´Â °æ¿ì true, ¾øÀ¸¸é false
+//				>> Enumerationê°ì²´ì— ìˆëŠ” Elementê°€ ìˆëŠ” ê²½ìš° true, ì—†ìœ¼ë©´ false
 				
-				String key_urlcmd = (String)en.nextElement(); // ½ÇÁ¦ ´ã°ÜÀÖ´Â key¸¦ ¹Ş¾Æ¿È
+				String key_urlcmd = (String)en.nextElement(); // ì‹¤ì œ ë‹´ê²¨ìˆëŠ” keyë¥¼ ë°›ì•„ì˜´
 				String className = pr.getProperty(key_urlcmd);
 				
 				if(className != null) {
@@ -92,10 +92,10 @@ public class FrontController extends HttpServlet {
 				}
 			}
 		} catch (ClassNotFoundException e) {
-			System.out.println("StringÅ¸ÀÔÀ¸·Î ¸í½ÃµÈ Å¬·¡½º°¡ ¾ø½À´Ï´Ù.");
+			System.out.println("Stringíƒ€ì…ìœ¼ë¡œ ëª…ì‹œëœ í´ë˜ìŠ¤ê°€ ì—†ìŠµë‹ˆë‹¤.");
 			e.printStackTrace();
 		} catch (FileNotFoundException e) {
-			System.out.println(props+"ÆÄÀÏÀÌ ¾ø½À´Ï´Ù.");
+			System.out.println(props+"íŒŒì¼ì´ ì—†ìŠµë‹ˆë‹¤.");
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -119,12 +119,12 @@ public class FrontController extends HttpServlet {
 	}
 
 	protected void requestProcess(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-//		#init¸Ş¼Òµå¿¡¼­ ¸¸µé¾î HashMap¿¡ ³Ö¾îµĞ °´Ã¼¸¦ ÇØ´ç °´Ã¼ÀÇ Å¬·¡½ºÅ¸ÀÔÀ¸·Î Ä³½ºÆÃÇÏ¿© °¡Á®¿È
+//		#initë©”ì†Œë“œì—ì„œ ë§Œë“¤ì–´ HashMapì— ë„£ì–´ë‘” ê°ì²´ë¥¼ í•´ë‹¹ ê°ì²´ì˜ í´ë˜ìŠ¤íƒ€ì…ìœ¼ë¡œ ìºìŠ¤íŒ…í•˜ì—¬ ê°€ì ¸ì˜´
 /*		Test1Controller action = (Test1Controller)cmdMap.get("/test1.do");
 		action.testPrint();*/
-//		>> Interface·Î ºÎ¸ğÅ¬·¡½º¸¦ ¸¸µç ´ÙÀ½, ºÎ¸ğÅ¬·¡½º·Î Ä³½ºÆÃÇØÁÖ°í ÀÚ½ÄÅ¬·¡½º¿¡¼­ overrideÇÑ ¸Ş¼Òµå¸¦ ºÒ·¯¿È
+//		>> Interfaceë¡œ ë¶€ëª¨í´ë˜ìŠ¤ë¥¼ ë§Œë“  ë‹¤ìŒ, ë¶€ëª¨í´ë˜ìŠ¤ë¡œ ìºìŠ¤íŒ…í•´ì£¼ê³  ìì‹í´ë˜ìŠ¤ì—ì„œ overrideí•œ ë©”ì†Œë“œë¥¼ ë¶ˆëŸ¬ì˜´
 		
-//		#À¥ºê¶ó¿ìÀú¿¡ ³ª¿À´Â ÁÖ¼Ò¸¦ ÀÌ¿ëÇÏ¿© HashmapÀÇ key°ª ±¸ÇÏ±â(/~.do)
+//		#ì›¹ë¸Œë¼ìš°ì €ì— ë‚˜ì˜¤ëŠ” ì£¼ì†Œë¥¼ ì´ìš©í•˜ì—¬ Hashmapì˜ keyê°’ êµ¬í•˜ê¸°(/~.do)
 		String url = request.getRequestURL().toString();
 		// >> http://localhost:9090/MyMVC/test2.do
 		
@@ -135,32 +135,32 @@ public class FrontController extends HttpServlet {
 		// >> /MyMVC
 		
 		String mapKey = uri.substring(ctxPath.length());
-		// >> /test2.do ==> key°ª!
+		// >> /test2.do ==> keyê°’!
 		
-//		#À§¿¡¼­ ±¸ÇÑ key¸¦ ÀÌ¿ëÇÏ¿© Hashmap¿¡¼­ °´Ã¼¸¦ °¡Á®¿È
-//		 >> ´ÙÇü¼ºÀ» ÀÌ¿ëÇÏ¿© ºÎ¸ğÅ¬·¡½º·Î ÁöÁ¤ÇØµĞ Ãß»óÅ¬·¡½º¸¦ »ç¿ëÇØ Ä³½ºÆÃ --> ÀúÀåµÇ¾îÀÖ´Â ¸ğµç °´Ã¼¿¡ °øÅëÀû¿ë
+//		#ìœ„ì—ì„œ êµ¬í•œ keyë¥¼ ì´ìš©í•˜ì—¬ Hashmapì—ì„œ ê°ì²´ë¥¼ ê°€ì ¸ì˜´
+//		 >> ë‹¤í˜•ì„±ì„ ì´ìš©í•˜ì—¬ ë¶€ëª¨í´ë˜ìŠ¤ë¡œ ì§€ì •í•´ë‘” ì¶”ìƒí´ë˜ìŠ¤ë¥¼ ì‚¬ìš©í•´ ìºìŠ¤íŒ… --> ì €ì¥ë˜ì–´ìˆëŠ” ëª¨ë“  ê°ì²´ì— ê³µí†µì ìš©
 		AbstractController action = (AbstractController)cmdMap.get(mapKey);
 		
 		if(action == null) {
-			System.out.println(mapKey+" URL ÆĞÅÏ¿¡ ¸ÅÇÎµÈ °´Ã¼°¡ ¾ø½À´Ï´Ù.");
+			System.out.println(mapKey+" URL íŒ¨í„´ì— ë§¤í•‘ëœ ê°ì²´ê°€ ì—†ìŠµë‹ˆë‹¤.");
 			return;
 		}
 		else {
 			try {
-				action.execute(request, response); // >> Ãß»óÅ¬·¡½º¿¡¼­ Á¤ÇØµĞ ¸Ş¼Òµå¸¦ »ó¼Ó¹ŞÀº ÀÚ½ÄÅ¬·¡½º¿¡¼­ ÀçÁ¤ÀÇÇÑ °ÍÀ¸·Î »ç¿ë
+				action.execute(request, response); // >> ì¶”ìƒí´ë˜ìŠ¤ì—ì„œ ì •í•´ë‘” ë©”ì†Œë“œë¥¼ ìƒì†ë°›ì€ ìì‹í´ë˜ìŠ¤ì—ì„œ ì¬ì •ì˜í•œ ê²ƒìœ¼ë¡œ ì‚¬ìš©
 				
 				
 				String viewPage = action.getViewPage();
 				boolean bool = action.isRedirect();
 				
 				if(bool) {
-					// >> trueÀÏ ¶§ sendRedirect¹æ½ÄÀ¸·Î page¸¦ ÀÌµ¿
-					// redirect; µ¥ÀÌÅÍ(history, request, response µî)¸¦ ³Ñ±âÁö ¾Ê°í ÆäÀÌÁö¸¸ ÀÌµ¿µÊ
+					// >> trueì¼ ë•Œ sendRedirectë°©ì‹ìœ¼ë¡œ pageë¥¼ ì´ë™
+					// redirect; ë°ì´í„°(history, request, response ë“±)ë¥¼ ë„˜ê¸°ì§€ ì•Šê³  í˜ì´ì§€ë§Œ ì´ë™ë¨
 					response.sendRedirect(viewPage);
 				}
 				else {
-					// >> falseÀÏ ¶§ forward¹æ½ÄÀ¸·Î pageÀÌµ¿
-					// forward; ÆäÀÌÁö ÀÌµ¿½Ã µ¥ÀÌÅÍ±îÁö ³Ñ¾î°¨
+					// >> falseì¼ ë•Œ forwardë°©ì‹ìœ¼ë¡œ pageì´ë™
+					// forward; í˜ì´ì§€ ì´ë™ì‹œ ë°ì´í„°ê¹Œì§€ ë„˜ì–´ê°
 					RequestDispatcher dispatcher = request.getRequestDispatcher(viewPage);
 					dispatcher.forward(request, response);
 				}

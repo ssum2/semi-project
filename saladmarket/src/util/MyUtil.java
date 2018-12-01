@@ -7,16 +7,16 @@ import member.model.*;*/
 import javax.servlet.http.HttpServletRequest;
 
 public class MyUtil {
-//	#ÇöÀç URLÁÖ¼Ò(Äõ¸®µ¥ÀÌÅÍ±îÁö Æ÷ÇÔ)¸¦ ¾Ë·ÁÁÖ´Â ¸Ş¼Òµå
+//	#í˜„ì¬ URLì£¼ì†Œ(ì¿¼ë¦¬ë°ì´í„°ê¹Œì§€ í¬í•¨)ë¥¼ ì•Œë ¤ì£¼ëŠ” ë©”ì†Œë“œ
 	public static String getCurrentURL(HttpServletRequest request) {
-		String currentURL = request.getRequestURL().toString(); // ?ÀÌÀüÀÇ ÁÖ¼Ò
-		String queryString = request.getQueryString(); // ? ÀÌÈÄÀÇ µ¥ÀÌÅÍÁÖ¼Ò
+		String currentURL = request.getRequestURL().toString(); // ?ì´ì „ì˜ ì£¼ì†Œ
+		String queryString = request.getQueryString(); // ? ì´í›„ì˜ ë°ì´í„°ì£¼ì†Œ
 		
 		currentURL += "?"+queryString;
 		
-		String ctxPath = request.getContextPath(); // ÇØ´ç jspÆÄÀÏÀÌ ÀÖ´Â »óÀ§ °æ·Î (/MyWeb)
+		String ctxPath = request.getContextPath(); // í•´ë‹¹ jspíŒŒì¼ì´ ìˆëŠ” ìƒìœ„ ê²½ë¡œ (/MyWeb)
 		int beginIndex = currentURL.indexOf(ctxPath) + ctxPath.length();
-		// currentURL¿¡¼­ /MyWebÀÌ ½ÃÀÛÇÏ´Â ºÎºĞ -> 21 + /MyWebÀÇ ±æÀÌ -> 6 ==> 27 -> /MyWeb ÀÌÈÄ ½ÃÀÛ°ª
+		// currentURLì—ì„œ /MyWebì´ ì‹œì‘í•˜ëŠ” ë¶€ë¶„ -> 21 + /MyWebì˜ ê¸¸ì´ -> 6 ==> 27 -> /MyWeb ì´í›„ ì‹œì‘ê°’
 		
 		currentURL = currentURL.substring(beginIndex+1); // member/memberList.jsp~~
 		
@@ -25,7 +25,7 @@ public class MyUtil {
 	} // end of getCurrentURL(HttpServletRequest request);
 	
 	
-/*//	#ÇöÀç ¼¼¼Ç¿¡ °´Ã¼°¡ ÀÖ´ÂÁö ¾ø´ÂÁö ¾Ë·ÁÁÖ´Â ¸Ş¼Òµå (·Î±×ÀÎ À¯¹« °Ë»ç) --> return HashMap
+/*//	#í˜„ì¬ ì„¸ì…˜ì— ê°ì²´ê°€ ìˆëŠ”ì§€ ì—†ëŠ”ì§€ ì•Œë ¤ì£¼ëŠ” ë©”ì†Œë“œ (ë¡œê·¸ì¸ ìœ ë¬´ ê²€ì‚¬) --> return HashMap
 	public static HashMap<String, Object> checkLoginUser(HttpServletRequest req) {
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		
@@ -33,7 +33,7 @@ public class MyUtil {
 		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
 		
 		if(loginuser == null) {
-			String msg = "·Î±×ÀÎ ÈÄ »ç¿ë °¡´ÉÇÕ´Ï´Ù.";
+			String msg = "ë¡œê·¸ì¸ í›„ ì‚¬ìš© ê°€ëŠ¥í•©ë‹ˆë‹¤.";
         	String loc = "javascript:history.back();";
         	
         	map.put("msg", msg);
@@ -47,7 +47,7 @@ public class MyUtil {
 	} // end of HashMap<String, Object> checkLoginUser(HttpServletRequest req)
 */
 
-//	#°Ë»ö¾î, ³¯Â¥±¸°£(period)°¡ Æ÷ÇÔµÈ ÆäÀÌÁö¹Ù ¸¸µé±â
+//	#ê²€ìƒ‰ì–´, ë‚ ì§œêµ¬ê°„(period)ê°€ í¬í•¨ëœ í˜ì´ì§€ë°” ë§Œë“¤ê¸°
 	public static String getSearchPageBar(String url, int currentShowPageNo, int sizePerPage, int totalPage,
 			int blockSize, String searchType, String searchWord, int period) {
 		String pageBar ="";
@@ -55,12 +55,12 @@ public class MyUtil {
 		int pageNo = 1;
 		int loop = 1;
 		
-		// ¡ØÆäÀÌÁöºí·° °ø½Ä
+		// â€»í˜ì´ì§€ë¸”ëŸ­ ê³µì‹
 		pageNo = ( (currentShowPageNo - 1)/blockSize)*blockSize +1;
 		
 		if(pageNo!=1) {
 			pageBar += "<a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord
-						+"&sizePerPage="+sizePerPage+"&currentShowPageNo="+(pageNo-1)+"&period="+period+"'>[ÀÌÀü]</a>&nbsp";
+						+"&sizePerPage="+sizePerPage+"&currentShowPageNo="+(pageNo-1)+"&period="+period+"'>[ì´ì „]</a>&nbsp";
 		}				
 		while(!(pageNo > totalPage || loop > blockSize)) {
 			if(pageNo==currentShowPageNo) {
@@ -75,7 +75,7 @@ public class MyUtil {
 		}
 		if(pageNo <= totalPage) {
 			pageBar += "<a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord
-						+"&sizePerPage="+sizePerPage+"&currentShowPageNo="+pageNo+"&period="+period+"'>[´ÙÀ½]</a>&nbsp";
+						+"&sizePerPage="+sizePerPage+"&currentShowPageNo="+pageNo+"&period="+period+"'>[ë‹¤ìŒ]</a>&nbsp";
 		}
 		
 		return pageBar;

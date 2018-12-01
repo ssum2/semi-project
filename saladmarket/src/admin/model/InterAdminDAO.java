@@ -3,6 +3,6 @@ package admin.model;
 import java.sql.SQLException;
 
 public interface InterAdminDAO {
-//	#°ü¸®ÀÚ ·Î±×ÀÎ
+//	#ê´€ë¦¬ì ë¡œê·¸ì¸
 	public AdminVO AdminLoginCheck(String adminid, String adminpw) throws SQLException;
 }

@@ -15,18 +15,18 @@ import util.AES256;
 import util.SHA256;
 import util.MyKey;
 public class AdminDAO implements InterAdminDAO {
-//	#¾ÆÆÄÄ¡ÅèÄ¹ÀÌ Á¦°øÇÏ´Â DBCP °´Ã¼º¯¼ö ds »ı¼º 
+//	#ì•„íŒŒì¹˜í†°ìº£ì´ ì œê³µí•˜ëŠ” DBCP ê°ì²´ë³€ìˆ˜ ds ìƒì„± 
 	private DataSource ds = null; // import javax.sql.DataSource
 	
-//	#Connection, preparedStatement, ResultSet°´Ã¼ »ı¼º
+//	#Connection, preparedStatement, ResultSetê°ì²´ ìƒì„±
 	private Connection conn = null;
 	private PreparedStatement pstmt = null;
 	private ResultSet rs = null;
 	
-//	#¾ÏÈ£È­
+//	#ì•”í˜¸í™”
 	AES256 aes = null;
 
-//	#MemberDAO ±âº»»ı¼ºÀÚ
+//	#MemberDAO ê¸°ë³¸ìƒì„±ì
 	public AdminDAO() {
 		try {
 			Context initContext = new InitialContext();	//	import javax.naming.*;
@@ -40,12 +40,12 @@ public class AdminDAO implements InterAdminDAO {
 		} catch (NamingException e) {
 			e.printStackTrace();
 		} catch (UnsupportedEncodingException e) {
-			System.out.println(">>> key°ªÀº 17ÀÚ ÀÌ»óÀÌ¾î¾ß ÇÕ´Ï´Ù.");
+			System.out.println(">>> keyê°’ì€ 17ì ì´ìƒì´ì–´ì•¼ í•©ë‹ˆë‹¤.");
 			e.printStackTrace();
 		} 
 	} // end of default constructor
 	
-	//#»ç¿ëÇÑ ÀÚ¿øÀ» ¹İ³³ÇÏ´Â close() ¸Ş¼Òµå
+	//#ì‚¬ìš©í•œ ìì›ì„ ë°˜ë‚©í•˜ëŠ” close() ë©”ì†Œë“œ
 	public void close() {
 		try {
 			if(rs != null) {
@@ -67,7 +67,7 @@ public class AdminDAO implements InterAdminDAO {
 	
 	
 	
-//	#°ü¸®ÀÚ ·Î±×ÀÎ ¸Ş¼Òµå
+//	#ê´€ë¦¬ì ë¡œê·¸ì¸ ë©”ì†Œë“œ
 	@Override
 	public AdminVO AdminLoginCheck(String adminid, String adminpw) throws SQLException {
 		AdminVO adminvo = null;

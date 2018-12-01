@@ -10,12 +10,12 @@ public class AdminLogoutAction extends AbstractController {
 
 	@Override
 	public void execute(HttpServletRequest req, HttpServletResponse res) throws Exception {
-//		#·Î±×¾Æ¿ô Ã³¸®
+//		#ë¡œê·¸ì•„ì›ƒ ì²˜ë¦¬
 		HttpSession session = req.getSession();
 		session.removeAttribute("admin");
-//		>> session¿¡ ÀúÀåµÇ¾îÀÖ´Â atrributeÀÇ key°ªÀ» ³ÖÀ¸¸é ÇØ´ç °´Ã¼°¡ »èÁ¦
-//		·Î±×ÀÎÇÑ °´Ã¼¸¦ »èÁ¦ÇÏ¿© ÇØ´ç °´Ã¼¸¦ null·Î ¸¸µê ----> ·Î±×ÀÎ ÀüÀÇ »óÅÂ¿Í µ¿ÀÏÇØÁü
-		super.setRedirect(true); // ÆäÀÌÁö ÀÌµ¿
+//		>> sessionì— ì €ì¥ë˜ì–´ìˆëŠ” atrributeì˜ keyê°’ì„ ë„£ìœ¼ë©´ í•´ë‹¹ ê°ì²´ê°€ ì‚­ì œ
+//		ë¡œê·¸ì¸í•œ ê°ì²´ë¥¼ ì‚­ì œí•˜ì—¬ í•´ë‹¹ ê°ì²´ë¥¼ nullë¡œ ë§Œë“¦ ----> ë¡œê·¸ì¸ ì „ì˜ ìƒíƒœì™€ ë™ì¼í•´ì§
+		super.setRedirect(true); // í˜ì´ì§€ ì´ë™
 		super.setViewPage("adminLogin.do");
 
 	}

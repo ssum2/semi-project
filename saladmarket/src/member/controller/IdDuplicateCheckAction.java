@@ -28,7 +28,7 @@ public class IdDuplicateCheckAction extends AbstractController {
 			JSONObject jsonObj = new JSONObject();
 			jsonObj.put("isUseUserid", isUseUserid);
 			
-			String str_json = jsonObj.toString();	// °ªÀÌ ÇÏ³ª»ÓÀÌ±â ¶§¹®¿¡ ¹Ù·Î JSON °´Ã¼·Î ³»º¸³¿
+			String str_json = jsonObj.toString();	// ê°’ì´ í•˜ë‚˜ë¿ì´ê¸° ë•Œë¬¸ì— ë°”ë¡œ JSON ê°ì²´ë¡œ ë‚´ë³´ëƒ„
 			
 			req.setAttribute("str_json", str_json);
 			
@@ -44,7 +44,7 @@ public class IdDuplicateCheckAction extends AbstractController {
 			System.out.println("IdDuplicateCheckAction success 4/4");
 		}
 		else {
-			req.setAttribute("msg", "ºñÁ¤»óÀûÀÎ °æ·Î·Î µé¾î¿Ô½À´Ï´Ù.");
+			req.setAttribute("msg", "ë¹„ì •ìƒì ì¸ ê²½ë¡œë¡œ ë“¤ì–´ì™”ìŠµë‹ˆë‹¤.");
 			req.setAttribute("loc", "javascript:history.back();");
 			
 			super.setRedirect(false);

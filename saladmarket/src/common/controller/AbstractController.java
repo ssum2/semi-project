@@ -7,20 +7,20 @@ import admin.model.AdminVO;
 import member.model.MemberVO;
 
 public abstract class AbstractController implements Command {
-	// Ãß»óÅ¬·¡½º
+	// ì¶”ìƒí´ë˜ìŠ¤
 	private boolean isRedirect = false;
-	/*	#°³¹ßÀÚ ÁöÁ¤ ±ÔÄ¢
-	 	View ÆäÀÌÁö(.jsp ÆäÀÌÁö)¿¡ sendRedirect ¹æ¹ıÀ¸·Î ÀÌµ¿ ÇÒ ¶§; 
+	/*	#ê°œë°œì ì§€ì • ê·œì¹™
+	 	View í˜ì´ì§€(.jsp í˜ì´ì§€)ì— sendRedirect ë°©ë²•ìœ¼ë¡œ ì´ë™ í•  ë•Œ; 
 	 		isRedirect = true
-	 	View ÆäÀÌÁö(.jsp ÆäÀÌÁö)¿¡ forward ¹æ¹ıÀ¸·Î ÀÌµ¿ ÇÒ ¶§; 
+	 	View í˜ì´ì§€(.jsp í˜ì´ì§€)ì— forward ë°©ë²•ìœ¼ë¡œ ì´ë™ í•  ë•Œ; 
 	 		isRedirect = false
 	 */
 	
-	private String viewPage; // view¿¡¼­ »ç¿ëÇÒ page
+	private String viewPage; // viewì—ì„œ ì‚¬ìš©í•  page
 
 	public boolean isRedirect() {
 		return isRedirect;
-		// >> returnÅ¸ÀÔÀÌ booleanÀÎ °æ¿ì getÀÌ ¾Æ´Ï¶ó is~~
+		// >> returníƒ€ì…ì´ booleanì¸ ê²½ìš° getì´ ì•„ë‹ˆë¼ is~~
 	}
 
 	public void setRedirect(boolean isRedirect) {
@@ -35,15 +35,15 @@ public abstract class AbstractController implements Command {
 		this.viewPage = viewPage;
 	}
 	
-//	#ÇöÀç ¼¼¼Ç¿¡ °´Ã¼°¡ ÀÖ´ÂÁö ¾ø´ÂÁö ¾Ë·ÁÁÖ´Â ¸Ş¼Òµå (·Î±×ÀÎ À¯¹« °Ë»ç) --> return MemberVO or null
+//	#í˜„ì¬ ì„¸ì…˜ì— ê°ì²´ê°€ ìˆëŠ”ì§€ ì—†ëŠ”ì§€ ì•Œë ¤ì£¼ëŠ” ë©”ì†Œë“œ (ë¡œê·¸ì¸ ìœ ë¬´ ê²€ì‚¬) --> return MemberVO or null
 	public MemberVO getLoginUser(HttpServletRequest req) {
 		MemberVO loginuser = null;
 		
 		HttpSession session = req.getSession();
 		loginuser = (MemberVO)session.getAttribute("loginuser");
 		
-		if(loginuser == null) { // ·Î±×ÀÎ °´Ã¼°¡ ¾øÀ» ¶§
-			String msg = "·Î±×ÀÎ ÈÄ »ç¿ë °¡´ÉÇÕ´Ï´Ù.";
+		if(loginuser == null) { // ë¡œê·¸ì¸ ê°ì²´ê°€ ì—†ì„ ë•Œ
+			String msg = "ë¡œê·¸ì¸ í›„ ì‚¬ìš© ê°€ëŠ¥í•©ë‹ˆë‹¤.";
         	String loc = "javascript:history.back();";
         	
         	req.setAttribute("msg", msg);
@@ -61,8 +61,8 @@ public abstract class AbstractController implements Command {
 		HttpSession session = req.getSession();
 		admin = (AdminVO)session.getAttribute("admin");
 		
-		if(admin == null) { // ·Î±×ÀÎ °´Ã¼°¡ ¾øÀ» ¶§
-			String msg = "·Î±×ÀÎ ÈÄ »ç¿ë °¡´ÉÇÕ´Ï´Ù.";
+		if(admin == null) { // ë¡œê·¸ì¸ ê°ì²´ê°€ ì—†ì„ ë•Œ
+			String msg = "ë¡œê·¸ì¸ í›„ ì‚¬ìš© ê°€ëŠ¥í•©ë‹ˆë‹¤.";
         	String loc = "javascript:history.back();";
         	
         	req.setAttribute("msg", msg);

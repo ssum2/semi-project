@@ -13,7 +13,7 @@ public class AdminIndexController extends AbstractController {
 		AdminVO admin = super.getAdmin(req);
 		
 		if(admin==null) {
-			String msg = "·Î±×ÀÎ ÈÄ »ç¿ë °¡´ÉÇÕ´Ï´Ù.";
+			String msg = "ë¡œê·¸ì¸ í›„ ì‚¬ìš© ê°€ëŠ¥í•©ë‹ˆë‹¤.";
         	String loc = "javascript:history.back();";
         	
         	req.setAttribute("msg", msg);

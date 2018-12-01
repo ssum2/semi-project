@@ -9,7 +9,7 @@ public class IndexController extends AbstractController {
 
 	@Override
 	public void execute(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		req.setAttribute("result", "¼îÇÎ¸ô¸ŞÀÎ");
+		req.setAttribute("result", "ì‡¼í•‘ëª°ë©”ì¸");
 		
 		super.setRedirect(false);
 		super.setViewPage("/WEB-INF/store/index.jsp");

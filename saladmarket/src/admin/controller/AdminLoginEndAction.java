@@ -16,7 +16,7 @@ public class AdminLoginEndAction extends AbstractController {
 	public void execute(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		String method = req.getMethod();
 		if(!"POST".equalsIgnoreCase(method)) {
-			req.setAttribute("msg", "ºñÁ¤»óÀûÀÎ °æ·Î·Î µé¾î¿Ô½À´Ï´Ù.");
+			req.setAttribute("msg", "ë¹„ì •ìƒì ì¸ ê²½ë¡œë¡œ ë“¤ì–´ì™”ìŠµë‹ˆë‹¤.");
 			req.setAttribute("loc", "javascript:history.back();");
 			
 			super.setRedirect(false);
@@ -53,14 +53,14 @@ public class AdminLoginEndAction extends AbstractController {
 				res.addCookie(cookie);
 				
 
-				req.setAttribute("msg", adminid+"´Ô È¯¿µÇÕ´Ï´Ù.");
+				req.setAttribute("msg", adminid+"ë‹˜ í™˜ì˜í•©ë‹ˆë‹¤.");
 				req.setAttribute("loc", "admin_index.do");
 				super.setRedirect(false);
 				super.setViewPage("/WEB-INF/msg.jsp");
 				
 			}
 			else {
-				req.setAttribute("msg", "·Î±×ÀÎ¿¡ ½ÇÆĞÇÏ¿´½À´Ï´Ù.");
+				req.setAttribute("msg", "ë¡œê·¸ì¸ì— ì‹¤íŒ¨í•˜ì˜€ìŠµë‹ˆë‹¤.");
 				req.setAttribute("loc", "javascript:history.back();");
 				
 				super.setRedirect(false);

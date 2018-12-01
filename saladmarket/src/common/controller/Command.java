@@ -5,11 +5,11 @@ import javax.servlet.http.HttpServletResponse;
 
 public interface Command {
 /*
-	[Ãß»ó ¸Ş¼Òµå ¼±¾ğ]
-	1) Ãß»ó¸Ş¼Òµå ¼±¾ğ½Ã public abstract ÁöÁ¤ÀÚ°¡ ÀÚµ¿À¸·Î ºÙÀ½
-	2) Ãß»óº¯¼ö ¼±¾ğ½Ã ÀÚµ¿À¸·Î public static finalÀÌ ºÙÀ½ 
+	[ì¶”ìƒ ë©”ì†Œë“œ ì„ ì–¸]
+	1) ì¶”ìƒë©”ì†Œë“œ ì„ ì–¸ì‹œ public abstract ì§€ì •ìê°€ ìë™ìœ¼ë¡œ ë¶™ìŒ
+	2) ì¶”ìƒë³€ìˆ˜ ì„ ì–¸ì‹œ ìë™ìœ¼ë¡œ public static finalì´ ë¶™ìŒ 
  */
-//	#À¥ ½ÇÁ¦ ½ÇÇà¸Ş¼Òµå	
+//	#ì›¹ ì‹¤ì œ ì‹¤í–‰ë©”ì†Œë“œ	
 	void execute(HttpServletRequest req, HttpServletResponse res) throws Exception;
 	
 }

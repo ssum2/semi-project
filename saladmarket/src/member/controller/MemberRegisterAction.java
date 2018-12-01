@@ -20,7 +20,7 @@ public class MemberRegisterAction extends AbstractController {
 			super.setViewPage("/WEB-INF/store/member/join.jsp");
 		}
 		else {
-			String msg = "·Î±×¾Æ¿ô ÈÄ »ç¿ë °¡´É ÇÕ´Ï´Ù.";
+			String msg = "ë¡œê·¸ì•„ì›ƒ í›„ ì‚¬ìš© ê°€ëŠ¥ í•©ë‹ˆë‹¤.";
         	String loc = "javascript:history.back();";
         	req.setAttribute("msg", msg);
 			req.setAttribute("loc", loc);

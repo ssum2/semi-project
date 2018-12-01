@@ -3,26 +3,26 @@ package member.model;
 import java.util.Calendar;
 
 public class MemberVO {
-	private int mnum;            // È¸¿ø¹øÈ£(½ÃÄö½º·Î µ¥ÀÌÅÍ°¡ µé¾î¿Â´Ù)
-	private String userid;      // È¸¿ø¾ÆÀÌµğ
-	private String name;        // È¸¿ø¸í
-	private String pwd;         // ºñ¹Ğ¹øÈ£
-	private String email;       // ÀÌ¸ŞÀÏ
-	private String phone;         // ÈŞ´ëÆù ¹øÈ£
-	private String postnum;       // ¿ìÆí¹øÈ£
-	private String address1;       // ÁÖ¼Ò
-	private String address2;       // »ó¼¼ÁÖ¼Ò
-	private String birthday; 	// »ı³â¿ùÀÏ
-	private int coin;           // ÄÚÀÎ¾×
-	private int point;          // Æ÷ÀÎÆ®
-	private String registerday; // °¡ÀÔÀÏÀÚ
-	private int status;         // È¸¿øÅ»ÅğÀ¯¹«   1:»ç¿ë°¡´É(°¡ÀÔÁß) / 0:»ç¿ëºÒ´É(Å»Åğ)
-	private String lastlogindate;	// ¸¶Áö¸· ·Î±×ÀÎ ÀÏ½Ã
-	private String lastpwdchangedate;	// ¸¶Áö¸· ÆĞ½º¿öµå º¯°æ ÀÏ½Ã
-	private boolean requirePwdChange = false; // ÆĞ½º¿öµå º¯°æ ÀÇ¹« ¿©ºÎ --> trueÀÎ °æ¿ì 6°³¿ù ÀÌÀüÀÌ¿©¼­ º¯°æÇÏµµ·Ï À¯µµ
-	private boolean requireCertify = false; // ¸¶Áö¸· ·Î±×ÀÎ ÀÏ½Ã; idleStatus
-	private int summoney;	// ´©Àû±¸¸Å±İ¾×
-	private int fk_lvnum;	// È¸¿ø µî±Ş ³Ñ¹ö
+	private int mnum;            // íšŒì›ë²ˆí˜¸(ì‹œí€€ìŠ¤ë¡œ ë°ì´í„°ê°€ ë“¤ì–´ì˜¨ë‹¤)
+	private String userid;      // íšŒì›ì•„ì´ë””
+	private String name;        // íšŒì›ëª…
+	private String pwd;         // ë¹„ë°€ë²ˆí˜¸
+	private String email;       // ì´ë©”ì¼
+	private String phone;         // íœ´ëŒ€í° ë²ˆí˜¸
+	private String postnum;       // ìš°í¸ë²ˆí˜¸
+	private String address1;       // ì£¼ì†Œ
+	private String address2;       // ìƒì„¸ì£¼ì†Œ
+	private String birthday; 	// ìƒë…„ì›”ì¼
+	private int coin;           // ì½”ì¸ì•¡
+	private int point;          // í¬ì¸íŠ¸
+	private String registerday; // ê°€ì…ì¼ì
+	private int status;         // íšŒì›íƒˆí‡´ìœ ë¬´   1:ì‚¬ìš©ê°€ëŠ¥(ê°€ì…ì¤‘) / 0:ì‚¬ìš©ë¶ˆëŠ¥(íƒˆí‡´)
+	private String lastlogindate;	// ë§ˆì§€ë§‰ ë¡œê·¸ì¸ ì¼ì‹œ
+	private String lastpwdchangedate;	// ë§ˆì§€ë§‰ íŒ¨ìŠ¤ì›Œë“œ ë³€ê²½ ì¼ì‹œ
+	private boolean requirePwdChange = false; // íŒ¨ìŠ¤ì›Œë“œ ë³€ê²½ ì˜ë¬´ ì—¬ë¶€ --> trueì¸ ê²½ìš° 6ê°œì›” ì´ì „ì´ì—¬ì„œ ë³€ê²½í•˜ë„ë¡ ìœ ë„
+	private boolean requireCertify = false; // ë§ˆì§€ë§‰ ë¡œê·¸ì¸ ì¼ì‹œ; idleStatus
+	private int summoney;	// ëˆ„ì êµ¬ë§¤ê¸ˆì•¡
+	private int fk_lvnum;	// íšŒì› ë“±ê¸‰ ë„˜ë²„
 	
 	public MemberVO() { }
 	
@@ -182,7 +182,7 @@ public class MemberVO {
 	}
 
 	public int getShowAge() {
-		Calendar currentdate = Calendar.getInstance(); // ÇöÀç³¯Â¥¿Í ½Ã°£À» ¾ò¾î¿Â´Ù.
+		Calendar currentdate = Calendar.getInstance(); // í˜„ì¬ë‚ ì§œì™€ ì‹œê°„ì„ ì–»ì–´ì˜¨ë‹¤.
 		int year = currentdate.get(Calendar.YEAR);
 
 		String myYear = birthday.substring(0, 4);
@@ -196,7 +196,7 @@ public class MemberVO {
 		String birthmonth = birthday.substring(4, 6);
 		String day = birthday.substring(6);
 		
-		result = birthyear+"³â "+birthmonth+"¿ù "+day+"ÀÏ";
+		result = birthyear+"ë…„ "+birthmonth+"ì›” "+day+"ì¼";
 		
 		return result;
 	}

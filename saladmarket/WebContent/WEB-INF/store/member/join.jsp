@@ -84,7 +84,7 @@
 		
 		});
 //		#패스워드 유효성 검사
-		$("#password").blur(function(){
+		$("#pwd").blur(function(){
 			var passwd = $(this).val();
 			var regExp_pw = /^.*(?=^.{8,15}$)(?=.*\d)(?=.*[a-zA-Z])(?=.*[^a-zA-Z0-9]).*$/g;
 			var isUsePasswd = regExp_pw.test(passwd);
@@ -92,7 +92,7 @@
 				$(".pwdOK").html.empty();
 				$("#error_passwd").show();
 				$(this).val("");
-				$("#password").focus();
+				$("#pwd").focus();
 			}
 			else{
 				$("#error_passwd").hide();
@@ -183,14 +183,14 @@
 
 	});
 //	#최종적으로 체크박스/라디오 체크된 다음 submit
-	function goRegister(event){
+	function goRegister(){
 	
 		var isCheckedAgree = $("input:checkbox[id=agree]").is(":checked");
 		if(!isCheckedAgree){
 			alert("이용약관에 동의하셔야 가입 가능합니다.");
 			return;
 		}
-		var frm = document.registerFrm;
+		var frm = document.joinFrm;
 		frm.method = "POST";
 		frm.action = "memberRegisterEnd.do";
 		frm.submit();
@@ -222,7 +222,7 @@
             <div class="form-group">
                <div class="col-md-6">
                   <label for="userid">아이디</label>
-                  <input type="text" id="userid" class="form-control requiredinfo" placeholder="ID" required>
+                  <input type="text" id="userid" name="userid" class="form-control requiredinfo" placeholder="ID" required>
                </div>
                <div class="col-md-2" style="margin-top:5.5%">
                   <button type="button" id="idcheck" class="btn btn-outline" style="padding: 2px; font-size: 10pt;" >아이디 확인</button>
@@ -239,7 +239,7 @@
             <div class="form-group">
                <div class="col-md-6">
                   <label for="password">비밀번호</label>
-                  <input type="password" id="password" class="form-control requiredinfo" placeholder="Password" required>
+                  <input type="password" id="pwd" name="pwd" class="form-control requiredinfo" placeholder="Password" required>
                </div>
                 <div class="col-md-5" style="margin-top:5%">
                      <span class="error" style="color: blue; font-size: 12px;">비밀번호는 영문자,숫자,특수기호가 혼합된 8~15 글자로만 입력가능합니다.</span>
@@ -263,7 +263,7 @@
             <div class="form-group">
                <div class="col-md-6">
                   <label for="name">성명</label>
-                  <input type="text" id="name" class="form-control requiredinfo" placeholder="마켓수" required>
+                  <input type="text" id="name" name="name" class="form-control requiredinfo" placeholder="마켓수" required>
                </div>
                <div class="col-md-4" style="margin-top:5.5%">
                      <span class="error" style="color: blue; font-size: 12px;">성명을 입력하세요.</span>
@@ -272,7 +272,7 @@
             <div class="form-group">
                <div class="col-md-6" >
                   <label for="email">이메일</label>
-                  <input type="text" id="email" class="form-control requiredinfo" placeholder="marketsue@gmail.com" required>
+                  <input type="text" id="email" name="email" class="form-control requiredinfo" placeholder="marketsue@gmail.com" required>
                </div>
                <div class="col-md-5" style="margin-top:5.5%">
                      <span class="error" style="color: blue; font-size: 12px;">이메일 형식에 맞게 입력하세요.</span>
@@ -293,7 +293,7 @@
             <div class="form-group">
                <div class="col-md-3">
                   <label for="postnum">우편번호</label>
-                  <input type="text" id="postnum" class="form-control" placeholder="우편번호" required>
+                  <input type="text" id="postnum" name="postnum" class="form-control" placeholder="우편번호" required>
                </div>
                <div class="col-md-2" style="margin-top: 5%">
                   <button class="btn btn-outline" id="zipcodeSearch" style="padding: 2px; font-size: 10pt;">우편번호</button>
@@ -337,7 +337,7 @@
 
          <div class="row">
             <div class="col-md-12" style="margin-left: 35%; margin-top: 5%;" >
-               <p><a href="#" id="join" class="btn btn-primary">가입하기</a></p>
+               <button type="button" id="join" class="btn btn-primary" OnClick="goRegister();">가입하기</button>
             </div>
          </div>
 

@@ -2,7 +2,14 @@
     pageEncoding="UTF-8"%>
 <% String CtxPath = request.getContextPath(); %>
 <jsp:include page="../header.jsp" />
-	
+
+<<script type="text/javascript">
+//#전체 체크박스(관리자모드; 배송시작, 배송완료)
+function allCheckBox() {
+	var bool = $("#allCheck").is(':checked');
+	$(".cartCheck").prop('checked', bool)	
+}
+</script>
 	<aside id="colorlib-hero" class="breadcrumbs">
 			<div class="flexslider">
 				<ul class="slides">
@@ -48,6 +55,12 @@
 				<div class="row row-pb-md">
 					<div class="col-md-10 col-md-offset-1">
 						<div class="product-name">
+							<div class="text-left">
+								<input type="checkbox" id="allCheck" onClick="allCheckBox();">
+								<label for="allCheck">
+								<span style="font-weight: bold; font-size: 9pt;">전체선택</span>
+								</label>
+							</div>
 							<div class="one-forth text-center">
 								<span>상품</span>
 							</div>
@@ -66,6 +79,11 @@
 						</div><!-- 장바구니 List 윗부분 -->
 						
 						<div class="product-cart">
+							<div class="text-center">
+								<div class="display-tc">
+									<input type="checkbox" id="cartCheck1" name="cartCheck" class="cartCheck"/>
+								</div>
+							</div>
 							<div class="one-forth">
 								<div class="product-img" style="background-image: url(<%=CtxPath %>/store/images/index/coupon.jpg););">
 								</div>
@@ -98,6 +116,11 @@
 						</div>
 						
 						<div class="product-cart">
+							<div class="text-center">
+								<div class="display-tc">
+									<input type="checkbox" id="cartCheck2" name="cartCheck" class="cartCheck"/>
+								</div>
+							</div>
 							<div class="one-forth">
 								<div class="product-img" style="background-image: url(<%=CtxPath %>/store/images/index/coupon.jpg););">
 								</div>

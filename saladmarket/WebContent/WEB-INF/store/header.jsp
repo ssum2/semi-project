@@ -81,50 +81,50 @@
 						<div class="col-xs-10 text-right menu-1">
 							<ul>
 								<li class="active"><a href="<%=ctxPath %>/index.do">Home</a></li>
-								<c:if test="${SessionScope.loginuser==null }">
+								<c:if test="${sessionScope.loginuser eq null}">
 								<li><a href="<%=ctxPath %>/memberLogin.do">로그인</a></li>
+								<li><a href="<%=ctxPath %>/memberRegister.do">회원가입</a></li>
 								</c:if>
-								<c:if test="${SessionScope.loginuser!=null }">
+								<c:if test="${sessionScope.loginuser ne null }">
 								<li><a href="<%=ctxPath %>/memberLogout.do">로그아웃</a></li>
 								</c:if>
-								<li><a href="<%=ctxPath %>/memberRegister.do">회원가입</a></li>
 								<li><a href=""></a></li>
 								<li class="has-dropdown">
 									<a href="">마이페이지</a>
 									<ul class="dropdown">
-										<li><a href="<%=ctxPath %>/memberInfomain.do">회원정보</a></li>
-										<li><a href="<%=ctxPath %>/cuponList.do">할인쿠폰</a></li>
+										<li><a href="<%=ctxPath %>/memberInfo.do">회원정보</a></li>
+										<li><a href="<%=ctxPath %>/couponList.do">할인쿠폰</a></li>
 										<li><a href="<%=ctxPath %>/refundChange.do">환불교환</a></li>
 										<li><a href="<%=ctxPath %>/orderList.do">주문내역</a></li>
-										<li><a href="<%=ctxPath %>/cart.do">장바구니</a></li>
+										<li><a href="<%=ctxPath %>/cartList.do">장바구니</a></li>
 										<li><a href="<%=ctxPath %>/myPickList.do">찜</a></li>
 									</ul>
 								</li>
 								<li class="has-dropdown">
 									<a href="">샐러드</a>
 									<ul class="dropdown">
-										<li><a href="">시리얼</a></li>
-										<li><a href="">샐러드</a></li>
-										<li><a href="">죽/스프</a></li>
+										<li><a href="<%=ctxPath %>/productList.do?fk_sdname='시리얼'">시리얼</a></li>
+										<li><a href="<%=ctxPath %>/productList.do?fk_sdname='샐러드'">샐러드</a></li>
+										<li><a href="<%=ctxPath %>/productList.do?fk_sdname='죽/스프'">죽/스프</a></li>
 									</ul>
 								</li>
 								<li class="has-dropdown">
 									<a href="">디톡스</a>
 									<ul class="dropdown">
-										<li><a href="">물/주스</a></li>
-										<li><a href="">건강즙</a></li>
-										<li><a href="">건강차</a></li>
+										<li><a href="<%=ctxPath %>/productList.do?fk_sdname='물/주스'">물/주스</a></li>
+										<li><a href="<%=ctxPath %>/productList.do?fk_sdname='건강즙'">건강즙</a></li>
+										<li><a href="<%=ctxPath %>/productList.do?fk_sdname='건강차'">건강차</a></li>
 									</ul>
 								</li>
 								<li class="has-dropdown">
 									<a href="">DIY</a>
 									<ul class="dropdown">
-										<li><a href="">야채/곡류</a></li>
-										<li><a href="">과일</a></li>
-										<li><a href="">고기/달걀</a></li>
-										<li><a href="">생선</a></li>
-										<li><a href="">소스</a></li>
-										<li><a href="">유제품</a></li>
+										<li><a href="<%=ctxPath %>/productList.do?fk_sdname='야채/곡류'">야채/곡류</a></li>
+										<li><a href="<%=ctxPath %>/productList.do?fk_sdname='과일'">과일</a></li>
+										<li><a href="<%=ctxPath %>/productList.do?fk_sdname='고기/달걀'">고기/달걀</a></li>
+										<li><a href="<%=ctxPath %>/productList.do?fk_sdname='생선'">생선</a></li>
+										<li><a href="<%=ctxPath %>/productList.do?fk_sdname='소스'">소스</a></li>
+										<li><a href="<%=ctxPath %>/productList.do?fk_sdname='유제품'">유제품</a></li>
 									</ul>
 								</li>
 								<li><a href="">EVENT</a></li>

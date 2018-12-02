@@ -17,12 +17,12 @@
 		   				<div class="slider-text-inner text-center">
 		   					<h1>MyPage</h1>
 		   					<h2 class="bread">
-			   					<span style="font-size: 13pt;"><a href="#">회원정보수정</a></span>
-			   					<span style="font-size: 13pt;"><a href="#">환불 및 교환내역</a></span>
-			   					<span style="font-size: 13pt;"><a href="#">찜 목록 보기</a></span>
-			   					<span style="font-size: 13pt;"><a href="#">주문내역보기</a></span>
-			   					<span style="font-size: 13pt;"><a href="#">보유쿠폰 보기</a></span>
-			   					<span style="font-size: 13pt;"><a href="#">리뷰보기</a></span>
+			   					<span style="font-size: 13pt;"><a href="<%=ctxPath %>/memberModify.do">회원정보수정</a></span>
+			   					<span style="font-size: 13pt;"><a href="<%=ctxPath %>/refundChange.do">환불 및 교환내역</a></span>
+			   					<span style="font-size: 13pt;"><a href="<%=ctxPath %>/myPickList.do">찜 목록 보기</a></span>
+			   					<span style="font-size: 13pt;"><a href="<%=ctxPath %>/orderList.do">주문내역보기</a></span>
+			   					<span style="font-size: 13pt;"><a href="<%=ctxPath %>/couponList.do">보유쿠폰 보기</a></span>
+			   					<span style="font-size: 13pt;"><a href="<%=ctxPath %>/myReview.do">리뷰보기</a></span>
 		   					</h2>
 		   				</div>
 		   			</div>
@@ -50,13 +50,14 @@
 			<td><span style="font-size: 13pt;">아이디</span><td>
 		</tr>
 		<tr>
-			<td><span id="userid" class="userid" style="font-size: 13pt;">rkgus3575</span><td>
+			<td><span id="userid" class="userid" style="font-size: 13pt;">${sessionScope.loginuser.userid}</span><td>
 		</tr>
 		<tr>
 			<td><span style="font-size: 13pt;">비밀번호</span><td>
 		</tr>
 		<tr>
-			<td><input type="password" style="height: 15%;"/>&nbsp;&nbsp;<button type="button">확인</button><td>
+			<td><input type="password" style="height: 15%;"/>&nbsp;&nbsp;
+			<button type="button" class="btn btn-success">확인</button><td>
 		</tr>
 	</table>
 	</div>

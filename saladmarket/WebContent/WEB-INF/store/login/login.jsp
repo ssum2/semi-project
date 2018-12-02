@@ -1,10 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <jsp:include page="../header.jsp" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+
+<script src="//developers.kakao.com/sdk/js/kakao.min.js"></script>
 <% String CtxPath = request.getContextPath(); %>
-
-
-
 
 <script type="text/javascript">
 	$(document).ready(function(){
@@ -99,7 +99,13 @@
              <div class="col-md-12" style="margin-top: 1%; margin-left: 33%;" >
                 <button class="btn" style="font-size: 9pt;">아이디 찾기</button>
                 <button class="btn" style="font-size: 9pt;">비밀번호 찾기</button>
+               
                 <button class="btn btn-primary" style="margin-left: 2%; font-size: 10pt;" OnClick="goLogin();">로그인</button>
+             <div class="panel-body" style="margin-left: 5%;">
+                
+                <a id="kakao-login-btn"></a>
+                <a href="http://developers.kakao.com/logout"></a>
+             </div>
              </div>
           </div>
           
@@ -113,4 +119,20 @@
    <a href="#" class="js-gotop"><i class="icon-arrow-up2"></i></a>
 </div>
 
+<script type='text/javascript'>
+  //<![CDATA[
+    // 사용할 앱의 JavaScript 키를 설정해 주세요.
+    Kakao.init('3c40f1157f35feedc6f97790aa5d7a3d');
+    // 카카오 로그인 버튼을 생성합니다.
+    Kakao.Auth.createLoginButton({
+      container: '#kakao-login-btn',
+      success: function(authObj) {
+        alert(JSON.stringify(authObj));
+      },
+      fail: function(err) {
+         alert(JSON.stringify(err));
+      }
+    });
+  //]]>
+</script>
 <jsp:include page="../footer.jsp" />

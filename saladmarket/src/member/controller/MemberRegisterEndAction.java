@@ -59,11 +59,8 @@ public class MemberRegisterEndAction extends AbstractController {
 			if(n==1) {
 				// 정상적으로 insert 완료되었을 때
 				
-				HttpSession session = req.getSession();
-				session.setAttribute("loginuser", membervo);
-				
 				req.setAttribute("msg", "회원 가입 성공!");
-				req.setAttribute("loc", "memberLoginEnd.do");
+				req.setAttribute("loc", "index.do");
 				
 				super.setRedirect(false);
 				super.setViewPage("/WEB-INF/msg.jsp");

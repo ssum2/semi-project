@@ -18,25 +18,13 @@ public class LoginEndAction extends AbstractController {
 	@Override
 	public void execute(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		
-		
-		MemberVO loginuser = super.getLoginUser(req);
-		String userid = "";
-		String pwd = "";
-		String saveid = ""; 
-		
-		if(loginuser == null) {
-			userid = req.getParameter("userid");
-			pwd = req.getParameter("pwd");
-			saveid=req.getParameter("saveid");
-		}
-		else {
-			userid = loginuser.getUserid();
-			pwd = loginuser.getPwd();
-		}
+		String userid = req.getParameter("userid");
+		String pwd = req.getParameter("pwd");
+		String saveid = req.getParameter("saveid");
 		
 		
 		InterMemberDAO memberdao = new MemberDAO();
-		loginuser = memberdao.loginCheck(userid, pwd);
+		MemberVO loginuser = memberdao.loginCheck(userid, pwd);
 		
 		if(loginuser!=null) {
 			
@@ -63,7 +51,7 @@ public class LoginEndAction extends AbstractController {
 			
 		}
 		else {
-			req.setAttribute("msg", "로그인에 실패하였습니다.");
+			req.setAttribute("msg", "일치하는 회원 정보가 없습니다.");
 			req.setAttribute("loc", "javascript:history.back();");
 			
 			super.setRedirect(false);

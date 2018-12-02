@@ -517,8 +517,8 @@ nocycle
 nocache;
 
 
--- 리뷰게시판(review_borad) 테이블 생성 
-create table review_borad 
+-- 리뷰게시판(review_board) 테이블 생성 
+create table review_board 
 (rbnum        number  not null                -- 리뷰번호 
 ,fk_pnum      number  not null                -- 상품번호 
 ,fk_userid    varchar2(100)  not null         -- 사용자아이디 
@@ -530,15 +530,15 @@ create table review_borad
 ,rbviewcount  number default 0  not null      -- 리뷰조회수 
 ,rblike       number default 0  not null      -- 리뷰좋아요 
 ,rbstatus     number default 1  not null   
-,constraint PK_review_borad primary key(rbnum)
-,constraint FK_review_borad_pnum foreign key(fk_pnum)
+,constraint PK_review_board primary key(rbnum)
+,constraint FK_review_board_pnum foreign key(fk_pnum)
                                    references product(pnum)
-,constraint FK_review_borad_userid foreign key(fk_userid)
+,constraint FK_review_board_userid foreign key(fk_userid)
                                     references member(userid)
-,constraint CK_review_borad_rbstatus check( rbstatus in(0,1) )
+,constraint CK_review_board_rbstatus check( rbstatus in(0,1) )
 );
 
-create sequence seq_review_borad_rbnum
+create sequence seq_review_board_rbnum
 start with 1
 increment by 1
 nomaxvalue
@@ -548,8 +548,13 @@ nocache;
 
 -- 기존에 리뷰게시판 테이블 만드신 분만 실행하세요
 alter table review_borad add rbimage varchar2(200);
-
+ALTER TABLE review_borad RENAME TO review_board;
+ALTER sequence seq_review_borad_rbnum RENAME TO seq_review_board_rbnum;
 commit;
+
+drop sequence seq_review_borad_rbnum;
+drop table review_board purge;
+drop table review_comment purge;
 
 -- 리뷰게시판댓글(review_comment) 테이블 생성 
 create table review_comment 
@@ -561,7 +566,7 @@ create table review_comment
 ,rccontents   number  not null                -- 리뷰댓글내용 
 ,constraint PK_review_comment primary key(rcnum)
 ,constraint FK_review_comment_rbnum foreign key(fk_rbnum)
-                                       references review_borad(rbnum)
+                                       references review_board(rbnum)
 ,constraint FK_review_comment_userid foreign key(fk_userid)
                                         references member(userid)
 );
@@ -573,6 +578,9 @@ nomaxvalue
 nominvalue
 nocycle
 nocache;
+
+
+
 
 
 -- 상품주문(product_order)  테이블 생성 
@@ -634,7 +642,7 @@ select *
 from product_order_detail;
 
 -- 상품문의게시판(qna_borad) 테이블 생성 
-create table qna_borad 
+create table qna_board 
 (qnanum        number not null                -- 상품문의번호 
 ,fk_pnum       number not null                -- 상품번호 
 ,fk_userid     varchar2(100) not null         -- 사용자아이디 
@@ -643,15 +651,15 @@ create table qna_borad
 ,qnacontents   clob not null                  -- 상품문의내용 
 ,qnaopencheck  number default 1 not null      -- 상품문의공개여부 / 0:삭제 1:공개 
 ,qnastatus     number default 1 not null
-,constraint PK_qna_borad primary key(qnanum)
-,constraint FK_qna_borad_pnum foreign key(fk_pnum)
+,constraint PK_qna_board primary key(qnanum)
+,constraint FK_qna_board_pnum foreign key(fk_pnum)
                                   references product(pnum)
-,constraint FK_qna_borad_userid foreign key(fk_userid)
+,constraint FK_qna_board_userid foreign key(fk_userid)
                                   references member(userid)
-,constraint CK_qna_borad_qnastatus check( qnastatus in(0, 1) )
+,constraint CK_qna_board_qnastatus check( qnastatus in(0, 1) )
 );
 
-create sequence seq_qna_borad_qnanum
+create sequence seq_qna_board_qnanum
 start with 1
 increment by 1
 nomaxvalue
@@ -659,6 +667,10 @@ nominvalue
 nocycle
 nocache;
 
+
+drop sequence seq_qna_borad_qnanum;
+drop table qna_borad purge;
+drop table qna_comment purge;
 
 -- 상품문의댓글(qna_comment) 테이블 생성
 create table qna_comment 
@@ -668,7 +680,7 @@ create table qna_comment
 ,qnaccontents   clob not null                  -- 상품문의댓글내용 
 ,constraint PK_qna_comment primary key(qnacnum)
 ,constraint FK_qna_comment_qnanum foreign key(fk_qnanum)
-                                    references qna_borad(qnanum)
+                                    references qna_board(qnanum)
 );
 
 create sequence seq_qna_comment_qnacnum

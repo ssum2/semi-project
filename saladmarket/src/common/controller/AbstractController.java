@@ -1,7 +1,11 @@
 package common.controller;
 
+import java.util.logging.Logger;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+
+import org.apache.log4j.spi.LoggerFactory;
 
 import admin.model.AdminVO;
 import member.model.MemberVO;
@@ -34,6 +38,7 @@ public abstract class AbstractController implements Command {
 	public void setViewPage(String viewPage) {
 		this.viewPage = viewPage;
 	}
+
 	
 //	#현재 세션에 객체가 있는지 없는지 알려주는 메소드 (로그인 유무 검사) --> return MemberVO or null
 	public MemberVO getLoginUser(HttpServletRequest req) {

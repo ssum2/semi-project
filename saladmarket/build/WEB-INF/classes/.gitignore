@@ -1,5 +1,8 @@
-/common/
 /member/
+/admin/
+/common/
 /order/
 /product/
+/qna/
 /review/
+/util/

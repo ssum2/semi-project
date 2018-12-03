@@ -20,7 +20,9 @@ public class ProductVO {
 	private int salecount; // 판매량
 	private int plike; // 상품좋아요
 	private String pdate; // 상품등록일자
+	private String titleimg; // 대표이미지
 	
+	private ProductImageVO images;	// 상세이미지
 	
 	private int totalPrice;   // 주문량 * 제품판매가(할인해서 팔 것이므로)
 	private int totalPoint;   // 주문량 * 포인트점수
@@ -31,8 +33,8 @@ public class ProductVO {
 	public ProductVO(String pnum, String fk_pacname, String fk_sdname, String fk_ctname, String fk_stname,
 			String fk_etname, String pname, int price, int saleprice, int point, int pqty, String pcontents,
 			String pcompanyname, String pexpiredate, String allergy, int weight, int salecount, int plike,
-			String pdate) {
-		super();
+			String pdate, String titleimg) {
+		
 		this.pnum = pnum;
 		this.fk_pacname = fk_pacname;
 		this.fk_sdname = fk_sdname;
@@ -52,6 +54,36 @@ public class ProductVO {
 		this.salecount = salecount;
 		this.plike = plike;
 		this.pdate = pdate;
+		this.titleimg=titleimg;
+	}
+
+//	#상품이미지 정보까지 있는 생성자
+	public ProductVO(String pnum, String fk_pacname, String fk_sdname, String fk_ctname, String fk_stname,
+			String fk_etname, String pname, int price, int saleprice, int point, int pqty, String pcontents,
+			String pcompanyname, String pexpiredate, String allergy, int weight, int salecount, int plike, String pdate, String titleimg,
+			ProductImageVO images) {
+		
+		this.pnum = pnum;
+		this.fk_pacname = fk_pacname;
+		this.fk_sdname = fk_sdname;
+		this.fk_ctname = fk_ctname;
+		this.fk_stname = fk_stname;
+		this.fk_etname = fk_etname;
+		this.pname = pname;
+		this.price = price;
+		this.saleprice = saleprice;
+		this.point = point;
+		this.pqty = pqty;
+		this.pcontents = pcontents;
+		this.pcompanyname = pcompanyname;
+		this.pexpiredate = pexpiredate;
+		this.allergy = allergy;
+		this.weight = weight;
+		this.salecount = salecount;
+		this.plike = plike;
+		this.pdate = pdate;
+		this.titleimg= titleimg;
+		this.images = images;
 	}
 
 	public String getPnum() {
@@ -204,6 +236,23 @@ public class ProductVO {
 
 	public void setPdate(String pdate) {
 		this.pdate = pdate;
+	}
+
+	
+	public String getTitleimg() {
+		return titleimg;
+	}
+
+	public void setTitleimg(String titleimg) {
+		this.titleimg = titleimg;
+	}
+
+	public ProductImageVO getImages() {
+		return images;
+	}
+
+	public void setImages(ProductImageVO images) {
+		this.images = images;
 	}
 
 	public int getTotalPrice() {

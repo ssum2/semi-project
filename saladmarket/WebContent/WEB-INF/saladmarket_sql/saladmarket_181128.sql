@@ -103,6 +103,16 @@ create table member
 alter table member modify(fk_lvnum number default 1); 
 alter table member modify(name varchar2(100));
 
+
+-- 우편번호 varchar2타입으로 변경
+alter table member modify(postnum number null); -- 14409
+update member set postnum = null;
+alter table member modify(postnum varchar2(10));
+update member set postnum = '14409';
+alter table member modify(postnum varchar2(10) not null);
+
+commit;
+
 -- 테이블 정보보기
 SELECT COLUMN_ID,COLUMN_NAME,DECODE (NULLABLE , 'N', 'NOT NULL',NULL)  "NULL" ,
        DATA_TYPE||DECODE(DATA_TYPE,'NUMBER',DECODE (DATA_PRECISION, null,'','('||DATA_PRECISION||','||DATA_SCALE||')' ) ,
@@ -398,6 +408,7 @@ create table product
 ,salecount     number default 0  not null      -- 판매량 
 ,plike         number default 0  not null      -- 상품좋아요 
 ,pdate         date default sysdate  not null  -- 상품등록일자
+,titleimg      varchar2(200) not null          -- 상품 대표이미지
 ,constraint PK_product_pnum primary key(pnum)
 ,constraint FK_product_pacname foreign key(fk_pacname)
                                references product_package(pacname)
@@ -418,6 +429,210 @@ nomaxvalue
 nominvalue
 nocycle
 nocache;
+
+-- 상품테이블에 대표이미지 컬럼 추가
+alter table product
+add titleimg varchar2(200) 
+default ' ' not null;
+
+commit;
+
+alter table product
+drop constraint FK_product_pacname;
+
+commit;
+select *
+from product;
+
+-- 상품 select문
+String sql = "select pnum, fk_pacname, fk_sdname, fk_ctname, fk_stname, fk_etname, pname,\n"+
+"        price, saleprice, point, pqty, \n"+
+"        pcontents, pcompanyname, \n"+
+"        pexpiredate, allergy, weight, salecount, plike, to_char(pdate, 'yyyy-mm-dd') as pdate\n"+
+"from product\n"+
+"where fk_sdname like '%'||?||'%'\n"+
+"order by pnum desc";
+
+
+select *
+from product A right outer join product_package B
+on fk_pacname = pacname
+left outer join product_images C
+on A.pnum = C.fk_pnum
+where A.fk_sdname like '%%'
+order by B.pacnum, A.pnum asc;
+
+
+
+-- 패키지별로 대표상품의 정보를 가져오는 쿼리(패키지 없음 제외)
+select pnum, fk_pacname, fk_sdname, fk_ctname, fk_stname, fk_etname, pname, 
+       price, saleprice, point, pqty, pcontents, pcompanyname, pexpiredate, allergy, weight, salecount, plike, pdate,
+	   pacnum, pacname, paccontents, pacimage,
+	   pimgfilename, fk_pnum
+from
+    (
+    select pnum, fk_pacname, fk_sdname, fk_ctname, fk_stname, fk_etname, pname, 
+       price, saleprice, point, pqty, pcontents, pcompanyname, pexpiredate, allergy, weight, salecount, plike, pdate,
+	   pacnum, pacname, paccontents, pacimage
+    from
+        (select ROW_NUMBER() OVER ( PARTITION BY pacnum ORDER BY pacnum ) AS rno,
+        pnum, fk_pacname, fk_sdname, fk_ctname, fk_stname, fk_etname, pname, 
+        price, saleprice, point, pqty,
+        pcontents, pcompanyname,
+        pexpiredate, allergy, weight, salecount, plike, to_char(pdate, 'yyyy-mm-dd') as pdate,
+        pacnum, pacname, paccontents, pacimage
+        from product_package A right outer join product B 
+        on fk_pacname = pacname
+        where pacnum != 1
+        order by pacnum, pnum asc) n
+    where n.rno = 1
+    )y
+join 
+    (
+    select fk_pnum, pimgfilename
+    from
+    (select ROW_NUMBER() OVER ( PARTITION BY fk_pnum ORDER BY fk_pnum ) AS rno, fk_pnum, pimgfilename 
+    from product_images) v
+    where v.rno =1
+    )t
+on pnum = fk_pnum;
+where fk_sdname like '%샐러드%';
+
+
+create or replace view view_product_by_package
+as
+select pnum, fk_pacname, fk_sdname, fk_ctname, fk_stname, fk_etname, pname, 
+       price, saleprice, point, pqty, pcontents, pcompanyname, pexpiredate, allergy, weight, salecount, plike, pdate, titleimg,
+	   pacnum, pacname, paccontents, pacimage,
+	   pimgfilename, fk_pnum
+from
+    (
+    select pnum, fk_pacname, fk_sdname, fk_ctname, fk_stname, fk_etname, pname, 
+       price, saleprice, point, pqty, pcontents, pcompanyname, pexpiredate, allergy, weight, salecount, plike, pdate, titleimg,
+	   pacnum, pacname, paccontents, pacimage
+    from
+        (select ROW_NUMBER() OVER ( PARTITION BY pacnum ORDER BY pacnum ) AS rno,
+        pnum, fk_pacname, fk_sdname, fk_ctname, fk_stname, fk_etname, pname, 
+        price, saleprice, point, pqty,
+        pcontents, pcompanyname,
+        pexpiredate, allergy, weight, salecount, plike, to_char(pdate, 'yyyy-mm-dd') as pdate, titleimg,
+        pacnum, pacname, paccontents, pacimage
+        from product_package A right outer join product B 
+        on fk_pacname = pacname
+        where pacnum != 1
+        order by pacnum, pnum asc) n
+    where n.rno = 1
+    )y
+join 
+    (
+    select fk_pnum, pimgfilename
+    from
+    (select ROW_NUMBER() OVER ( PARTITION BY fk_pnum ORDER BY fk_pnum ) AS rno, fk_pnum, pimgfilename 
+    from product_images) v
+    where v.rno =1
+    )t
+on pnum = fk_pnum;
+
+select *
+from view_product_by_package;
+
+
+
+
+-- 패키지가 없는 상품을 대표이미지용으로 쓸 이미지와 함께 select
+create or replace view view_product_non_package
+as
+select pnum, fk_pacname, fk_sdname, fk_ctname, fk_stname, fk_etname, pname, 
+       price, saleprice, point, pqty, pcontents, pcompanyname, pexpiredate, allergy, weight, salecount, plike, pdate, titleimg,
+	   pacnum, pacname, paccontents, pacimage,
+	   pimgfilename, fk_pnum
+from    
+    (select 
+    pnum, fk_pacname, fk_sdname, fk_ctname, fk_stname, fk_etname, pname, 
+    price, saleprice, point, pqty,
+    pcontents, pcompanyname,
+    pexpiredate, allergy, weight, salecount, plike, to_char(pdate, 'yyyy-mm-dd') as pdate, titleimg,
+    pacnum, pacname, paccontents, pacimage
+    from product_package A right outer join product B 
+    on fk_pacname = pacname
+    where pacnum = 1
+    order by pacnum, pnum asc) y
+join 
+    (
+    select fk_pnum, pimgfilename
+    from
+    (select ROW_NUMBER() OVER ( PARTITION BY fk_pnum ORDER BY fk_pnum ) AS rno, fk_pnum, pimgfilename 
+    from product_images) v
+    where v.rno =1
+    )t
+on pnum = fk_pnum;
+
+where fk_sdname like '%샐러드%';
+
+select *
+from view_product_non_package;
+
+-- 패키지 있는 것과 없는 것 join
+select pnum, fk_pacname, fk_sdname, fk_ctname, fk_stname, fk_etname, pname, 
+       price, saleprice, point, pqty, pcontents, pcompanyname, pexpiredate, allergy, weight, salecount, plike, pdate,
+	   pacnum, pacname, paccontents, pacimage,
+	   pimgfilename, fk_pnum
+from view_product_by_package a union all select * from view_product_non_package;
+
+-- 소분류명에 따른 select
+select pacnum, pacname, paccontents, pacimage,
+        pnum, fk_pacname, fk_sdname, fk_ctname, fk_stname, fk_etname, pname, 
+       price, saleprice, point, pqty, pcontents, pcompanyname, pexpiredate, allergy, weight, salecount, plike, pdate, titleimg,
+	   pimgfilename, fk_pnum
+from
+( select *
+from view_product_by_package union all select * from view_product_non_package )
+where fk_sdname like '%%' ;
+
+
+String sql = "select pnum, fk_pacname, fk_sdname, fk_ctname, fk_stname, fk_etname, pname, \n"+
+"       price, saleprice, point, pqty, pcontents, pcompanyname, pexpiredate, allergy, weight, salecount, plike, pdate, titleimg, \n"+
+"	   pacnum, pacname, paccontents, pacimage,\n"+
+"	   pimgfilename, fk_pnum\n"+
+"from\n"+
+"( select *\n"+
+"from view_product_by_package union all select * from view_product_non_package )\n"+
+"where fk_sdname like '%'||?||'%'";
+
+commit;
+
+-- 상품테이블 대표 이미지 삽입
+update product p set p.titleimg=(select pimgfilename from (select ROW_NUMBER() OVER ( PARTITION BY fk_pnum ORDER BY fk_pnum ) AS rno, fk_pnum, pimgfilename from product_images) v where v.rno =1 and v.fk_pnum = p.pnum);
+
+select *
+from product
+order by pnum;
+
+
+select *
+from product_package;
+
+update product set fk_pacname='없음' where pnum in(8, 9, 10,11,12,13,14,15,16,17,26,27,28,29);
+update product set fk_pacname=null where pnum in(8, 9, 10,11,12,13,14,15,16,17,26,27,28,29);
+
+commit;
+
+select *
+from product
+order by pnum;
+
+
+String sql = "select *\n"+
+"from product A join product_package B\n"+
+"on fk_pacname = pacname\n"+
+"join product_images C\n"+
+"on A.pnum = C.fk_pnum\n"+
+"where A.fk_sdname like '%%'\n"+
+"order by  A.pdate desc, B.pacnum, A.pnum asc";
+
+
+
+
 
 
 -- 상품백업(Product_backup) 테이블 생성 

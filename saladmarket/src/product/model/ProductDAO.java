@@ -69,20 +69,22 @@ public class ProductDAO implements InterProductDAO {
 	
 	
 	
-	
-//	#카테고리 코드로 물품 리스트를 select하는 메소드
+//	#카테고리 코드로 물품 리스트를 select하는 메소드(패키지O 이미지 O)
 	@Override
-	public List<ProductVO> selectProductListBySdname(String fk_sdname) throws SQLException {
-		List<ProductVO> productList = null;
+	public List<PackageVO> selectProductListBySdname(String fk_sdname) throws SQLException {
+		List<PackageVO> productList = null;
 		
 		try {
 			 conn = ds.getConnection();
 			 
-			 String sql = "select pnum, pname, pcategory_fk, pcompany, pimage1, pimage2, pqty, price, saleprice, pspec, pcontent, point\n"+
-					 "     , to_char(pinputdate, 'yyyy-mm-dd') as pinputdate\n"+
-					 "from jsp_product\n"+
-					 "where pcategory_fk = ? \n"+
-					 "order by pnum desc";
+			 String sql = "select pnum, fk_pacname, fk_sdname, fk_ctname, fk_stname, fk_etname, pname, \n"+
+					 "       price, saleprice, point, pqty, pcontents, pcompanyname, pexpiredate, allergy, weight, salecount, plike, pdate, titleimg, \n"+
+					 "	   pacnum, pacname, paccontents, pacimage,\n"+
+					 "	   pimgfilename, fk_pnum\n"+
+					 "from\n"+
+					 "( select *\n"+
+					 "from view_product_by_package union all select * from view_product_non_package )\n"+
+					 "where fk_sdname like '%'||?||'%'";
 			 
 			 pstmt = conn.prepareStatement(sql);
 			 pstmt.setString(1, fk_sdname);
@@ -94,28 +96,52 @@ public class ProductDAO implements InterProductDAO {
 				 cnt++;
 				 
 				 if(cnt==1) {
-					 productList = new ArrayList<ProductVO>();
+					 productList = new ArrayList<PackageVO>();
 				 }
 				 
-				 int pnum = rs.getInt("pnum");
+				 
+				 String pnum = rs.getString("pnum");
+				 String fk_pacname = rs.getString("fk_pacname");
+				 String v_fk_sdname = rs.getString("fk_sdname");
+				 String fk_ctname = rs.getString("fk_ctname");
+				 String fk_stname = rs.getString("fk_stname");
+				 String fk_etname = rs.getString("fk_etname");
+				 
 				 String pname = rs.getString("pname");
-				 String pcategory_fk = rs.getString("pcategory_fk");
-				 String pcompany = rs.getString("pcompany");
-				 String pimage1 = rs.getString("pimage1");
-				 String pimage2 = rs.getString("pimage2");
-				 int pqty = rs.getInt("pqty");
 				 int price = rs.getInt("price");
 				 int saleprice = rs.getInt("saleprice");
-				 String v_pspec = rs.getString("pspec");
-				 String pcontent = rs.getString("pcontent");
 				 int point = rs.getInt("point");
-				 String pinputdate = rs.getString("pinputdate");
+				 int pqty = rs.getInt("pqty");
+				 String pcontents = rs.getString("pcontents");
+				 String pcompanyname = rs.getString("pcompanyname");
 				 
-				 ProductVO productvo = new ProductVO(pnum, fk_pacname, fk_sdname, fk_ctname, fk_stname, fk_etname, pname, price, saleprice, point, pqty, pcontents, pcompanyname, pexpiredate, allergy, weight, salecount, plike, pdate)
+				 String pexpiredate = rs.getString("pexpiredate");
+				 String allergy = rs.getString("allergy");
+				 int weight = rs.getInt("weight");
+				 int salecount = rs.getInt("salecount");
+				 int plike = rs.getInt("plike");
+				 String pdate = rs.getString("pdate");
+				 String titleimg = rs.getString("titleimg");
+				 
+				 String pacnum = rs.getString("pacnum");
+				 String pacname = rs.getString("pacname");
+				 String paccontents = rs.getString("paccontents");
+				 String pacimage = rs.getString("pacimage");
+				 String pimgfilename = rs.getString("pimgfilename");
+				 String fk_pnum = rs.getString("fk_pnum");
+				 
+				 ProductImageVO images = new ProductImageVO(pimgfilename, fk_pnum);
+				 
+				 ProductVO items = new ProductVO(pnum, fk_pacname, v_fk_sdname, fk_ctname, fk_stname, fk_etname, pname
+						 			, price, saleprice, point, pqty, pcontents, pcompanyname, pexpiredate
+						 			, allergy, weight, salecount, plike, pdate, titleimg, images);
+				 
+				 
+				 PackageVO pac = new PackageVO(pacnum, pacname, paccontents, pacimage, items);
 				
-				 productList.add(productvo);
+				 productList.add(pac);
 				 
-			 }// end of while-----------------------
+			 }// end of while
 			 
 		} finally {
 			close();

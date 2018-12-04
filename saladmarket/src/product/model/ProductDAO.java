@@ -71,8 +71,8 @@ public class ProductDAO implements InterProductDAO {
 	
 //	#카테고리 코드로 물품 리스트를 select하는 메소드(패키지O 이미지 O)
 	@Override
-	public List<PackageVO> selectProductListBySdname(String fk_sdname) throws SQLException {
-		List<PackageVO> productList = null;
+	public List<ProductVO> selectProductListBySdname(String fk_sdname) throws SQLException {
+		List<ProductVO> productList = null;
 		
 		try {
 			 conn = ds.getConnection();
@@ -96,7 +96,7 @@ public class ProductDAO implements InterProductDAO {
 				 cnt++;
 				 
 				 if(cnt==1) {
-					 productList = new ArrayList<PackageVO>();
+					 productList = new ArrayList<ProductVO>();
 				 }
 				 
 				 
@@ -132,14 +132,16 @@ public class ProductDAO implements InterProductDAO {
 				 
 				 ProductImageVO images = new ProductImageVO(pimgfilename, fk_pnum);
 				 
+				 PackageVO pac = new PackageVO(pacnum, pacname, paccontents, pacimage);
+				 
 				 ProductVO items = new ProductVO(pnum, fk_pacname, v_fk_sdname, fk_ctname, fk_stname, fk_etname, pname
 						 			, price, saleprice, point, pqty, pcontents, pcompanyname, pexpiredate
-						 			, allergy, weight, salecount, plike, pdate, titleimg, images);
+						 			, allergy, weight, salecount, plike, pdate, titleimg, images, pac);
 				 
 				 
-				 PackageVO pac = new PackageVO(pacnum, pacname, paccontents, pacimage, items);
+				 
 				
-				 productList.add(pac);
+				 productList.add(items);
 				 
 			 }// end of while
 			 

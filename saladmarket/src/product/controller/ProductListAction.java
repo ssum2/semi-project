@@ -19,7 +19,7 @@ public class ProductListAction extends AbstractController {
 		System.out.println("ProductAction; fk_sdname: "+fk_sdname);
 		
 		InterProductDAO pdao = new ProductDAO();
-		List<PackageVO> productListBySdname = pdao.selectProductListBySdname(fk_sdname);
+		List<ProductVO> productListBySdname = pdao.selectProductListBySdname(fk_sdname);
 		
 		
 		req.setAttribute("productListBySdname", productListBySdname);

@@ -13,5 +13,8 @@ public interface InterMemberDAO {
 
 //	#회원 로그인 메소드
 	MemberVO loginCheck(String userid, String pwd) throws SQLException;
+
+//	#아이디 찾기
+	String findUserid(String name, String phone) throws SQLException;
 	
 }

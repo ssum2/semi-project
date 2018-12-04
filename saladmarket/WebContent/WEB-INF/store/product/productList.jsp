@@ -155,46 +155,46 @@
             </c:if>
             
             <c:if test="${productListBySdname != null}">
-            <c:forEach  var="pac" items="${productListBySdname }" varStatus="status">
-	            <c:if test="${ pac.pacnum == '1' }">
+            <c:forEach  var="items" items="${productListBySdname }" varStatus="status">
+	            <c:if test="${ items.pac.pacnum == '1' }">
 	            <div class="col-md-3 text-center">
 	                <div class="product-entry">
-	                   <div class="product-img" style="background-image: url(img/${((pac.items).images).pimgfilename});">
-	                      <p class="tag"><span class="sale">${pac.items.fk_stname}</span></p>
+	                   <div class="product-img" style="background-image: url(img/${(items.images).pimgfilename});">
+	                      <p class="tag"><span class="sale">${items.fk_stname}</span></p>
 	                      <div class="cart">
 	                         <p>
 	                            <span class="addtocart"><a href="cart.html"><i class="icon-shopping-cart"></i></a></span> 
-	                            <span><a href="<%=CtxPath%>/productDetail.do?pacnum=${pac.pacnum}"><i class="icon-eye"></i></a></span> 
+	                            <span><a href="<%=CtxPath%>/productDetail.do?pacnum=${items.pac.pacnum}"><i class="icon-eye"></i></a></span> 
 	                            <span><a href="#"><i class="icon-heart3"></i></a></span>
 	                            <span><a href="add-to-wishlist.html"><i class="icon-bar-chart"></i></a></span>
 	                         </p>
 	                      </div>
 	                   </div>
 	                   <div class="desc">
-	                      <h3><a href="<%=CtxPath%>/productDetail.do?pacnum=1&pnum=${pac.items.pnum}">${pac.items.pnum}</a></h3>
-	                      <p class="price" style="font-weight: bold;"><span>${pac.items.saleprice}원</span>&nbsp;<span class="sale">${package.items.product.price}원</span> </p>
+	                      <h3><a href="<%=CtxPath%>/productDetail.do?pacnum=1&pnum=${items.pnum}">${items.pname}</a></h3>
+	                      <p class="price" style="font-weight: bold;"><span>${items.saleprice}원</span>&nbsp;<span class="sale">${items.price}원</span> </p>
 	                   </div>
 	                </div>
 	            </div>
 	            </c:if>
 	            
-	            <c:if test="${pac.pacnum != '1'}">
+	            <c:if test="${items.pac.pacnum != '1'}">
 	            <div class="col-md-3 text-center">
 	                <div class="product-entry">
-	                   <div class="product-img" style="background-image: url(img/${pac.pacimage});">
-	                      <p class="tag"><span class="sale">${pac.items.fk_stname}</span></p>
+	                   <div class="product-img" style="background-image: url(img/${items.pac.pacimage});">
+	                      <p class="tag"><span class="sale">${items.fk_stname}</span></p>
 	                      <div class="cart">
 	                         <p>
 	                            <span class="addtocart"><a href="cart.html"><i class="icon-shopping-cart"></i></a></span> 
-	                            <span><a href="<%=CtxPath%>/productDetail.do?pacnum=${pac.pacnum}"><i class="icon-eye"></i></a></span> 
+	                            <span><a href="<%=CtxPath%>/productDetail.do?pacnum=${items.pac.pacnum}"><i class="icon-eye"></i></a></span> 
 	                            <span><a href="#"><i class="icon-heart3"></i></a></span>
 	                            <span><a href="add-to-wishlist.html"><i class="icon-bar-chart"></i></a></span>
 	                         </p>
 	                      </div>
 	                   </div>
 	                   <div class="desc">
-	                      <h3><a href="<%=CtxPath%>/productDetail.do?pacnum=${pac.pacnum}"> ${pac.pacnum}</a></h3>
-	                      <p class="price" style="font-weight: bold;"><span>${pac.items.saleprice}원</span>&nbsp;<span class="sale">${pac.items.product.price}원</span> </p>
+	                      <h3><a href="<%=CtxPath%>/productDetail.do?pacnum=${items.pac.pacnum}"> ${items.pac.pacname}</a></h3>
+	                      <p class="price" style="font-weight: bold;"><span>${items.saleprice}원</span>&nbsp;<span class="sale">${items.price}원</span> </p>
 	                   </div>
 	                </div>
 	            </div>

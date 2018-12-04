@@ -41,6 +41,7 @@ public class MemberRegisterEndAction extends AbstractController {
 				birthday += b;
 			}
 			
+			System.out.println(name+"/"+postnum+"/"+address1+"/"+address2);
 			
 //			#받아온 값들을 VO에 셋팅
 			MemberVO membervo = new MemberVO();

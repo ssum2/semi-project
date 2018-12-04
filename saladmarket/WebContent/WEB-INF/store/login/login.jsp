@@ -14,6 +14,16 @@
 				goLogin();
 			}
 		});
+		
+		$(".myclose").click(function(){
+			// alert("닫는다.");
+			$("#loginUserid").val("${SessionScope.loginuser.userid}");
+			javascript:history.go(0);
+			// 현재 페이지를 새로고침을 함으로써 모달창에 입력한 성명과 휴대폰의 값이 텍스트박스에 남겨있지 않고 삭제하는 효과를 누린다. 
+
+		});
+		
+		
 	});
 
 	function goLogin(){
@@ -97,8 +107,8 @@
           
           <div class="row" style="margin-bottom: 2%">
              <div class="col-md-12" style="margin-top: 1%; margin-left: 33%;" >
-                <button class="btn" style="font-size: 9pt;">아이디 찾기</button>
-                <button class="btn" style="font-size: 9pt;">비밀번호 찾기</button>
+                <a class="btn btn-default" style="font-size: 9pt;" href="<%= CtxPath %>/idFind.do">아이디 찾기</a>
+                <a class="btn btn-default" style="font-size: 9pt;" href="<%= CtxPath %>/pwFind.do">비밀번호 찾기</a>
                
                 <button class="btn btn-primary" style="margin-left: 2%; font-size: 10pt;" OnClick="goLogin();">로그인</button>
              <div class="panel-body" style="margin-left: 5%;">
@@ -118,6 +128,8 @@
 <div class="gototop js-top">
    <a href="#" class="js-gotop"><i class="icon-arrow-up2"></i></a>
 </div>
+
+
 
 <script type='text/javascript'>
   //<![CDATA[

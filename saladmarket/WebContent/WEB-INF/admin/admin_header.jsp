@@ -371,4 +371,4 @@
       </div>
       <%-- End Navbar --%>
       <%-- 컨텐츠 --%>
-	  <div class="content">
+	  <div class="content" style="background-color: #1e1e2f;">

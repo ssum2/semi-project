@@ -3,7 +3,7 @@
     
 <jsp:include page="admin_header.jsp"/> 
 
-  <div class="row">
+  	<div class="row">
           <div class="col-md-3"></div>
           <div class="col-md-6">
             <div class="card">
@@ -133,6 +133,6 @@
               </div>
             </div>
           </div>
-        </div>
-        
+    </div>
+      
 <jsp:include page="admin_footer.jsp"/> 

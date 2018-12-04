@@ -23,6 +23,7 @@ public class ProductVO {
 	private String titleimg; // 대표이미지
 	
 	private ProductImageVO images;	// 상세이미지
+	private PackageVO pac;		// 패키지
 	
 	private int totalPrice;   // 주문량 * 제품판매가(할인해서 팔 것이므로)
 	private int totalPoint;   // 주문량 * 포인트점수
@@ -61,7 +62,7 @@ public class ProductVO {
 	public ProductVO(String pnum, String fk_pacname, String fk_sdname, String fk_ctname, String fk_stname,
 			String fk_etname, String pname, int price, int saleprice, int point, int pqty, String pcontents,
 			String pcompanyname, String pexpiredate, String allergy, int weight, int salecount, int plike, String pdate, String titleimg,
-			ProductImageVO images) {
+			ProductImageVO images, PackageVO pac) {
 		
 		this.pnum = pnum;
 		this.fk_pacname = fk_pacname;
@@ -84,6 +85,7 @@ public class ProductVO {
 		this.pdate = pdate;
 		this.titleimg= titleimg;
 		this.images = images;
+		this.pac=pac;
 	}
 
 	public String getPnum() {
@@ -253,6 +255,14 @@ public class ProductVO {
 
 	public void setImages(ProductImageVO images) {
 		this.images = images;
+	}
+
+	public PackageVO getPac() {
+		return pac;
+	}
+
+	public void setPac(PackageVO pac) {
+		this.pac = pac;
 	}
 
 	public int getTotalPrice() {

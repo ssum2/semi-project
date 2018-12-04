@@ -7,7 +7,7 @@ import javax.servlet.http.HttpSession;
 import common.controller.AbstractController;
 import member.model.MemberVO;
 
-public class MemberInfoAction extends AbstractController {
+public class MemberInfoMainAction extends AbstractController {
 
 	@Override
 	public void execute(HttpServletRequest req, HttpServletResponse res) throws Exception {
@@ -17,7 +17,7 @@ public class MemberInfoAction extends AbstractController {
 		if(loginuser != null) {
 		
 			super.setRedirect(false);
-			super.setViewPage("/WEB-INF/store/mypage/memberInfo.jsp");
+			super.setViewPage("/WEB-INF/store/mypage/memberInfoMain.jsp");
 		}
 		else {
 			String msg = "권한이 없습니다.";

@@ -8,18 +8,18 @@ public class PackageVO {
 	private String paccontents; 	// 패키지내용 
 	private String pacimage;		// 상품패키지 대표 이미지명
 	
-	private ProductVO items;		// 패키지에 딸려있는 물품 객체
+//	private ProductVO items;		// 패키지에 딸려있는 물품 객체
 
 	
 	public PackageVO() {}
 
-	public PackageVO(String pacnum, String pacname, String paccontents, String pacimage, ProductVO items) {
+	public PackageVO(String pacnum, String pacname, String paccontents, String pacimage) {
 		
 		this.pacnum = pacnum;
 		this.pacname = pacname;
 		this.paccontents = paccontents;
 		this.pacimage = pacimage;
-		this.items = items;
+		
 	}
 
 	
@@ -55,14 +55,7 @@ public class PackageVO {
 		this.pacimage = pacimage;
 	}
 
-	public ProductVO getItems() {
-		return items;
-	}
 
-	public void setItems(ProductVO items) {
-		this.items = items;
-	}
-	
 	
 	
 	

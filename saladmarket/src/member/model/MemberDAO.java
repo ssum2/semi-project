@@ -101,12 +101,10 @@ public class MemberDAO implements InterMemberDAO {
 //	#회원가입 메소드
 	@Override
 	public int registerMember(MemberVO membervo) throws SQLException{
-//				>> 호출하는 곳에서 처리하면서 어떤 부분이 잘못됐는지 한번에 보기 위해서 throws
-		
-		int result = 0;
+		int n1=0, n2=0, n3=0;
 		try {
 			conn = ds.getConnection();
-			
+			conn.setAutoCommit(false); // 수동 커밋으로 전환 (트랜젝션)
 			String sql = "insert into member("
 						+ "mnum, userid, pwd, name, email, phone, birthday,"
 						+ " postnum, address1, address2,"
@@ -127,13 +125,57 @@ public class MemberDAO implements InterMemberDAO {
 			pstmt.setString(8, membervo.getAddress1());
 			pstmt.setString(9, membervo.getAddress2());
 			
-			result = pstmt.executeUpdate();
+			n1 = pstmt.executeUpdate();
+			if(n1!=1) {
+				conn.rollback();
+				conn.setAutoCommit(true);
+				return 0;
+			}
+			
+			if(n1==1) {
+				sql = "insert into my_coupon(fk_userid, fk_cpnum, cpexpiredate) values(?, 1, add_months(sysdate, 1))";
+				pstmt = conn.prepareStatement(sql);
+				
+				pstmt.setString(1, membervo.getUserid());
+				n2 = pstmt.executeUpdate();
+				
+				if(n2!=1) {
+					conn.rollback();
+					conn.setAutoCommit(true);
+					return 0;
+				}
+			}
+			
+			if(n2==1) {
+				sql = "insert into my_coupon(fk_userid, fk_cpnum, cpexpiredate) values(?, 2, add_months(sysdate, 1))";
+				pstmt = conn.prepareStatement(sql);
+				
+				pstmt.setString(1, membervo.getUserid());
+				n3 = pstmt.executeUpdate();
+				
+				if(n3!=1) {
+					conn.rollback();
+					conn.setAutoCommit(true);
+					return 0;
+				}
+			}
+			if(n3==1) {
+				if(n1*n2*n3 == 1) {
+					conn.commit();
+					conn.setAutoCommit(true);
+					return 1;
+				}
+				else {
+					return 0;
+				}
+			}
+			
 		} catch (UnsupportedEncodingException | GeneralSecurityException e) {
 			e.printStackTrace();
 		} finally {
 			close();
 		}
-		return result;
+		return n1*n2*n3;
 	} // end of registerMember()
 	
 	
@@ -201,6 +243,36 @@ public class MemberDAO implements InterMemberDAO {
 		return membervo;
 	}
 	
+//	#아이디 찾기 메소드
+	@Override
+	public String findUserid(String name, String phone) throws SQLException {
+		String userid = null;
+		try {
+			conn = ds.getConnection();
+			
+			String sql = " select userid "
+					+ " from member"
+					+ " where status=1 and name=? and phone = ? ";
+			
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setString(1, name);
+			pstmt.setString(2, aes.encrypt(phone));
 	
+			rs = pstmt.executeQuery();
+			
+			if(rs.next()) {
+				userid = rs.getString("userid");
+			}
+			
+		} catch (UnsupportedEncodingException | GeneralSecurityException e) {
+			
+			e.printStackTrace();
+		}  finally {
+			close();
+		}	
+		
+		return userid;
+	}
 	
 }

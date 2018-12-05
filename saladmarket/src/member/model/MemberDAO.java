@@ -275,4 +275,61 @@ public class MemberDAO implements InterMemberDAO {
 		return userid;
 	}
 	
+	
+//	#회원 인증용; 패스워드 찾기
+//	 유효한 이메일이고 인증메일이 발송되면 1, 메일 발송 실패시 -1 리턴
+	@Override
+	public int isUserExists(String userid, String email) throws SQLException{
+		int n = 0;
+		
+		try {
+			conn = ds.getConnection();
+			
+			String sql = " select count(*) as CNT "
+					+ " from member"
+					+ " where status=1 and userid=? and email=? ";
+			
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setString(1, userid);
+			pstmt.setString(2, aes.encrypt(email));
+	
+			rs = pstmt.executeQuery();
+			
+			if(rs.next()) {
+				n=rs.getInt("CNT");
+			}
+			
+		} catch (UnsupportedEncodingException | GeneralSecurityException e) {
+			e.printStackTrace();
+		} finally {
+			close();
+		}	
+
+		return n;
+	}
+
+	
+//	#새로운 비밀번호로 변경하는 메소드 (비밀번호 찾기)
+	@Override
+	public int changeNewPwd(String userid, String pwd) throws SQLException{
+		int n = 0;
+		try {
+			conn = ds.getConnection();
+			String sql = " update member set pwd=?, last_changepwdate=sysdate"+
+					 	  " where userid = ? and status=1 ";
+		
+			pstmt = conn.prepareStatement(sql);
+
+			pstmt.setString(1, SHA256.encrypt(pwd));
+			pstmt.setString(2, userid);
+			n = pstmt.executeUpdate();
+
+		} finally {
+			close();
+		}
+		
+		return n;
+	}
+	
 }

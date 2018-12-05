@@ -25,8 +25,32 @@ public class LoginEndAction extends AbstractController {
 		
 		InterMemberDAO memberdao = new MemberDAO();
 		MemberVO loginuser = memberdao.loginCheck(userid, pwd);
-		
-		if(loginuser!=null) {
+        if(loginuser==null) {
+//	        a) 로그인 실패했을 경우
+	        	String msg = "로그인에 실패하였습니다. 아이디 또는 패스워드를 확인해주세요.";
+	        	String loc = "javascript:history.back();";
+	        	req.setAttribute("msg", msg);
+				req.setAttribute("loc", loc);
+				
+				super.setRedirect(false);
+				super.setViewPage("/WEB-INF/msg.jsp");
+				
+				return;
+	     }
+	     else if(loginuser.isRequireCertify()) {
+//	        b) 마지막 로그인 일시가 오래됐을 경우 ---> 인증 요구
+				String msg = "마지막 로그인 일시가 6개월 전이므로 휴면계정으로 전환 되었습니다. 관리자에게 문의하세요.";
+				String loc = "index.do";
+				
+				req.setAttribute("msg", msg);
+				req.setAttribute("loc", loc);
+				
+				super.setRedirect(false);
+				super.setViewPage("/WEB-INF/msg.jsp");
+				
+				return;
+		}
+	    else {
 			
 			HttpSession session = req.getSession();
 			session.setAttribute("loginuser", loginuser);
@@ -42,7 +66,6 @@ public class LoginEndAction extends AbstractController {
 			cookie.setPath("/");
 			
 			res.addCookie(cookie);
-		
 
 			req.setAttribute("msg", loginuser.getName()+"님 환영합니다.");
 			req.setAttribute("loc", "index.do");
@@ -50,14 +73,7 @@ public class LoginEndAction extends AbstractController {
 			super.setViewPage("/WEB-INF/msg.jsp");
 			
 		}
-		else {
-			req.setAttribute("msg", "일치하는 회원 정보가 없습니다.");
-			req.setAttribute("loc", "javascript:history.back();");
-			
-			super.setRedirect(false);
-			super.setViewPage("/WEB-INF/msg.jsp");
-		}
-	}	
 	
+	}
 
-}
+} // end of class

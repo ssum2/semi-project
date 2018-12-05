@@ -15,7 +15,6 @@ public class FindUseridAction extends AbstractController {
 		String name = "";
 		String phone ="";
 		if("POST".equalsIgnoreCase(method)) {
-//		>> 찾기 버튼을 눌렀을 때(POST 방식으로 submit) 
 			name = req.getParameter("name");
 			phone = req.getParameter("phone");
 			
@@ -23,7 +22,6 @@ public class FindUseridAction extends AbstractController {
 			String userid = memberdao.findUserid(name, phone);
 			
 			if(userid != null) {
-//			>> DAO에서 전해준 userid가 존재 할 때	
 				req.setAttribute("userid", userid);
 			}
 			else {

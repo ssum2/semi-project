@@ -11,8 +11,7 @@ public class MemberInfoMainAction extends AbstractController {
 
 	@Override
 	public void execute(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		HttpSession session = req.getSession();
-		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+		MemberVO loginuser = super.getLoginUser(req);
 		
 		if(loginuser != null) {
 		

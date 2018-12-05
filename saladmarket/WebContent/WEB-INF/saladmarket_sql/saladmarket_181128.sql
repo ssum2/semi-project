@@ -78,7 +78,7 @@ from coupon;
 create table member 
 (mnum               number                not null  -- 회원번호
 ,userid             varchar2(100)         not null  -- 회원아이디
-,pw                 varchar2(200)         not null  -- 비밀번호(SHA256 암호화)
+,pwd                 varchar2(200)         not null  -- 비밀번호(SHA256 암호화)
 ,name               varchar2(10)          not null  -- 회원명
 ,email              varchar2(200)         not null  -- 이메일(AES256 암호화)
 ,phone              varchar2(400)         not null  -- 휴대폰(AES256 암호화)
@@ -131,10 +131,16 @@ order by mnum desc;
 alter table member add(pw varchar2(200));
 
 ALTER TABLE member RENAME COLUMN pw TO pwd;
+commit;
 update member set name='헤르미온느' where mnum=6;
 update member set name='론위즐리' where mnum=7;
 update member set name='해리포터' where mnum=5;
 update member set name='헤르미온느' where mnum=7;
+
+
+update member set email='ceLUMtKVBfBFzHtCcLl4manuOE15mgsrRCFwv4GIlbA=', phone='WIn7zkFgYQjkwmjQlrWbwQ==', pwd='9695b88a59a1610320897fa84cb7e144cc51f2984520efb77111d94b402a8382'
+where name='이순신';
+
 
 commit;
 
@@ -524,7 +530,7 @@ from
        price, saleprice, point, pqty, pcontents, pcompanyname, pexpiredate, allergy, weight, salecount, plike, pdate, titleimg,
 	   pacnum, pacname, paccontents, pacimage
     from
-        (select ROW_NUMBER() OVER ( PARTITION BY pacnum ORDER BY pacnum ) AS rno,
+        (select ROW_NUMBER() OVER ( PARTITION BY pacnum ORDER BY pacnum) AS rno,
         pnum, fk_pacname, fk_sdname, fk_ctname, fk_stname, fk_etname, pname, 
         price, saleprice, point, pqty,
         pcontents, pcompanyname,
@@ -590,7 +596,9 @@ select pnum, fk_pacname, fk_sdname, fk_ctname, fk_stname, fk_etname, pname,
        price, saleprice, point, pqty, pcontents, pcompanyname, pexpiredate, allergy, weight, salecount, plike, pdate,
 	   pacnum, pacname, paccontents, pacimage,
 	   pimgfilename, fk_pnum
-from view_product_by_package a union all select * from view_product_non_package;
+from view_product_by_package a
+union all 
+    select * from view_product_non_package;
 
 -- 소분류명에 따른 select
 select pacnum, pacname, paccontents, pacimage,

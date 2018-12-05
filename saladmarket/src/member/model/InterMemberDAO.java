@@ -16,5 +16,12 @@ public interface InterMemberDAO {
 
 //	#아이디 찾기
 	String findUserid(String name, String phone) throws SQLException;
+
+//	#비밀번호 찾기
+//	1) userid와 email정보로 해당 유저가 존재하는 지 확인
+	int isUserExists(String userid, String email) throws SQLException;
+	
+//	2) 새로운 비밀번호로 변경
+	int changeNewPwd(String userid, String pwd) throws SQLException;
 	
 }

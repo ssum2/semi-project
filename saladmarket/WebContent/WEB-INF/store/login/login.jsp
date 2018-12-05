@@ -107,9 +107,10 @@
           
           <div class="row" style="margin-bottom: 2%">
              <div class="col-md-12" style="margin-top: 1%; margin-left: 33%;" >
-                <a class="btn btn-default" style="font-size: 9pt;" href="<%= CtxPath %>/idFind.do">아이디 찾기</a>
-                <a class="btn btn-default" style="font-size: 9pt;" href="<%= CtxPath %>/pwFind.do">비밀번호 찾기</a>
-               
+           <%-- <a class="btn btn-default" style="font-size: 9pt;" href="<%= CtxPath %>/idFind.do">아이디 찾기</a>
+                <a class="btn btn-default" style="font-size: 9pt;" href="<%= CtxPath %>/pwFind.do">비밀번호 찾기</a> --%>
+               	<a class="btn btn-default" style="font-size: 9pt;" data-toggle="modal" data-target="#findUserid" data-dismiss="modal">아이디 찾기</a>
+                <a class="btn btn-default" style="font-size: 9pt;" data-toggle="modal" data-target="#findPwd" data-dismiss="modal">비밀번호 찾기</a>
                 <button class="btn btn-primary" style="margin-left: 2%; font-size: 10pt;" OnClick="goLogin();">로그인</button>
              <div class="panel-body" style="margin-left: 5%;">
                 
@@ -129,6 +130,55 @@
    <a href="#" class="js-gotop"><i class="icon-arrow-up2"></i></a>
 </div>
 
+
+<%-- ****** 아이디 찾기 Modal ****** --%>
+  <div class="modal fade" id="findUserid" role="dialog">
+    <div class="modal-dialog">
+    
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close myclose" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">아이디 찾기</h4>
+        </div>
+        <div class="modal-body" style="height: 300px; width: 100%;">
+          <div id="idFind">
+          	<iframe style="border: none; width: 100%; height: 280px;" src="<%= request.getContextPath() %>/idFind.do">
+          	</iframe>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default myclose" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+      
+    </div>
+  </div>   
+
+
+  <%-- ****** 비밀번호 찾기 Modal ****** --%>
+  <div class="modal fade" id="findPwd" role="dialog">
+    <div class="modal-dialog">
+    
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close myclose" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">비밀번호 찾기</h4>
+        </div>
+        <div class="modal-body">
+          <div id="pwFind">
+          	<iframe style="border: none; width: 100%; height: 350px;" src="<%= request.getContextPath() %>/pwdFind.do">  
+          	</iframe>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default myclose" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+      
+    </div>
+  </div>
 
 
 <script type='text/javascript'>

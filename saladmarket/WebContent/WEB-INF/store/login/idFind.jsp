@@ -1,29 +1,59 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<% String CtxPath = request.getContextPath(); %>
-<jsp:include page="../header.jsp" />
-<aside id="colorlib-hero" class="breadcrumbs">
-   <div class="flexslider">
-      <ul class="slides">
-         <li style="background-image: url(<%=CtxPath %>/store/images/cover-img-1.jpg);">
-            <div class="overlay"></div>
-            <div class="container-fluid">
-               <div class="row">
-                  <div class="col-md-6 col-md-offset-3 col-sm-12 col-xs-12 slider-text">
-                     <div class="slider-text-inner text-center">
-                        <h1>Find Password</h1>
-                        <h2 class="bread"><span><a href="index.jsp">Home</a></span> <span><a href="login.jsp">Login</a></span></h2>
-                     </div>
-                  </div>
-               </div>
-            </div>
-         </li>
-        </ul> 
-     </div>
-</aside>
+<%
+    String ctxPath = request.getContextPath();
+%>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-	
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" type="text/css" />
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="http://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+
+<!-- jQuery -->
+<script src="<%=ctxPath %>/store/js/jquery.min.js"></script>
+
+<!-- Animate.css -->
+<link rel="stylesheet" href="<%=ctxPath %>/store/css/animate.css">
+<!-- Icomoon Icon Fonts-->
+<link rel="stylesheet" href="<%=ctxPath %>/store/css/icomoon.css">
+<!-- Bootstrap  -->
+<link rel="stylesheet" href="<%=ctxPath %>/store/css/bootstrap.css">
+
+<!-- Magnific Popup -->
+<link rel="stylesheet" href="<%=ctxPath %>/store/css/magnific-popup.css">
+
+<!-- Flexslider  -->
+<link rel="stylesheet" href="<%=ctxPath %>/store/css/flexslider.css">
+
+<!-- Owl Carousel -->
+<link rel="stylesheet" href="<%=ctxPath %>/store/css/owl.carousel.min.css">
+<link rel="stylesheet" href="<%=ctxPath %>/store/css/owl.theme.default.min.css">
+
+<!-- Date Picker -->
+<link rel="stylesheet" href="<%=ctxPath %>/store/css/bootstrap-datepicker.css">
+<!-- Flaticons  -->
+<link rel="stylesheet" href="<%=ctxPath %>/store/fonts/flaticon/font/flaticon.css">
+
+<!-- Theme style  -->
+<link rel="stylesheet" href="<%=ctxPath %>/store/css/style.css">
+
+<!-- Modernizr JS -->
+<script src="<%=ctxPath %>/store/js/modernizr-2.6.2.min.js"></script>
+<!-- FOR IE9 below -->
+<!--[if lt IE 9]>
+<script src="js/respond.min.js"></script>
+
+<![endif]-->
+
 <script type="text/javascript">
+	
 	$(document).ready(function(){
 	// 1) GET 방식으로 들어왔을 때(초기 화면) ID 출력 부분을 감춤
 		var method = "${method}"; // 문자열로 받아올 때는 반드시 "~"
@@ -31,14 +61,12 @@
 		
 		if(method=="GET"){
 			$("#div_findResult").hide();
-			$("#name").val("");
-			$("#phone").val("");
-			$("#name").focus();
 		}
 		else {
 			$("#name").val("${name}");
 			$("#phone").val("${phone}");
 			$("#div_findResult").show();
+			$("#btnFind").hide();
 		}
 		
 		$("#btnFind").click(function(){
@@ -47,6 +75,7 @@
 			
 			if(name==""){
 				alert("성명을 입력하세요.");
+				
 				$("#name").val("");
 				$("#name").focus();
 				return;
@@ -64,13 +93,13 @@
 			var isUseMobile2 = regExp2.test(mobile);
 			if(!isUseMobile1 || !isUseMobile2) {
 				alert("10~11자리 숫자만 입력 가능합니다.");
-				$("#mobile").val("");
-				$("#mobile").focus();
+				$("#phone").val("");
+				$("#phone").focus();
 				return;
 			}
 			
 		   var frm = document.idFindFrm
-		   frm.action = "<%= CtxPath %>/idFind.do";
+		   frm.action = "<%= ctxPath %>/idFind.do";
 		   frm.method = "POST";
 		   frm.submit();
 	   });
@@ -79,53 +108,26 @@
 </script>
 
 
-      
-<div class="container">      
-   <div class="col-md-12">
-   	<div>
-	    <form name="idFindFrm" class="colorlib-form">    
-	       <div class="form-group" style="margin-top: 3%;">
-	       	 <div class="col-md-4"></div>
-	       	 <div class="col-md-1" style="margin-top: 3%;">
-	             <label for="name">성명</label>
-	          </div>
-	          <div class="col-md-3" id="div_name">
-	             <input type="text" id="name" name="name" class="form-control" placeholder="이름을 입력하세요" required />
-	          </div>
-	          <div class="col-md-4"></div>
-	       </div>
-	       <div class="form-group" style="margin-bottom: 3%;">
-	       	   <div class="col-md-4"></div>
-		       <div class="col-md-1" style="margin-top: 3%;">
-		           <label for="phone">연락처</label>
-		       </div>
-		       <div class="col-md-3" id="div_phone" >
-		           <input type="text" id="phone" name="phone" class="form-control" placeholder="-없이 숫자만 입력하세요" required />
-		       </div>
-		       <div class="col-md-4"></div>
-	       </div>
-	       <div class="form-group" id="div_findResult">
-	       	<div class="col-md-4"></div>
-		       <div class="col-md-4 text-center">
-		       	${name}님의 아이디는 
-		          <span style="color: red; font-size: 14pt; font-weight: bold;">${userid}</span>입니다. 
-		       </div>
-		       <div class="col-md-4"></div>
-		   </div>  		               
-	       <div class="row" style="margin-bottom: 2%">
-	          <div class="col-md-12 text-center" style="margin-top: 1%;" id="div_btnFind" >
-	          	<button class="btn" id="btnFind" style="font-size: 9pt;">아이디 찾기</button>
-	          </div>
-	       </div>
-	       
-	       
-	    </form>
-     </div>
+<div class="container">
+<form name="idFindFrm" class="colorlib-form">
+   	<div class="form-group" >
+      <label for="name">성명</label>
+      <input type="text" class="form-control" id="name" name="name" placeholder="이름을 입력하세요" required/>
+    </div>
+    
+    <div class="form-group">
+      <label for="phone">연락처</label>
+      <input type="text" class="form-control" id="phone" name="phone" placeholder="-없이 입력하세요" required>
+    </div>
+  
+   <div id="div_findResult" align="center">
+	  <span style="font-size: 12pt; font-weight: bold;">[검색 결과]</span><br/>
+   	  <span style="color: red; font-size: 14pt; font-weight: bold;">${userid}</span> 
    </div>
+   
+   <div id="div_btnFind" align="center" >
+   		<button type="button" class="btn btn-primary" id="btnFind">찾기</button>
+   </div>
+   
+</form>
 </div>
-
-<div class="gototop js-top">
-   <a href="#" class="js-gotop"><i class="icon-arrow-up2"></i></a>
-</div>
-
-<jsp:include page="../footer.jsp" />

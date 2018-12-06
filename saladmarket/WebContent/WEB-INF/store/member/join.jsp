@@ -298,7 +298,7 @@ request.setCharacterEncoding("UTF-8");
                   <input type="text" id="postnum" name="postnum" class="form-control" placeholder="우편번호" required>
                </div>
                <div class="col-md-2" style="margin-top: 5%">
-                  <button class="btn btn-outline" id="zipcodeSearch" style="padding: 2px; font-size: 10pt;">우편번호</button>
+                  <button type="button" class="btn btn-outline" id="zipcodeSearch" style="padding: 2px; font-size: 10pt;">우편번호</button>
                </div>
                <div class="col-md-4" style="margin-top:5.5%">
                      <span class="error" style="color: blue; font-size: 12px;">올바른 우편번호 형식이 아닙니다.(예. 12345)</span>

@@ -194,6 +194,7 @@ create table my_coupon
 (fk_userid   varchar2(100) not null  -- 회원아이디 
 ,fk_cpnum  number not null  -- 쿠폰번호
 ,cpexpiredate date not null         -- 쿠폰 사용 기한
+, cpstatus number default 1 not null
 ,constraint FK_my_coupon_userid foreign key(fk_userid)
                                   references member(userid)
 ,constraint FK_my_coupon_cpnum foreign key(fk_cpnum)
@@ -207,9 +208,50 @@ insert into my_coupon(fk_userid, fk_cpnum, cpexpiredate) values(?, 2, add_months
 String sql = "insert into my_coupon(fk_userid, fk_cpnum, cpexpiredate) values(?, 1, add_months(sysdate, 1))";
 String sql = "insert into my_coupon(fk_userid, fk_cpnum, cpexpiredate) values(?, 2, add_months(sysdate, 1))";
 
+-- 쿠폰 사용상태 추가
+alter table my_coupon add(cpstatus number default 1 not null);
+
+
+insert into my_coupon(fk_userid, fk_cpnum, cpexpiredate, cpstatus) values('leess', 3, add_months(sysdate, 1), default);
+insert into my_coupon(fk_userid, fk_cpnum, cpexpiredate, cpstatus) values('leess', 4, add_months(sysdate, 1), default);
+insert into my_coupon(fk_userid, fk_cpnum, cpexpiredate, cpstatus) values('leess', 5, add_months(sysdate, 1), default);
+
+commit;
+
+String sql = "select cpnum, cpname, discountper, cpusemoney, cpuselimit, fk_userid, fk_cpnum, cpexpiredate, b.cpstatus\n"+
+"from coupon a join my_coupon b\n"+
+"on cpnum = fk_cpnum\n"+
+"where fk_userid='?'"; 
+
+
 select *
 from my_coupon
-where fk_userid = 'user6';
+where fk_userid = 'leess';
+
+select *
+from
+
+select mnum, userid, name, email, phone , to_char(birthday, 'yyyy-mm-dd') as birthday, postnum
+,address1, address2, point, to_char(registerdate, 'yyyy-mm-dd') as  registerdate
+,summoney ,fk_lvnum, 
+from member 
+where status = 1 and mnum = ? ;
+
+select mnum, userid, name, email, phone , to_char(birthday, 'yyyy-mm-dd') as birthday, postnum
+,address1, address2, point, to_char(registerdate, 'yyyy-mm-dd') as  registerdate
+,summoney ,fk_lvnum, 
+from member 
+where status = 1 and mnum = ?;
+
+
+select count(b.fk_cpnum) as cpcnt from my_coupon where fk_userid='leess' and cpexpiredate>sysdate;
+
+and fk_userid='leess' and cpexpiredate>sysdate ;
+
+select count(*) as cnt
+from my_coupon
+where fk_userid='leess' and cpexpiredate>sysdate  ;
+
 
 ---- 로그인(login) 테이블 생성 
 --create table login 
@@ -481,7 +523,16 @@ on A.pnum = C.fk_pnum
 where A.fk_sdname like '%%'
 order by B.pacnum, A.pnum asc;
 
+select *
+from product
+where fk_sdname='물/주스';
 
+
+select *
+from product_package;
+
+update product_package set pacnum=2 where pacname like '%[퀸즈프레시]%';
+update product_package set pacnum=1 where pacname like '없음';
 
 -- 패키지별로 대표상품의 정보를 가져오는 쿼리(패키지 없음 제외)
 select pnum, fk_pacname, fk_sdname, fk_ctname, fk_stname, fk_etname, pname, 
@@ -608,7 +659,7 @@ select pacnum, pacname, paccontents, pacimage,
 from
 ( select *
 from view_product_by_package union all select * from view_product_non_package )
-where fk_sdname like '%%' ;
+where fk_sdname like '물/주스' ;
 
 
 String sql = "select pnum, fk_pacname, fk_sdname, fk_ctname, fk_stname, fk_etname, pname, \n"+

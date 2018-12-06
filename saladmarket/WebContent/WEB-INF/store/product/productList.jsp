@@ -155,7 +155,7 @@
             </c:if>
             
             <c:if test="${productListBySdname != null}">
-            <c:forEach  var="items" items="${productListBySdname }" varStatus="status">
+            <c:forEach  var="items" items="${productListBySdname}" varStatus="status">
 	            <c:if test="${ items.pac.pacnum == '1' }">
 	            <div class="col-md-3 text-center">
 	                <div class="product-entry">

@@ -1,4 +1,4 @@
-package member.controller;
+package member.controller.mypage;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -7,7 +7,7 @@ import javax.servlet.http.HttpSession;
 import common.controller.AbstractController;
 import member.model.MemberVO;
 
-public class MemberModifyAction extends AbstractController {
+public class MyReviewAction extends AbstractController {
 
 	@Override
 	public void execute(HttpServletRequest req, HttpServletResponse res) throws Exception {
@@ -17,7 +17,7 @@ public class MemberModifyAction extends AbstractController {
 		if(loginuser != null) {
 		
 			super.setRedirect(false);
-			super.setViewPage("/WEB-INF/store/mypage/memberModify.jsp");
+			super.setViewPage("/WEB-INF/store/mypage/myReview.jsp");
 		}
 		else {
 			String msg = "권한이 없습니다.";

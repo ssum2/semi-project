@@ -331,5 +331,158 @@ public class MemberDAO implements InterMemberDAO {
 		
 		return n;
 	}
+
+	
+//	#마이페이지
+	
+//	1) 마이페이지 메인; 비밀번호 확인
+	@Override
+	public int memberPwdCheck(String userid, String pwd) throws SQLException {
+		int result = 0;
+		
+		try {
+			conn = ds.getConnection();
+			
+			String sql = " select mnum "
+					+ "	from member "
+					+ "	where userid=? and pwd=? ";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, userid);
+			pstmt.setString(2, SHA256.encrypt(pwd));
+			
+			rs = pstmt.executeQuery();
+			
+			if(rs.next()) {
+			
+				result = rs.getInt("mnum");
+			
+			}
+			else {
+				result = 0;
+			}
+		
+		} finally {
+			close();
+		}
+		return result;
+	}
+
+	
+//	보유쿠폰 개수 구하기
+	@Override
+	public int getMyCouponCnt(String userid) throws SQLException {
+		int cpcnt = 0;
+		try {
+			conn = ds.getConnection();
+			
+			String sql = " select count(*) as cnt "
+					+ " from my_coupon "
+					+ " where fk_userid = ? and cpexpiredate>sysdate ";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, userid);
+			
+			rs = pstmt.executeQuery();
+			rs.next();
+			
+			cpcnt = rs.getInt("cnt");
+			
+		} finally {
+			close();
+		}
+		
+		
+		return cpcnt;
+		
+	}
+	
+//	2) mnum으로 회원 1명의 정보를 select하는 메소드; 회원정보 수정
+	@Override
+	public MemberVO getOneMemberBymnum(String mnum) throws SQLException {
+		MemberVO membervo = null;
+		try {
+			conn = ds.getConnection();
+			String sql = " select mnum, userid, name, email, phone, to_char(birthday, 'yyyymmdd') as birthday, postnum "+
+						 " ,address1, address2, point, to_char(registerdate, 'yyyymmdd') as  registerdate"+
+					     " ,summoney ,fk_lvnum"+
+					     " from member "+
+					     " where status = 1 "+
+					     " and mnum = ? ";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, mnum);
+			rs = pstmt.executeQuery();
+			
+			if(rs.next()) {
+				int v_mnum = rs.getInt("mnum");
+				String userid = rs.getString("USERID");
+				String name = rs.getString("NAME");
+				String email = aes.decrypt(rs.getString("EMAIL"));  // AES256 복호화	
+				String phone = aes.decrypt(rs.getString("phone"));	// AES256 복호화		
+				String postnum = rs.getString("postnum");
+				String address1 = rs.getString("address1");
+				String address2 = rs.getString("address2");
+				String birthday = rs.getString("birthday");
+				int point = rs.getInt("point");
+				String registerdate = rs.getString("registerdate");
+				int summoney = rs.getInt("summoney");
+				int fk_lvnum = rs.getInt("fk_lvnum");
+
+				membervo = new MemberVO();
+				
+				membervo.setMnum(v_mnum);
+				membervo.setName(name);
+				membervo.setUserid(userid);
+				membervo.setEmail(email);
+				membervo.setPhone(phone);
+				membervo.setBirthday(birthday);
+				membervo.setPostnum(postnum);
+				membervo.setAddress1(address1);
+				membervo.setAddress2(address2);
+				membervo.setPoint(point);
+				membervo.setRegisterdate(registerdate);
+				membervo.setSummoney(summoney);
+				membervo.setFk_lvnum(fk_lvnum);
+	
+			}
+		} catch (UnsupportedEncodingException | GeneralSecurityException e) {
+			e.printStackTrace();
+		}  finally {
+			close();	
+		}
+		return membervo;
+	}
+
+	@Override
+	public int updateMemberMyInfo(MemberVO membervo) throws SQLException {
+		int result = 0;
+
+		try {
+			conn = ds.getConnection();
+			String sql = " update member set pwd=?, name= ?, email=?, phone=?, "+
+						 " postnum=?,address1=?, address2=?, last_changepwdate=sysdate"+
+						 " where mnum = ? ";
+			
+			pstmt = conn.prepareStatement(sql);
+			
+			System.out.println("mnum: "+membervo.getMnum());
+			pstmt.setString(1, SHA256.encrypt(membervo.getPwd()));	// SHA256 단방향 암호화
+			pstmt.setString(2, membervo.getName());
+			pstmt.setString(3, aes.encrypt(membervo.getEmail()));	// AES256 양방향 암호화
+			pstmt.setString(4, aes.encrypt(membervo.getPhone()));	// AES256 양방향 암호화
+			pstmt.setString(5, membervo.getPostnum());
+			pstmt.setString(6, membervo.getAddress1());
+			pstmt.setString(7, membervo.getAddress2());
+			pstmt.setInt(8, membervo.getMnum());
+			
+			result = pstmt.executeUpdate();
+		} catch (UnsupportedEncodingException | GeneralSecurityException e) {
+			e.printStackTrace();
+		} finally {
+			close();
+		}
+		return result;
+	}
 	
 }

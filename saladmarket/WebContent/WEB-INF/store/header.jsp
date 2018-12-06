@@ -97,7 +97,7 @@
 								</c:if>
 								
 								<li class="has-dropdown">
-									<a href="<%=ctxPath %>/memberInfoMain.do">마이페이지</a>
+									<a href="#">마이페이지</a>
 									<ul class="dropdown">
 										<li><a href="<%=ctxPath %>/memberInfoMain.do">회원정보</a></li>
 										<%-- memberModify.jsp 비번 확인후 이곳으로 이동 --%>
@@ -109,7 +109,7 @@
 									</ul>
 								</li>
 								<li class="has-dropdown">
-									<a href="">샐러드</a>
+									<a href="#">샐러드</a>
 									<ul class="dropdown">
 										<li><a href="<%=ctxPath %>/productList.do?fk_sdname=시리얼">시리얼</a></li>
 										<li><a href="<%=ctxPath %>/productList.do?fk_sdname=샐러드">샐러드</a></li>
@@ -117,7 +117,7 @@
 									</ul>
 								</li>
 								<li class="has-dropdown">
-									<a href="">디톡스</a>
+									<a href="#">디톡스</a>
 									<ul class="dropdown">
 										<li><a href="<%=ctxPath %>/productList.do?fk_sdname=물/주스">물/주스</a></li>
 										<li><a href="<%=ctxPath %>/productList.do?fk_sdname=건강즙">건강즙</a></li>

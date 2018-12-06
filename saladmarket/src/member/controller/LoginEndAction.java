@@ -54,7 +54,7 @@ public class LoginEndAction extends AbstractController {
 			
 			HttpSession session = req.getSession();
 			session.setAttribute("loginuser", loginuser);
-			Cookie cookie = new Cookie("saveid", loginuser.getUserid());
+			Cookie cookie = new Cookie("userInputId", loginuser.getUserid());
 			
 			if(saveid != null) {
 				cookie.setMaxAge(7*24*60*60);

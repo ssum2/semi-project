@@ -23,5 +23,16 @@ public interface InterMemberDAO {
 	
 //	2) 새로운 비밀번호로 변경
 	int changeNewPwd(String userid, String pwd) throws SQLException;
+
+//	#마이페이지
+//	1) 마이페이지 메인(비밀번호 확인)
+	int memberPwdCheck(String userid, String pwd) throws SQLException;
+
+//	2) mnum으로 회원 1명의 정보를 select하는 메소드; 회원정보 수정
+	MemberVO getOneMemberBymnum(String mnum) throws SQLException;
+//	3) 보유쿠폰 개수 구하기
+	int getMyCouponCnt(String userid) throws SQLException;
+//	3) 회원 정보 수정 메소드; 회원
+	int updateMemberMyInfo(MemberVO membervo) throws SQLException;
 	
 }

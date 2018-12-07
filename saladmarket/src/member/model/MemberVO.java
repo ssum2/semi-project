@@ -1,4 +1,4 @@
-package member.model;
+﻿package member.model;
 
 import java.util.Calendar;
 
@@ -15,13 +15,15 @@ public class MemberVO {
 	private String birthday; 	// 생년월일
 	private int point;          // 포인트
 	private String registerdate; // 가입일자
-	private int status;         // 회원탈퇴유무   1:사용가능(가입중) / 0:사용불능(탈퇴)
+	private int status;         // 회원탈퇴유무   1:사용가능(가입중) / 0:사용불능(탈퇴) / 2: 휴면
 	private String last_logindate;	// 마지막 로그인 일시
 	private String last_changepwdate;	// 마지막 패스워드 변경 일시
 	private boolean requirePwdChange = false; // 패스워드 변경 의무 여부 --> true인 경우 6개월 이전이여서 변경하도록 유도
 	private boolean requireCertify = false; // 마지막 로그인 일시; idleStatus
 	private int summoney;	// 누적구매금액
 	private int fk_lvnum;	// 회원 등급 넘버
+	
+	
 	
 	public MemberVO() { }
 	
@@ -202,6 +204,36 @@ public class MemberVO {
 		result = registeryear+"년 "+registerdatemonth+"월 "+registerdateday+"일";
 		
 		return result;
+	}
+	
+	public String getLvnameByLvnum() {
+		if(fk_lvnum==1) {
+			return "Bronze";
+		}
+		else if(fk_lvnum==2) {
+			return "Silver";
+		}
+		else if(fk_lvnum==3) {
+			return "Gold";
+		}
+		else {
+			return "";
+		}
+	}
+	
+	public String getStatusByStatus() {
+		if(status==0) {
+			return "탈퇴";
+		}
+		else if(status==1) {
+			return "활동";
+		}
+		else if(status==2) {
+			return "휴면";
+		}
+		else {
+			return "";
+		}
 	}
 
 	public String getLast_logindate() {

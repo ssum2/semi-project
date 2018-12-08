@@ -331,5 +331,354 @@ public class MemberDAO implements InterMemberDAO {
 		
 		return n;
 	}
+
+	
+//	#마이페이지
+	
+//	1) 마이페이지 메인; 비밀번호 확인
+	@Override
+	public int memberPwdCheck(String userid, String pwd) throws SQLException {
+		int result = 0;
+		
+		try {
+			conn = ds.getConnection();
+			
+			String sql = " select mnum "
+					+ "	from member "
+					+ "	where userid=? and pwd=? ";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, userid);
+			pstmt.setString(2, SHA256.encrypt(pwd));
+			
+			rs = pstmt.executeQuery();
+			
+			if(rs.next()) {
+			
+				result = rs.getInt("mnum");
+			
+			}
+			else {
+				result = 0;
+			}
+		
+		} finally {
+			close();
+		}
+		return result;
+	}
+
+	
+//	보유쿠폰 개수 구하기
+	@Override
+	public int getMyCouponCnt(String userid) throws SQLException {
+		int cpcnt = 0;
+		try {
+			conn = ds.getConnection();
+			
+			String sql = " select count(*) as cnt "
+					+ " from my_coupon "
+					+ " where fk_userid = ? and cpexpiredate>sysdate ";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, userid);
+			
+			rs = pstmt.executeQuery();
+			rs.next();
+			
+			cpcnt = rs.getInt("cnt");
+			
+		} finally {
+			close();
+		}
+		
+		
+		return cpcnt;
+		
+	}
+	
+//	2) mnum으로 회원 1명의 정보를 select하는 메소드; 회원정보 수정
+	@Override
+	public MemberVO getOneMemberBymnum(String mnum) throws SQLException {
+		MemberVO membervo = null;
+		try {
+			conn = ds.getConnection();
+			String sql = " select mnum, userid, name, email, phone, to_char(birthday, 'yyyymmdd') as birthday, postnum "+
+						 " ,address1, address2, point, to_char(registerdate, 'yyyymmdd') as  registerdate"+
+					     " ,summoney ,fk_lvnum"+
+					     " from member "+
+					     " where status = 1 "+
+					     " and mnum = ? ";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, mnum);
+			rs = pstmt.executeQuery();
+			
+			if(rs.next()) {
+				int v_mnum = rs.getInt("mnum");
+				String userid = rs.getString("USERID");
+				String name = rs.getString("NAME");
+				String email = aes.decrypt(rs.getString("EMAIL"));  // AES256 복호화	
+				String phone = aes.decrypt(rs.getString("phone"));	// AES256 복호화		
+				String postnum = rs.getString("postnum");
+				String address1 = rs.getString("address1");
+				String address2 = rs.getString("address2");
+				String birthday = rs.getString("birthday");
+				int point = rs.getInt("point");
+				String registerdate = rs.getString("registerdate");
+				int summoney = rs.getInt("summoney");
+				int fk_lvnum = rs.getInt("fk_lvnum");
+
+				membervo = new MemberVO();
+				
+				membervo.setMnum(v_mnum);
+				membervo.setName(name);
+				membervo.setUserid(userid);
+				membervo.setEmail(email);
+				membervo.setPhone(phone);
+				membervo.setBirthday(birthday);
+				membervo.setPostnum(postnum);
+				membervo.setAddress1(address1);
+				membervo.setAddress2(address2);
+				membervo.setPoint(point);
+				membervo.setRegisterdate(registerdate);
+				membervo.setSummoney(summoney);
+				membervo.setFk_lvnum(fk_lvnum);
+	
+			}
+		} catch (UnsupportedEncodingException | GeneralSecurityException e) {
+			e.printStackTrace();
+		}  finally {
+			close();	
+		}
+		return membervo;
+	}
+
+	@Override
+	public int updateMemberMyInfo(MemberVO membervo) throws SQLException {
+		int result = 0;
+
+		try {
+			conn = ds.getConnection();
+			String sql = " update member set pwd=?, name= ?, email=?, phone=?, "+
+						 " postnum=?,address1=?, address2=?, last_changepwdate=sysdate"+
+						 " where mnum = ? ";
+			
+			pstmt = conn.prepareStatement(sql);
+			
+			System.out.println("mnum: "+membervo.getMnum());
+			pstmt.setString(1, SHA256.encrypt(membervo.getPwd()));	// SHA256 단방향 암호화
+			pstmt.setString(2, membervo.getName());
+			pstmt.setString(3, aes.encrypt(membervo.getEmail()));	// AES256 양방향 암호화
+			pstmt.setString(4, aes.encrypt(membervo.getPhone()));	// AES256 양방향 암호화
+			pstmt.setString(5, membervo.getPostnum());
+			pstmt.setString(6, membervo.getAddress1());
+			pstmt.setString(7, membervo.getAddress2());
+			pstmt.setInt(8, membervo.getMnum());
+			
+			result = pstmt.executeUpdate();
+		} catch (UnsupportedEncodingException | GeneralSecurityException e) {
+			e.printStackTrace();
+		} finally {
+			close();
+		}
+		return result;
+	}
+	
+	
+	
+//	#검색 및 날짜구간이 있는 총 회원수 구하는 메소드
+	@Override
+	public int getTotalCount(String searchType, String searchWord, int period) throws SQLException {
+		int count = 0;
+		try {
+			conn = ds.getConnection();
+			String sql = " select count(*) as CNT "+
+						 " from member "+
+						 " where 1=1 ";
+		
+			if("email".equals(searchType)) {
+				searchWord = aes.encrypt(searchWord);
+			}
+			
+			if(period == -1) { // period가 전체(-1)일 떄 sql구문 그대로 실행
+				sql+=" and "+ searchType + " like '%'||?||'%' ";
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setString(1, searchWord);
+			}
+			else { // period가 전체(-1)설정이 아닐 때 기존 sql구문에 조건절 추가
+				
+				sql += " and "+ searchType + " like '%'||?||'%' "
+						+"and to_date(to_char(sysdate, 'yyyy-mm-dd'), 'yyyy-mm-dd')-to_date(to_char(registerday, 'yyyy-mm-dd'), 'yyyy-mm-dd') <= ?";
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setString(1, searchWord);
+				pstmt.setInt(2, period);
+			}
+	
+			rs = pstmt.executeQuery();
+			rs.next();
+			
+			count = rs.getInt("CNT");
+		
+		} catch (UnsupportedEncodingException | GeneralSecurityException e) {
+
+		} finally {
+			close();	
+		}
+		return count;
+	}
+	
+//	#검색 및 날짜구간이 있고, 일반회원이 볼 수 있는 총 회원수 구하기
+	@Override
+	public int getTotalCountMember(String searchType, String searchWord, int period) throws SQLException {
+		int count = 0;
+		try {
+			conn = ds.getConnection();
+			String sql = " select count(*) as CNT "+
+						 " from jsp_member "+
+						 " where status=1 "
+						 + "and  MONTHS_BETWEEN (add_months(sysdate, -6), lastlogindate ) < 12 ";
+		
+			if("email".equals(searchType)) {
+				searchWord = aes.encrypt(searchWord);
+			}
+			
+			if(period == -1) { // period가 전체(-1)일 떄 sql구문 그대로 실행
+				sql+=" and "+ searchType + " like '%'||?||'%' ";
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setString(1, searchWord);
+			}
+			else { // period가 전체(-1)설정이 아닐 때 기존 sql구문에 조건절 추가
+				
+				sql += " and "+ searchType + " like '%'||?||'%' "
+						+"and to_date(to_char(sysdate, 'yyyy-mm-dd'), 'yyyy-mm-dd')-to_date(to_char(registerday, 'yyyy-mm-dd'), 'yyyy-mm-dd') <= ?";
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setString(1, searchWord);
+				pstmt.setInt(2, period);
+			}
+	
+			rs = pstmt.executeQuery();
+			rs.next();
+			
+			count = rs.getInt("CNT");
+		
+		} catch (UnsupportedEncodingException | GeneralSecurityException e) {
+
+		} finally {
+			close();	
+		}
+		return count;
+	}
+	
+//	#페이징 처리가 완료된 상태에서 날짜구간기능까지 포함하여 memberList에 전체회원을 넣어주는 메소드
+	@Override
+	public List<MemberVO> getAllMember(int sizePerPage, int currentShowPageNo, String searchType, String searchWord,int period) throws SQLException {
+		List<MemberVO> memberList = null;
+		
+		try {
+			conn = ds.getConnection();
+			String sql = "select   RNO,\n"+
+					"              IDX, USERID, NAME, PWD, EMAIL, HP1, HP2, HP3, \n"+
+					"              POST1, POST2, ADDR1, ADDR2, GENDER, BIRTHDAY,\n"+
+					"              COIN, POINT, REGISTERDAY, STATUS, lastlogindate, lastPwdChangeDate,  lastlogingap "+
+					"from\n"+
+					"(\n"+
+					"    select rownum AS RNO,\n"+
+					"              IDX, USERID, NAME, PWD, EMAIL, HP1, HP2, HP3, \n"+
+					"              POST1, POST2, ADDR1, ADDR2, GENDER, BIRTHDAY,\n"+
+					"              COIN, POINT, REGISTERDAY, STATUS, lastlogindate, lastPwdChangeDate, lastlogingap\n"+
+					"    from\n"+
+					"        (\n"+
+					"        select IDX, USERID, NAME, PWD, EMAIL, HP1, HP2, HP3, \n"+
+					"                  POST1, POST2, ADDR1, ADDR2, GENDER, BIRTHDAY,\n"+
+					"                  COIN, POINT, to_char(REGISTERDAY, 'yyyy-mm-dd') as REGISTERDAY, STATUS "+
+					"				, lastlogindate, lastPwdChangeDate" +
+					"				, trunc( months_between(sysdate, lastlogindate) ) as lastlogingap "+
+					"        from jsp_member\n"+
+					"        where 1=1 "+
+							" and " + searchType + " like '%'||?||'%' ";
+
+			String sql2 =	"        order by idx desc\n"+
+							"        ) V\n"+
+							") T\n"+
+							"where T.RNO between ? and ?  ";  
+			
+			if("email".equals(searchType)) {
+				searchWord = aes.encrypt(searchWord);
+			}
+			
+			if(period == -1) {
+				sql += sql2;
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setString(1, searchWord);
+				pstmt.setInt(2, (currentShowPageNo*sizePerPage)-(sizePerPage -1));
+				pstmt.setInt(3, (currentShowPageNo*sizePerPage));
+				
+			}
+			else {
+				sql += 	" and to_date(to_char(sysdate, 'yyyy-mm-dd'), 'yyyy-mm-dd')-to_date(to_char(registerday, 'yyyy-mm-dd'), 'yyyy-mm-dd') <= ? "+
+						sql2;
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setString(1, searchWord);
+				pstmt.setInt(2, period);
+				pstmt.setInt(3, (currentShowPageNo*sizePerPage)-(sizePerPage -1));
+				pstmt.setInt(4, (currentShowPageNo*sizePerPage));
+			}
+
+			rs = pstmt.executeQuery();
+			int cnt = 0;
+			while(rs.next()) {
+				cnt++;
+				if(cnt==1)
+					memberList = new ArrayList<MemberVO>();
+				
+				int idx = rs.getInt("IDX");
+				String userid = rs.getString("USERID");
+				String name = rs.getString("NAME");
+				String pwd = rs.getString("PWD");
+				String email = aes.decrypt(rs.getString("EMAIL"));  // AES256 복호화	
+				
+				String hp1 = rs.getString("HP1");
+				String hp2 = aes.decrypt(rs.getString("HP2"));	// AES256 복호화
+				String hp3 = aes.decrypt(rs.getString("HP3"));	// AES256 복호화
+						
+				String post1 = rs.getString("POST1");
+				String post2 = rs.getString("POST2");
+				String addr1 = rs.getString("ADDR1");
+				String addr2 = rs.getString("ADDR2");
+				String gender = rs.getString("GENDER");
+				String birthday = rs.getString("BIRTHDAY");
+				int coin = rs.getInt("COIN");
+				int point = rs.getInt("POINT");
+				String registerday = rs.getString("REGISTERDAY");
+				int status = rs.getInt("STATUS");
+				int lastlogingap = rs.getInt("lastlogingap");
+				String lastlogindate = rs.getString("lastlogindate");
+				String lastPwdChangeDate = rs.getString("lastPwdChangeDate");
+				
+				boolean requireCertify = false;
+				if(lastlogingap>=12) { // 휴면계정일 때
+					requireCertify = true;
+				}
+				// MemberVO 생성자; VO객체를 만들어서 회원정보를 담아줌
+				MemberVO membervo = new MemberVO(idx, userid, name, pwd, email, hp1, hp2, hp3,
+						post1, post2, addr1, addr2, gender,
+						birthday.substring(0, 4), birthday.substring(4, 6), birthday.substring(6), birthday,
+						coin, point, registerday, status, requireCertify, lastlogindate, lastPwdChangeDate) ;
+				// 가입된 회원수 만큼 객체가 리스트업
+				memberList.add(membervo);
+			} // end of while
+			
+		} catch (UnsupportedEncodingException | GeneralSecurityException e) {
+			e.printStackTrace();
+		}  finally {
+			close();	
+		}
+		return memberList;
+	}
+	
+	
+	
+	
 	
 }

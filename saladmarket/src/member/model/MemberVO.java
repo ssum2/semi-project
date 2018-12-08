@@ -1,4 +1,4 @@
-package member.model;
+﻿package member.model;
 
 import java.util.Calendar;
 
@@ -13,22 +13,23 @@ public class MemberVO {
 	private String address1;       // 주소
 	private String address2;       // 상세주소
 	private String birthday; 	// 생년월일
-	private int coin;           // 코인액
 	private int point;          // 포인트
-	private String registerday; // 가입일자
-	private int status;         // 회원탈퇴유무   1:사용가능(가입중) / 0:사용불능(탈퇴)
-	private String lastlogindate;	// 마지막 로그인 일시
-	private String lastpwdchangedate;	// 마지막 패스워드 변경 일시
+	private String registerdate; // 가입일자
+	private int status;         // 회원탈퇴유무   1:사용가능(가입중) / 0:사용불능(탈퇴) / 2: 휴면
+	private String last_logindate;	// 마지막 로그인 일시
+	private String last_changepwdate;	// 마지막 패스워드 변경 일시
 	private boolean requirePwdChange = false; // 패스워드 변경 의무 여부 --> true인 경우 6개월 이전이여서 변경하도록 유도
 	private boolean requireCertify = false; // 마지막 로그인 일시; idleStatus
 	private int summoney;	// 누적구매금액
 	private int fk_lvnum;	// 회원 등급 넘버
 	
+	
+	
 	public MemberVO() { }
 	
 	public MemberVO(int mnum, String userid, String name, String pwd, String email, String phone, String postnum,
-			String address1, String address2, String birthday, int coin, int point, String registerday, int status,
-			String lastlogindate, String lastpwdchangedate, boolean requirePwdChange, boolean requireCertify,
+			String address1, String address2, String birthday, int point, String registerdate, int status,
+			String last_logindate, String last_changepwdate, boolean requirePwdChange, boolean requireCertify,
 			int summoney, int fk_lvnum) {
 		super();
 		this.mnum = mnum;
@@ -41,12 +42,11 @@ public class MemberVO {
 		this.address1 = address1;
 		this.address2 = address2;
 		this.birthday = birthday;
-		this.coin = coin;
 		this.point = point;
-		this.registerday = registerday;
+		this.registerdate = registerdate;
 		this.status = status;
-		this.lastlogindate = lastlogindate;
-		this.lastpwdchangedate = lastpwdchangedate;
+		this.last_logindate = last_logindate;
+		this.last_changepwdate = last_changepwdate;
 		this.requirePwdChange = requirePwdChange;
 		this.requireCertify = requireCertify;
 		this.summoney = summoney;
@@ -133,14 +133,6 @@ public class MemberVO {
 		this.birthday = birthday;
 	}
 
-	public int getCoin() {
-		return coin;
-	}
-
-	public void setCoin(int coin) {
-		this.coin = coin;
-	}
-
 	public int getPoint() {
 		return point;
 	}
@@ -149,12 +141,12 @@ public class MemberVO {
 		this.point = point;
 	}
 
-	public String getRegisterday() {
-		return registerday;
+	public String getRegisterdate() {
+		return registerdate;
 	}
 
-	public void setRegisterday(String registerday) {
-		this.registerday = registerday;
+	public void setRegisterdate(String registerdate) {
+		this.registerdate = registerdate;
 	}
 
 	public int getStatus() {
@@ -195,26 +187,69 @@ public class MemberVO {
 		String birthyear = birthday.substring(0, 4);
 		String birthmonth = birthday.substring(4, 6);
 		String day = birthday.substring(6);
-		
+		// 19930222 
+		// 01234567
 		result = birthyear+"년 "+birthmonth+"월 "+day+"일";
 		
 		return result;
 	}
-
-	public String getLastlogindate() {
-		return lastlogindate;
+	
+	public String getShowRegisterdate() {
+		String result = "";
+		String registeryear = registerdate.substring(0, 4);
+		String registerdatemonth = registerdate.substring(4, 6);
+		String registerdateday = registerdate.substring(6);
+		// 19930222 
+		// 01234567
+		result = registeryear+"년 "+registerdatemonth+"월 "+registerdateday+"일";
+		
+		return result;
+	}
+	
+	public String getLvnameByLvnum() {
+		if(fk_lvnum==1) {
+			return "Bronze";
+		}
+		else if(fk_lvnum==2) {
+			return "Silver";
+		}
+		else if(fk_lvnum==3) {
+			return "Gold";
+		}
+		else {
+			return "";
+		}
+	}
+	
+	public String getStatusByStatus() {
+		if(status==0) {
+			return "탈퇴";
+		}
+		else if(status==1) {
+			return "활동";
+		}
+		else if(status==2) {
+			return "휴면";
+		}
+		else {
+			return "";
+		}
 	}
 
-	public void setLastlogindate(String lastlogindate) {
-		this.lastlogindate = lastlogindate;
+	public String getLast_logindate() {
+		return last_logindate;
 	}
 
-	public String getLastpwdchangedate() {
-		return lastpwdchangedate;
+	public void setLast_logindate(String last_logindate) {
+		this.last_logindate = last_logindate;
 	}
 
-	public void setLastpwdchangedate(String lastpwdchangedate) {
-		this.lastpwdchangedate = lastpwdchangedate;
+	public String getLast_changepwdate() {
+		return last_changepwdate;
+	}
+
+	public void setLast_changepwdate(String last_changepwdate) {
+		this.last_changepwdate = last_changepwdate;
 	}
 
 	public boolean isRequirePwdChange() {

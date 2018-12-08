@@ -1,4 +1,4 @@
-package member.controller;
+package member.controller.mypage;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,8 +19,8 @@ public class MemberInfoMainAction extends AbstractController {
 			super.setViewPage("/WEB-INF/store/mypage/memberInfoMain.jsp");
 		}
 		else {
-			String msg = "권한이 없습니다.";
-        	String loc = "javascript:history.back();";
+			String msg = "로그인 후 사용 가능합니다.";
+        	String loc = "memberLogin.do";
         	req.setAttribute("msg", msg);
 			req.setAttribute("loc", loc);
 			

@@ -1,29 +1,82 @@
  <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-    
-<jsp:include page="admin_header.jsp"/> 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<% 
+	String ctxPath = request.getContextPath();
+%>
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="apple-touch-icon" sizes="76x76" href="../assets/img/apple-icon.png">
+  <link rel="icon" type="image/png" href="<%= ctxPath %>/assets/img/favicon.png">
+  <title>
+    회원 상세정보
+  </title>
+  <!--     Fonts and icons     -->
+  <link href="https://fonts.googleapis.com/css?family=Poppins:200,300,400,600,700,800" rel="stylesheet" />
+  <link href="https://use.fontawesome.com/releases/v5.0.6/css/all.css" rel="stylesheet">
+  <!-- Nucleo Icons -->
+  <link href="<%= ctxPath %>/assets/css/nucleo-icons.css" rel="stylesheet" />
+  <!-- CSS Files -->
+  <link href="<%= ctxPath %>/assets/css/black-dashboard.css?v=1.0.0" rel="stylesheet" />
+  <!-- CSS Just for demo purpose, don't include it in your project -->
+  <link href="<%= ctxPath %>/assets/demo/demo.css" rel="stylesheet" />
 
+   <!--   Core JS Files   -->
+  <script src="<%= ctxPath %>/assets/js/core/jquery.min.js"></script>
+  <script src="<%= ctxPath %>/assets/js/core/popper.min.js"></script>
+  <script src="<%= ctxPath %>/assets/js/core/bootstrap.min.js"></script>
+  <script src="<%= ctxPath %>/assets/js/plugins/perfect-scrollbar.jquery.min.js"></script>
+  <!--  Google Maps Plugin    -->
+  <!-- Place this tag in your head or just before your close body tag. -->
+  <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_KEY_HERE"></script>
+  <!-- Chart JS -->
+  <script src="<%= ctxPath %>/assets/js/plugins/chartjs.min.js"></script>
+  <!--  Notifications Plugin    -->
+  <script src="<%= ctxPath %>/assets/js/plugins/bootstrap-notify.js"></script>
+  <!-- Control Center for Black Dashboard: parallax effects, scripts for the example pages etc -->
+  <script src="<%= ctxPath %>/assets/js/black-dashboard.min.js?v=1.0.0"></script>
+  <!-- Black Dashboard DEMO methods, don't include it in your project! -->
+  <script src="<%= ctxPath %>/assets/demo/demo.js"></script>
+
+<script>
+
+	function editMemberInfo() {		
+		var frm = document.memberEditFrm;
+		frm.method = "POST";
+		frm.action = "a_memberEdit.do";
+		frm.submit();
+	}
+	
+</script>
+
+</head>
+
+<body class="">
+<div class="container" style="margin-top: 3%;">
   	<div class="row">
-          <div class="col-md-3"></div>
-          <div class="col-md-6">
+          
+          <div class="col-md-12">
             <div class="card">
               <div class="card-header">
                 <h5 class="title">회원 상세 정보/수정</h5>
               </div>
               <div class="card-body">
-                <form>
+                <form name="memberEditFrm">
                 
                    <div class="row">
                     <div class="col-md-3 pr-md-1">
                       <div class="form-group">
                         <label>회원번호</label>
-                        <input type="text" class="form-control" placeholder="" value="">
+                      	<input type="text" class="form-control" id="mnum" name="mnum" value="${mvo.mnum}" readonly>
                       </div>
                     </div>
                     <div class="col-md-3 pr-md-1">
                       <div class="form-group">
                         <label>이름</label>
-                        <input type="text" class="form-control" placeholder="name" value="이순신">
+                        <input type="text" class="form-control" name="name" value="${mvo.name }" readonly>
                       </div>
                     </div>
                   </div>
@@ -32,13 +85,13 @@
                     <div class="col-md-3 pr-md-1">
                       <div class="form-group">
                         <label>아이디</label>
-                        <input type="text" class="form-control" placeholder="userid" value="leess">
+                        <input type="text" class="form-control" name="userid" value="${mvo.userid }" readonly>
                       </div>
                     </div>
                     <div class="col-md-4 pl-md-1">
                       <div class="form-group">
                         <label for="exampleInputEmail1">이메일</label>
-                        <input type="email" class="form-control" placeholder="leess@email.com">
+                        <input type="email" class="form-control" name="email" value="${mvo.email}">
                       </div>
                     </div>
                   </div>
@@ -47,22 +100,13 @@
                     <div class="col-md-3 pl-md-3">
                       <div class="form-group">
                         <label>생년월일</label>
-                        <input type="date" class="form-control" placeholder="birthday" value="19870704">
+                        <input type="text" class="form-control" name="birthday" value="${mvo.showBirthday}" readonly>
                       </div>
                     </div>
                     <div class="col-md-3 pl-md-1">
                       <div class="form-group">
                         <label>나이</label>
-                        <input type="number" class="form-control" placeholder="ZIP Code">
-                      </div>
-                    </div>
-                     <div class="col-md-3 pl-md-1">
-                      <div class="form-group">
-                        <label>성별</label><br>
-                       	<!-- <input type="checkbox" id="form-control" />남&nbsp;
-                        <input type="checkbox" id="form-control" />여 -->
-                        <input type="radio" id="male" name="gender" value="1" /><label for="male" style="margin-left: 2%;">남자</label>
-			   			<input type="radio" id="female" name="gender" value="2" style="margin-left: 10%;" /><label for="female" style="margin-left: 2%;">여자</label>
+                        <input type="number" class="form-control" name="age" value="${mvo.showAge }" readonly>
                       </div>
                     </div>
                   </div>
@@ -71,7 +115,7 @@
                     <div class="col-md-3 pr-md-1">
                       <div class="form-group">
                         <label>전화번호</label>
-                        <input type="tel" class="form-control" placeholder="010-1111-2222">
+                        <input type="tel" class="form-control" name="phone" value="${mvo.showPhone}">
                       </div>
                     </div>
                   </div>
@@ -80,18 +124,18 @@
                   <div class="col-md-3 pr-md-1">
                       <div class="form-group">
                         <label>우편번호</label>
-                        <input type="number" class="form-control" placeholder="ZIP Code">
+                        <input type="number" class="form-control" name="postnum" value="${mvo.postnum}">
                       </div>
                     </div>
                     <div class="col-md-12">
                       <div class="form-group">
                         <label>주소</label>
-                        <input type="text" class="form-control" placeholder="address1" value="도로명주소">
+                        <input type="text" class="form-control" name="address1" value="${mvo.address1}">
                       </div>
                     </div>
                      <div class="col-md-12">
                       <div class="form-group">
-                        <input type="text" class="form-control" placeholder="address2" value="상세주소">
+                        <input type="text" class="form-control" name="address2" value="${mvo.address2}">
                       </div>
                     </div>
                   </div>
@@ -100,19 +144,19 @@
                     <div class="col-md-3 pr-md-1">
                       <div class="form-group">
                         <label>가입일자</label>
-                        <input type="date" class="form-control" placeholder="registerdate" value="2018-11-26">
+                        <input type="text" class="form-control" name="registerdate" value="${mvo.showRegisterdate }" readonly >
                       </div>
                     </div>
                     <div class="col-md-3 pl-md-1">
                       <div class="form-group">
                         <label>누적금액</label>
-                        <input type="text" class="form-control" name="summoney" placeholder="summoney" value="0">
+                        <input type="text" class="form-control" name="summoney" value="${mvo.showSummoney}" readonly >
                       </div>
                     </div>
                     <div class="col-md-3 pl-md-1">
                       <div class="form-group">
                         <label>회원등급</label>
-                        <input type="text" class="form-control" name="fk_lvnum" placeholder="fk_lvnum" value="bronze">
+                        <input type="text" class="form-control" name="lvname" value="${mvo.lvnameByLvnum}">
                       </div>
                     </div>
                   </div>
@@ -121,18 +165,19 @@
                   <div class="row">
                     <div class="col-md-8">
                       <div class="form-group">
-                        <label>그냥 입력기능</label>
-                        <textarea rows="4" cols="80" class="form-control" placeholder="내용을 입력하세요." value="Mike">좋아보여</textarea>
+                        <label>코멘트</label>
+                        <textarea rows="1" cols="80" class="form-control" name="textarea" value=""></textarea>
                       </div>
                     </div>
                   </div>
                 </form>
               </div>
               <div class="card-footer">
-                <button type="submit" class="btn btn-fill btn-primary">Save</button>
+                <button type="button" id="btnEditMemberInfo" class="btn btn-fill btn-primary" onClick="editMemberInfo()">Save</button>
               </div>
             </div>
           </div>
-    </div>
-      
-<jsp:include page="admin_footer.jsp"/> 
+    	</div>
+	</div>
+</body>
+</html>

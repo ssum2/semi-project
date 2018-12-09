@@ -15,7 +15,7 @@ public class MemberVO {
 	private String birthday; 	// 생년월일
 	private int point;          // 포인트
 	private String registerdate; // 가입일자
-	private int status;         // 회원탈퇴유무   1:사용가능(가입중) / 0:사용불능(탈퇴) / 2: 휴면
+	private int status;         // 회원활동 유무  1:사용가능(가입중) / 0:사용불능
 	private String last_logindate;	// 마지막 로그인 일시
 	private String last_changepwdate;	// 마지막 패스워드 변경 일시
 	private boolean requirePwdChange = false; // 패스워드 변경 의무 여부 --> true인 경우 6개월 이전이여서 변경하도록 유도
@@ -182,6 +182,29 @@ public class MemberVO {
 		
 	}
 	
+	public String getShowPhone() {
+		String result ="";
+
+		String phone1 = phone.substring(0, 3);
+		String phone2 = "";
+		String phone3 = "";
+		if(phone.length()==10) {
+			phone2 = phone.substring(3, 6);
+			phone3 = phone.substring(6);
+		}
+		else {
+			phone2 = phone.substring(3, 7);
+			phone3 = phone.substring(7);
+		}
+		// 010 9982 1387
+		// 010 888 9999
+		// 012 3456 78910
+		result = phone1+"- "+phone2+"-"+phone3;
+		
+		return result;
+		
+	}
+	
 	public String getShowBirthday() {
 		String result = "";
 		String birthyear = birthday.substring(0, 4);
@@ -223,17 +246,20 @@ public class MemberVO {
 	
 	public String getStatusByStatus() {
 		if(status==0) {
-			return "탈퇴";
+			return "휴면";
 		}
 		else if(status==1) {
 			return "활동";
 		}
-		else if(status==2) {
-			return "휴면";
-		}
 		else {
 			return "";
 		}
+	}
+	
+	public String getShowSummoney() {
+		String result=String.format("%,d", summoney);
+		
+		return result;
 	}
 
 	public String getLast_logindate() {

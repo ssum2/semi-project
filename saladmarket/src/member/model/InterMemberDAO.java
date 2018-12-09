@@ -1,6 +1,7 @@
 package member.model;
 
 import java.sql.SQLException;
+import java.util.List;
 
 public interface InterMemberDAO {
 	
@@ -34,5 +35,21 @@ public interface InterMemberDAO {
 	int getMyCouponCnt(String userid) throws SQLException;
 //	3) 회원 정보 수정 메소드; 회원
 	int updateMemberMyInfo(MemberVO membervo) throws SQLException;
+
+//	#admin; 회원목록
+	List<MemberVO> getSearchMemberList(int sizePerPage, int currentShowPageNo, String lvnum, String searchType,
+			String searchWord) throws SQLException;
+
+	int getTotalMemberCount(String searchType, String searchWord, String lvnum) throws SQLException;
+	int getNewbieMemberCount(String searchType, String searchWord, String lvnum) throws SQLException;
+	int getDormantMemberCount(String searchType, String searchWord, String lvnum) throws SQLException;
+//	int getLeaveMemberCount(String searchType, String searchWord, String lvnum) throws SQLException;
+
+	int deleteMember(String mnum) throws SQLException;
+
+	int editMemberStatus(String mnum, String status) throws SQLException;
+
+//	admin; 회원 정보 수정
+	int updateMemberInfo(MemberVO mvo) throws SQLException;
 	
 }

@@ -138,8 +138,53 @@ update member set name='해리포터' where mnum=5;
 update member set name='헤르미온느' where mnum=7;
 
 
-update member set email='ceLUMtKVBfBFzHtCcLl4manuOE15mgsrRCFwv4GIlbA=', phone='WIn7zkFgYQjkwmjQlrWbwQ==', pwd='9695b88a59a1610320897fa84cb7e144cc51f2984520efb77111d94b402a8382'
-where name='이순신';
+ALTER TABLE member DROP COLUMN pw;
+
+update member set email='ceLUMtKVBfBFzHtCcLl4manuOE15mgsrRCFwv4GIlbA=', phone='WIn7zkFgYQjkwmjQlrWbwQ==', pwd='9695b88a59a1610320897fa84cb7e144cc51f2984520efb77111d94b402a8382';
+
+select *
+from member
+order by mnum desc;
+
+update member set address1='경기도 부천시 고리울로 64번길 19', address2='유저집' where mnum in(5, 6, 7, 8, 9, 10, 11);
+update member set name='유저이' where mnum=9;
+update member set name='유저삼' where mnum=10;
+update member set name='유저사' where mnum=11;
+
+commit;
+
+commit;
+
+select rno, mnum,userid, name,email,phone , status, summoney ,fk_lvnum
+from
+    (
+    select rownum as rno, mnum, userid, name,email,phone , status, summoney ,fk_lvnum
+    from
+        (
+        select mnum, userid, name, email, phone, status, summoney, fk_lvnum 
+        from member
+        order by mnum asc
+        ) V
+    where fk_lvnum=1
+    and name like '%'|| '' ||'%'
+    ) T 
+where T.rno between 1 and 10 
+order by rno asc;
+
+
+
+select count(*) as cnt
+from member
+where name like '%'||''||'%'
+and fk_lvnum like '%'||''||'%';
+
+
+String sql = "select count(*) as cnt\n"+
+"from member\n"+
+"where name like '%'||''||'%'\n"+
+"and fk_lvnum like '%'||''||'%'";
+
+
 
 
 commit;
@@ -412,6 +457,28 @@ insert into category_tag values(seq_category_tag_ctnum.nextval, '채식주의자
 select *
 from category_tag;
 
+-- 카테고리 태그에 따른 물품 수량 구하기
+select ctnum, ctname, sum(pqty) as pqty
+from 
+(
+select ctnum, ctname, pqty
+from category_tag A left join product B
+on ctname = fk_ctname
+) v
+where ctname like '%'||''||'%'
+group by ctnum, ctname
+order by ctnum;
+
+
+String sql = "select ctnum, ctname, sum(pqty) as pqty\n"+
+"from \n"+
+"(\n"+
+"select ctnum, ctname, pqty\n"+
+"from category_tag A join product B\n"+
+"on ctname = fk_ctname\n"+
+") v\n"+
+"group by ctnum, ctname";
+
 -- 이벤트태그(event_tag) 테이블 생성 
 create table event_tag 
 (etnum   number  not null  -- 이벤트번호 
@@ -527,6 +594,11 @@ select *
 from product
 where fk_sdname='물/주스';
 
+-- insert
+String sql = "insert into product(pnum, fk_pacname, fk_sdname, fk_ctname, fk_stname, fk_etname, \n"+
+"                    pname, price, saleprice, point, pqty, pcontents, pcompanyname,\n"+
+"                    pexpiredate, allergy, weight, salecount, pdate, titleimg)\n"+
+"values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 select *
 from product_package;

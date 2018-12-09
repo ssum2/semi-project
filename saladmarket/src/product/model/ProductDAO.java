@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.naming.Context;
@@ -151,4 +152,517 @@ public class ProductDAO implements InterProductDAO {
 		 
 		return productList;
 	}
+
+//	#admin; 카테고리 태그 리스트
+	@Override
+	public List<HashMap<String, String>> getCategoryTagList(String searchWord) throws SQLException {
+		List<HashMap<String, String>> categoryTagList = null;
+		
+		try {
+			conn = ds.getConnection();
+			
+			String sql = "select ctnum, ctname, sum(pqty) as pqty\n"+
+					"from \n"+
+					"(\n"+
+					"select ctnum, ctname, pqty\n"+
+					"from category_tag A left join product B\n"+
+					"on ctname = fk_ctname\n"+
+					") v\n"+
+					" where ctname like '%'|| ? ||'%' "+
+					" group by ctnum, ctname "
+					+ " order by ctnum ";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, searchWord);
+			rs = pstmt.executeQuery();
+			
+			int cnt=0;
+			while(rs.next()) {
+				cnt++;
+				if(cnt==1) {
+					categoryTagList = new ArrayList<HashMap<String, String>>();
+				}
+				
+				String ctnum = rs.getString("ctnum");
+				String ctname = rs.getString("ctname");
+				String v_pqty = rs.getString("pqty");
+				if(v_pqty==null) {
+					v_pqty="0";
+				}
+				String pqty = v_pqty;
+				
+				System.out.println(pqty);
+				
+				HashMap<String, String> map = new HashMap<String, String>();
+				map.put("ctnum", ctnum);
+				map.put("ctname", ctname);
+				map.put("pqty", pqty);
+				
+				
+				categoryTagList.add(map);
+			}
+						
+		} finally {
+			close();
+		}
+
+		return categoryTagList;
+	}
+
+//	#admin; 카테고리태그 추가하기
+	@Override
+	public int addCategoryTag(String ctname) throws SQLException {
+		int result = 0;
+		try {
+			conn = ds.getConnection();
+			
+			String sql=" select count(*) as cnt from category_tag where ctname = ? ";
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setString(1, ctname);
+			
+			rs = pstmt.executeQuery();
+			
+			rs.next();
+			
+			if(rs.getInt("cnt")>0) {
+				return 0;
+			}
+			else {
+				sql = " insert into category_tag(ctnum, ctname) values(seq_category_tag_ctnum.nextval, ? )";
+				
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setString(1, ctname);
+				
+				result = pstmt.executeUpdate();
+			}
+		} finally {
+			close();
+		}
+		
+		return result;
+	}
+	
+//	#admin; 카테고리태그 삭제하기
+	@Override
+	public int deleteCategoryTag(String ctnum) throws SQLException {
+		int result = 0;
+		try {
+			conn = ds.getConnection();
+
+			String sql = " delete from category_tag where ctnum = ?";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, ctnum);
+			
+			result = pstmt.executeUpdate();
+			
+		} finally {
+			close();
+		}
+		
+		return result;
+	}
+	
+	
+	
+//	admin; 제품등록
+//	1) 패키지 불러오기
+	@Override
+	public List<HashMap<String, String>> getPacnameList() 
+			throws SQLException {
+			
+		List<HashMap<String, String>> pacnameList = null;
+		
+		try {
+			conn = ds.getConnection();
+			
+			String sql = " select pacnum, pacname"
+					   + " from product_package  "
+					   + " order by pacnum asc ";
+			
+			pstmt = conn.prepareStatement(sql); 
+						
+			rs = pstmt.executeQuery();
+			
+			int cnt = 0;
+			while(rs.next()) {
+				cnt++;
+				if(cnt == 1) {
+					pacnameList = new ArrayList<HashMap<String, String>>();
+				}
+				
+				String pacnum = rs.getString("pacnum"); 
+			    String pacname = rs.getString("pacname"); 
+			    
+			    HashMap<String, String> map = new HashMap<String, String>();
+			    map.put("pacnum", pacnum);
+			    map.put("pacname", pacname);
+			      
+			    pacnameList.add(map);  
+			}
+			
+		} finally{
+			close();
+		}
+		
+		return pacnameList;
+	}
+	
+//	2) 소분류명 불러오기
+	@Override
+	public List<HashMap<String, String>> getSdnameList() 
+			throws SQLException {
+			
+		List<HashMap<String, String>> sdnameList = null;
+		
+		try {
+			conn = ds.getConnection();
+			
+			String sql = " select sdnum, fk_ldname, sdname"
+					   + " from small_detail  "
+					   + " order by sdnum asc ";
+			
+			pstmt = conn.prepareStatement(sql); 
+						
+			rs = pstmt.executeQuery();
+			
+			int cnt = 0;
+			while(rs.next()) {
+				cnt++;
+				if(cnt == 1) {
+					sdnameList = new ArrayList<HashMap<String, String>>();
+				}
+				
+				String sdnum = rs.getString("sdnum"); 
+			    String fk_ldname = rs.getString("fk_ldname"); 
+			    String sdname = rs.getString("sdname"); 
+			    
+			    HashMap<String, String> map = new HashMap<String, String>();
+			    map.put("sdnum", sdnum);
+			    map.put("fk_ldname", fk_ldname);
+			    map.put("sdname", sdname);
+			      
+			    sdnameList.add(map);  
+			}
+			
+		} finally{
+			close();
+		}
+		
+		return sdnameList;
+	}
+	
+	
+//	3) 카테고리명 불러오기
+	@Override
+	public List<HashMap<String, String>> getCtnameList() 
+			throws SQLException {
+			
+		List<HashMap<String, String>> ctnameList = null;
+		
+		try {
+			conn = ds.getConnection();
+			
+			String sql = " select ctnum, ctname"
+					   + " from category_tag  "
+					   + " order by ctnum asc ";
+			
+			pstmt = conn.prepareStatement(sql); 
+						
+			rs = pstmt.executeQuery();
+			
+			int cnt = 0;
+			while(rs.next()) {
+				cnt++;
+				if(cnt == 1) {
+					ctnameList = new ArrayList<HashMap<String, String>>();
+				}
+				
+				String ctnum = rs.getString("ctnum"); 
+			    String ctname = rs.getString("ctname"); 
+			    
+			    HashMap<String, String> map = new HashMap<String, String>();
+			    map.put("ctnum", ctnum);
+			    map.put("ctname", ctname);
+			      
+			    ctnameList.add(map);  
+			}
+			
+		} finally{
+			close();
+		}
+		
+		return ctnameList;
+	}
+	
+	
+//	4) 스펙명 불러오기
+	@Override
+	public List<HashMap<String, String>> getStnameList() 
+			throws SQLException {
+			
+		List<HashMap<String, String>> stnameList = null;
+		
+		try {
+			conn = ds.getConnection();
+			
+			String sql = " select stnum, stname"
+					   + " from spec_tag  "
+					   + " order by stnum asc ";
+			
+			pstmt = conn.prepareStatement(sql); 
+						
+			rs = pstmt.executeQuery();
+			
+			int cnt = 0;
+			while(rs.next()) {
+				cnt++;
+				if(cnt == 1) {
+					stnameList = new ArrayList<HashMap<String, String>>();
+				}
+				
+				String stnum = rs.getString("stnum"); 
+			    String stname = rs.getString("stname"); 
+			    
+			    HashMap<String, String> map = new HashMap<String, String>();
+			    map.put("stnum", stnum);
+			    map.put("stname", stname);
+			      
+			    stnameList.add(map);  
+			}
+			
+		} finally{
+			close();
+		}
+		
+		return stnameList;
+	}
+	
+	
+//	5) 이벤트태그 불러오기
+	@Override
+	public List<HashMap<String, String>> getEtnameList() 
+			throws SQLException {
+			
+		List<HashMap<String, String>> etnameList = null;
+		
+		try {
+			conn = ds.getConnection();
+			
+			String sql = " select etnum, etname, etimagefilename"
+					   + " from event_tag  "
+					   + " order by etnum asc ";
+			
+			pstmt = conn.prepareStatement(sql); 
+						
+			rs = pstmt.executeQuery();
+			
+			int cnt = 0;
+			while(rs.next()) {
+				cnt++;
+				if(cnt == 1) {
+					etnameList = new ArrayList<HashMap<String, String>>();
+				}
+				
+				String etnum = rs.getString("etnum"); 
+			    String etname = rs.getString("etname"); 
+			    String etimagefilename = rs.getString("etimagefilename"); 
+			    
+			    
+			    HashMap<String, String> map = new HashMap<String, String>();
+			    map.put("etnum", etnum);
+			    map.put("etname", etname);
+			    map.put("etimagefilename", etimagefilename);
+			    
+			    etnameList.add(map);  
+			}
+			
+		} finally{
+			close();
+		}
+		
+		return etnameList;
+	}
+	
+	
+//	#제품번호(시퀀스) 채번 하는 메소드
+	@Override
+	public int getPnumOfProduct() throws SQLException {
+		int pnum = 0;
+		
+		try {
+			conn = ds.getConnection();
+			String sql = " select seq_product_pnum.nextval as seq"
+						+ " from dual ";
+			
+			pstmt = conn.prepareStatement(sql);
+			rs = pstmt.executeQuery();
+			rs.next();
+			
+			pnum = rs.getInt("seq");
+			
+		} finally {
+			close();
+		}
+		return pnum;
+	}
+
+
+//	#제품등록 insert 메소드
+	@Override
+	public int productInsert(ProductVO pvo) throws SQLException {
+		int n = 0;
+		
+		try {
+			conn = ds.getConnection();
+			
+			String sql = "insert into product(pnum, fk_pacname, fk_sdname, fk_ctname, fk_stname, fk_etname, \n"+
+					"                    pname, price, saleprice, point, pqty, pcontents, pcompanyname,\n"+
+					"                    pexpiredate, allergy, weight, pdate, titleimg)\n"+
+					"values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, sysdate, ?)";
+			
+			pstmt = conn.prepareStatement(sql);
+
+			pstmt.setString(1, pvo.getPnum());
+			pstmt.setString(2, pvo.getFk_pacname());
+			pstmt.setString(3, pvo.getFk_sdname());
+			pstmt.setString(4, pvo.getFk_ctname());
+			pstmt.setString(5, pvo.getFk_stname());
+			pstmt.setString(6, pvo.getFk_etname());
+			
+			pstmt.setString(7, pvo.getPname());
+			pstmt.setInt(8, pvo.getPrice());
+			pstmt.setInt(9, pvo.getSaleprice());
+			pstmt.setInt(10, pvo.getPoint());
+			pstmt.setInt(11, pvo.getPqty());
+			pstmt.setString(12, pvo.getPcontents());
+			pstmt.setString(13, pvo.getPcompanyname());
+			pstmt.setString(14, pvo.getPexpiredate());
+			pstmt.setString(15, pvo.getAllergy());
+			pstmt.setInt(16, pvo.getWeight());
+			pstmt.setString(17, pvo.getTitleimg());
+			
+			
+			n = pstmt.executeUpdate();
+
+		} finally {
+			close();
+		}
+		return n;
+	}
+
+//	#제품 이미지정보를 product_images 테이블에 insert하는 메소드
+	@Override
+	public int product_images_Insert(int pnum, String attachFilename) throws SQLException {
+		int result = 0;
+		try {
+			conn = ds.getConnection();
+			
+			String sql = "insert into product_images(pimgnum, pimgfilename, fk_pnum)\n"+
+						"values(seq_product_images_pimgnum.nextval, ?, ?)";
+			
+			pstmt = conn.prepareStatement(sql);
+
+			
+			pstmt.setString(1, attachFilename);
+			pstmt.setInt(2, pnum);
+			
+			result = pstmt.executeUpdate();
+
+		} finally {
+			close();
+		}
+		return result;
+	}
+
+//	admin; 물품목록
+	@Override
+	public List<HashMap<String, String>> getLdnameList() throws SQLException {
+		List<HashMap<String, String>> ldnameList = null;
+		
+		try {
+			conn = ds.getConnection();
+			
+			String sql = " select ldnum, ldname"
+					   + " from large_detail  "
+					   + " order by ldnum asc ";
+			
+			pstmt = conn.prepareStatement(sql); 
+			
+			rs = pstmt.executeQuery();
+			
+			int cnt = 0;
+			while(rs.next()) {
+				cnt++;
+				if(cnt == 1) {
+					ldnameList = new ArrayList<HashMap<String, String>>();
+				}
+				
+				String ldnum = rs.getString("ldnum"); 
+			    String ldname = rs.getString("ldname"); 
+			    
+			    HashMap<String, String> map = new HashMap<String, String>();
+			    map.put("ldnum", ldnum);
+			    map.put("ldname", ldname);
+			      
+			    ldnameList.add(map);  
+			}
+			
+		} finally{
+			close();
+		}
+		
+		return ldnameList;
+	}
+	
+	
+	
+	
+//	#대분류명에 따른 소분류명 목록 가져오기
+	@Override
+	public List<HashMap<String, String>> getSdnameListByLdname(String ldname) throws SQLException {
+		List<HashMap<String, String>> sdnameList = null;
+		
+		try {
+			conn = ds.getConnection();
+			
+			String sql = " select sdnum, fk_ldname, sdname"
+					   + " from small_detail  "
+					   + " where fk_ldname like '%'|| ? || '%' "
+					   + " order by sdnum asc ";
+			
+			pstmt = conn.prepareStatement(sql); 
+			pstmt.setString(1, ldname);
+			
+			rs = pstmt.executeQuery();
+			
+			int cnt = 0;
+			while(rs.next()) {
+				cnt++;
+				if(cnt == 1) {
+					sdnameList = new ArrayList<HashMap<String, String>>();
+				}
+				
+				String sdnum = rs.getString("sdnum"); 
+			    String fk_ldname = rs.getString("fk_ldname"); 
+			    String sdname = rs.getString("sdname"); 
+			    
+			    HashMap<String, String> map = new HashMap<String, String>();
+			    map.put("sdnum", sdnum);
+			    map.put("fk_ldname", fk_ldname);
+			    map.put("sdname", sdname);
+			      
+			    sdnameList.add(map);  
+			}
+			
+		} finally{
+			close();
+		}
+		
+		return sdnameList;
+	}
+	
+	
+	
 }

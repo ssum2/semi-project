@@ -774,9 +774,134 @@ String sql = "select *\n"+
 "where A.fk_sdname like '%%'\n"+
 "order by  A.pdate desc, B.pacnum, A.pnum asc";
 
+-- 관리자 상품목록 불러오기
 
 
 
+create or replace view view_product_join_sd
+as
+select pnum, fk_pacname, fk_sdname, fk_ldname, fk_ctname, fk_stname, fk_etname, pname, price, saleprice, point, pqty, pcontents, pcompanyname, pexpiredate, allergy, weight, salecount, plike, pdate, titleimg
+from product a join small_detail b
+on a.fk_sdname = b.sdname
+order by pnum desc;
+
+
+
+-- 아무 조건 없는 버전
+select rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg
+from
+(
+select rownum as rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg 
+from view_product_join_sd
+) V
+where V.rno between 1 and 10 
+order by rno asc;
+
+String sql = "select rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg\n"+
+"from\n"+
+"(\n"+
+"select rownum as rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg \n"+
+"from view_product_join_sd\n"+
+") V\n"+
+"where V.rno between ? and ? \n"+
+"order by rno asc ";
+
+
+
+-- ldname
+select rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg
+from
+(
+select rownum as rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg 
+from view_product_join_sd
+where fk_ldname like '%'|| ? || '%'
+) V
+where V.rno between 1 and 10 
+order by rno asc;
+
+
+String sql = "select rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg\n"+
+"from\n"+
+"(\n"+
+"select rownum as rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg \n"+
+"from view_product_join_sd\n"+
+"where ? like '%'|| ? || '%'\n"+
+") V\n"+
+"where V.rno between ? and ? \n"+
+"order by rno asc";
+
+-- sdname
+select rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg
+from
+(
+select rownum as rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg 
+from view_product_join_sd
+where fk_sdname like '%'|| ? || '%'
+) V
+where V.rno between 1 and 10 
+order by rno asc;
+
+-- searchType==전체, searchWord
+select rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg
+from
+(
+select rownum as rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg 
+from view_product_join_sd
+where searchType like '%'|| ? || '%' 
+    or searchType2 like '%'|| ? || '%'
+) V
+where V.rno between 1 and 10 
+order by rno asc;
+
+String sql = "select rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg\n"+
+"from\n"+
+"(\n"+
+"select rownum as rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg \n"+
+"from view_product_join_sd\n"+
+"where searchType like '%'|| ? || '%' \n"+
+"    or searchType2 like '%'|| ? || '%'\n"+
+") V\n"+
+"where V.rno between ? and ? \n"+
+"order by rno asc";
+
+
+
+-- searchType==전체, searchWord, sdname
+select rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg
+from
+(
+select rownum as rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg 
+from view_product_join_sd
+where fk_sdname like '%'|| ? || '%'
+      and (searchType like '%'|| ? || '%' 
+      or searchType2 like '%'|| ? || '%')
+) V
+where V.rno between 1 and 10 
+order by rno asc;
+
+
+-- searchType, searchWord
+select rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg
+from
+(
+select rownum as rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg 
+from view_product_join_sd
+where pname like '%'|| '샐러드' || '%' 
+) V
+where V.rno between 1 and 10 
+order by rno asc;
+
+-- searchType, searchWord
+select rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg
+from
+(
+select rownum as rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg 
+from view_product_join_sd
+where searchType like '%'|| ? || '%'
+and fk_sdname '%' || ? || '%'
+) V
+where V.rno between 1 and 10 
+order by rno asc;
 
 
 -- 상품백업(Product_backup) 테이블 생성 

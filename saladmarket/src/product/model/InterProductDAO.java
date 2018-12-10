@@ -46,5 +46,26 @@ public interface InterProductDAO {
 //	#대분류에 따른 소분류명 가져오기
 	List<HashMap<String, String>> getSdnameListByLdname(String ldname) throws SQLException;
 
+//	#물품 리스트 가져오기
+//	1) 아무 조건 없었을 때(페이지 처음 이동 했을 때)
+	List<ProductVO> getProductList(int sizePerPage, int currentShowPageNo) throws SQLException;
+	
+//	2) 
+	List<ProductVO> getProductListByDname(int sizePerPage, int currentShowPageNo, String fk_name, String dname) throws SQLException;
+	List<ProductVO> getProductListBySearch(int sizePerPage, int currentShowPageNo, String searchType, String searchWord) throws SQLException;
+	List<ProductVO> getProductListBySearchWithDname(int sizePerPage, int currentShowPageNo, String fk_name, String dname
+			, String searchType, String searchWord) throws SQLException;
+	List<ProductVO> getProductListBySearchAll(int sizePerPage, int currentShowPageNo, String searchWord) throws SQLException;
+	List<ProductVO> getProductListBySearchAllWithDname(int sizePerPage, int currentShowPageNo, String fk_name, String dname, String searchWord) throws SQLException;
+
+	int getTotalProductCountAll(String searchWord, String ldname, String sdname) throws SQLException;
+	int getTotalProductCount(String searchType, String searchWord, String ldname, String sdname) throws SQLException;
+
+
+	
+
+
+	
+
 
 }

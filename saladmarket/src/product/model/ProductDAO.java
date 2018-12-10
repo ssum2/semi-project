@@ -663,6 +663,517 @@ public class ProductDAO implements InterProductDAO {
 		return sdnameList;
 	}
 	
+//	#물품 목록 가져오기(where 조건절 마다 메소드 분리(
+	@Override
+	public List<ProductVO> getProductList(int sizePerPage, int currentShowPageNo) throws SQLException{
+		List<ProductVO> productList = null;
+		conn = ds.getConnection();
+		
+		try {
+			String sql = "select rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg\n"+
+					"from\n"+
+					"(\n"+
+					"select rownum as rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg \n"+
+					"from view_product_join_sd\n"+
+					") V\n"+
+					"where V.rno between ? and ? \n"+
+					"order by rno asc ";
+			
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, (currentShowPageNo*sizePerPage) - (sizePerPage - 1) );
+			pstmt.setInt(2, (currentShowPageNo*sizePerPage) );
+			
+			rs = pstmt.executeQuery();
+			
+			int cnt = 0;
+			
+			while(rs.next()) {
+				cnt++;
+				if(cnt==1) {
+					productList = new ArrayList<ProductVO>();
+				}
+				
+				String pnum = rs.getString("pnum");
+				String fk_pacname = rs.getString("fk_pacname");
+				String fk_sdname = rs.getString("fk_sdname");
+				String fk_ldname = rs.getString("fk_ldname");
+				String pname = rs.getString("pname");
+				int saleprice = rs.getInt("saleprice");
+				int point = rs.getInt("point");
+				int pqty = rs.getInt("pqty");
+				int salecount = rs.getInt("salecount");
+				int plike = rs.getInt("plike");
+				String pdate = rs.getString("pdate");
+				String titleimg = rs.getString("titleimg");
+				
+				ProductVO pvo = new ProductVO();
+				
+				pvo.setPnum(pnum);
+				pvo.setFk_pacname(fk_pacname);
+				pvo.setFk_sdname(fk_sdname);
+				pvo.setFk_ldname(fk_ldname);
+				pvo.setPname(pname);
+				pvo.setSaleprice(saleprice);
+				pvo.setPoint(point);
+				pvo.setPqty(pqty);
+				pvo.setSalecount(salecount);
+				pvo.setPlike(plike);
+				pvo.setPdate(pdate);
+				pvo.setTitleimg(titleimg);
+				
+				productList.add(pvo);
+			}
+		} finally {
+			close();
+		}
+		return productList;
+	}
 	
 	
+	@Override
+	public List<ProductVO> getProductListByDname(int sizePerPage, int currentShowPageNo, String fk_name, String dname) throws SQLException{
+		List<ProductVO> productList = null;
+		conn = ds.getConnection();
+		
+		try {
+			String sql = "select rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg\n"+
+					"from\n"+
+					"(\n"+
+					"select rownum as rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg \n"+
+					"from view_product_join_sd\n"+
+					"where 1=1 and "+fk_name+" like '%'|| ? || '%'\n"+
+					") V\n"+
+					"where V.rno between ? and ? \n"+
+					"order by rno asc";
+			
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, dname);
+			pstmt.setInt(2, (currentShowPageNo*sizePerPage) - (sizePerPage - 1) );
+			pstmt.setInt(3, (currentShowPageNo*sizePerPage) );
+			
+			rs = pstmt.executeQuery();
+			
+			int cnt = 0;
+			
+			while(rs.next()) {
+				cnt++;
+				if(cnt==1) {
+					productList = new ArrayList<ProductVO>();
+				}
+				
+				String pnum = rs.getString("pnum");
+				String fk_pacname = rs.getString("fk_pacname");
+				String fk_sdname = rs.getString("fk_sdname");
+				String fk_ldname = rs.getString("fk_ldname");
+				String pname = rs.getString("pname");
+				int saleprice = rs.getInt("saleprice");
+				int point = rs.getInt("point");
+				int pqty = rs.getInt("pqty");
+				int salecount = rs.getInt("salecount");
+				int plike = rs.getInt("plike");
+				String pdate = rs.getString("pdate");
+				String titleimg = rs.getString("titleimg");
+				
+				ProductVO pvo = new ProductVO();
+				
+				pvo.setPnum(pnum);
+				pvo.setFk_pacname(fk_pacname);
+				pvo.setFk_sdname(fk_sdname);
+				pvo.setFk_ldname(fk_ldname);
+				pvo.setPname(pname);
+				pvo.setSaleprice(saleprice);
+				pvo.setPoint(point);
+				pvo.setPqty(pqty);
+				pvo.setSalecount(salecount);
+				pvo.setPlike(plike);
+				pvo.setPdate(pdate);
+				pvo.setTitleimg(titleimg);
+				
+				productList.add(pvo);
+			}
+		} finally {
+			close();
+		}
+		return productList;
+	}
+	
+
+	
+	@Override
+	public List<ProductVO> getProductListBySearch(int sizePerPage, int currentShowPageNo, String searchType, String searchWord) throws SQLException{
+		List<ProductVO> productList = null;
+		conn = ds.getConnection();
+		
+		try {
+			String sql = "select rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg\n"+
+					"from\n"+
+					"(\n"+
+					"select rownum as rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg \n"+
+					"from view_product_join_sd\n"+
+					"where 1=1 and "+searchType+" like '%'|| ? || '%'\n"+
+					") V\n"+
+					"where V.rno between ? and ? \n"+
+					"order by rno asc";
+			
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, searchWord);
+			pstmt.setInt(2, (currentShowPageNo*sizePerPage) - (sizePerPage - 1) );
+			pstmt.setInt(3, (currentShowPageNo*sizePerPage) );
+			
+			rs = pstmt.executeQuery();
+			
+			int cnt = 0;
+			
+			while(rs.next()) {
+				cnt++;
+				if(cnt==1) {
+					productList = new ArrayList<ProductVO>();
+				}
+				
+				String pnum = rs.getString("pnum");
+				String fk_pacname = rs.getString("fk_pacname");
+				String fk_sdname = rs.getString("fk_sdname");
+				String fk_ldname = rs.getString("fk_ldname");
+				String pname = rs.getString("pname");
+				int saleprice = rs.getInt("saleprice");
+				int point = rs.getInt("point");
+				int pqty = rs.getInt("pqty");
+				int salecount = rs.getInt("salecount");
+				int plike = rs.getInt("plike");
+				String pdate = rs.getString("pdate");
+				String titleimg = rs.getString("titleimg");
+				
+				ProductVO pvo = new ProductVO();
+				
+				pvo.setPnum(pnum);
+				pvo.setFk_pacname(fk_pacname);
+				pvo.setFk_sdname(fk_sdname);
+				pvo.setFk_ldname(fk_ldname);
+				pvo.setPname(pname);
+				pvo.setSaleprice(saleprice);
+				pvo.setPoint(point);
+				pvo.setPqty(pqty);
+				pvo.setSalecount(salecount);
+				pvo.setPlike(plike);
+				pvo.setPdate(pdate);
+				pvo.setTitleimg(titleimg);
+				
+				productList.add(pvo);
+			}
+		} finally {
+			close();
+		}
+		return productList;
+	}
+	
+	@Override
+	public List<ProductVO> getProductListBySearchWithDname(int sizePerPage, int currentShowPageNo
+			, String fk_name, String dname, String searchType, String searchWord) throws SQLException{
+		List<ProductVO> productList = null;
+		conn = ds.getConnection();
+		
+		try {
+			String sql = "select rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg\n"+
+					"from\n"+
+					"(\n"+
+					"select rownum as rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg \n"+
+					"from view_product_join_sd\n"+
+					"where 1=1 and "+fk_name+" like '%'|| ? || '%'\n"+
+					"      and "+ searchType+" like '%'|| ? || '%' \n"+
+					") V\n"+
+					"where V.rno between ? and ? \n"+
+					"order by rno asc";
+			
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, dname);
+			pstmt.setString(2, searchWord);
+			pstmt.setInt(3, (currentShowPageNo*sizePerPage) - (sizePerPage - 1) );
+			pstmt.setInt(4, (currentShowPageNo*sizePerPage) );
+			
+			rs = pstmt.executeQuery();
+			
+			int cnt = 0;
+			
+			while(rs.next()) {
+				cnt++;
+				if(cnt==1) {
+					productList = new ArrayList<ProductVO>();
+				}
+				
+				String pnum = rs.getString("pnum");
+				String fk_pacname = rs.getString("fk_pacname");
+				String fk_sdname = rs.getString("fk_sdname");
+				String fk_ldname = rs.getString("fk_ldname");
+				String pname = rs.getString("pname");
+				int saleprice = rs.getInt("saleprice");
+				int point = rs.getInt("point");
+				int pqty = rs.getInt("pqty");
+				int salecount = rs.getInt("salecount");
+				int plike = rs.getInt("plike");
+				String pdate = rs.getString("pdate");
+				String titleimg = rs.getString("titleimg");
+				
+				ProductVO pvo = new ProductVO();
+				
+				pvo.setPnum(pnum);
+				pvo.setFk_pacname(fk_pacname);
+				pvo.setFk_sdname(fk_sdname);
+				pvo.setFk_ldname(fk_ldname);
+				pvo.setPname(pname);
+				pvo.setSaleprice(saleprice);
+				pvo.setPoint(point);
+				pvo.setPqty(pqty);
+				pvo.setSalecount(salecount);
+				pvo.setPlike(plike);
+				pvo.setPdate(pdate);
+				pvo.setTitleimg(titleimg);
+				
+				productList.add(pvo);
+			}
+		} finally {
+			close();
+		}
+		return productList;
+	}
+
+	@Override
+	public List<ProductVO> getProductListBySearchAll(int sizePerPage, int currentShowPageNo, String searchWord) throws SQLException{
+		List<ProductVO> productList = null;
+		conn = ds.getConnection();
+		
+		try {
+			String sql = "select rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg\n"+
+					"from\n"+
+					"(\n"+
+					"select rownum as rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg \n"+
+					"from view_product_join_sd\n"+
+					"where 1=1 and ( pname like '%'|| ? || '%' \n"+
+					"    or fk_pacname like '%'|| ? || '%') \n"+
+					") V\n"+
+					"where V.rno between ? and ? \n"+
+					"order by rno asc";
+			 
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, searchWord);
+			pstmt.setString(2, searchWord);
+			pstmt.setInt(3, (currentShowPageNo*sizePerPage) - (sizePerPage - 1) );
+			pstmt.setInt(4, (currentShowPageNo*sizePerPage) );
+			
+			rs = pstmt.executeQuery();
+			
+			int cnt = 0;
+			
+			while(rs.next()) {
+				cnt++;
+				if(cnt==1) {
+					productList = new ArrayList<ProductVO>();
+				}
+				
+				String pnum = rs.getString("pnum");
+				String fk_pacname = rs.getString("fk_pacname");
+				String fk_sdname = rs.getString("fk_sdname");
+				String fk_ldname = rs.getString("fk_ldname");
+				String pname = rs.getString("pname");
+				int saleprice = rs.getInt("saleprice");
+				int point = rs.getInt("point");
+				int pqty = rs.getInt("pqty");
+				int salecount = rs.getInt("salecount");
+				int plike = rs.getInt("plike");
+				String pdate = rs.getString("pdate");
+				String titleimg = rs.getString("titleimg");
+				
+				ProductVO pvo = new ProductVO();
+				
+				pvo.setPnum(pnum);
+				pvo.setFk_pacname(fk_pacname);
+				pvo.setFk_sdname(fk_sdname);
+				pvo.setFk_ldname(fk_ldname);
+				pvo.setPname(pname);
+				pvo.setSaleprice(saleprice);
+				pvo.setPoint(point);
+				pvo.setPqty(pqty);
+				pvo.setSalecount(salecount);
+				pvo.setPlike(plike);
+				pvo.setPdate(pdate);
+				pvo.setTitleimg(titleimg);
+				
+				productList.add(pvo);
+			}
+		} finally {
+			close();
+		}
+		return productList;
+	}
+	
+	@Override
+	public List<ProductVO> getProductListBySearchAllWithDname(int sizePerPage, int currentShowPageNo, String fk_name, String dname, String searchWord) throws SQLException{
+		List<ProductVO> productList = null;
+		conn = ds.getConnection();
+		
+		try {
+			String sql = "select rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg\n"+
+					"from\n"+
+					"(\n"+
+					"select rownum as rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg \n"+
+					"from view_product_join_sd\n"+
+					"where 1=1 and "+fk_name+" like '%'|| ? || '%'\n"+
+					"      and ( pname like '%'|| ? || '%' \n"+
+					"      or fk_pacname like '%'|| ? || '%')\n"+
+					") V\n"+
+					"where V.rno between ? and ? \n"+
+					"order by rno asc";
+			
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, dname);
+			pstmt.setString(2, searchWord);
+			pstmt.setString(3, searchWord);
+			
+			pstmt.setInt(4, (currentShowPageNo*sizePerPage) - (sizePerPage - 1) );
+			pstmt.setInt(5, (currentShowPageNo*sizePerPage) );
+			
+			rs = pstmt.executeQuery();
+			
+			int cnt = 0;
+			
+			while(rs.next()) {
+				cnt++;
+				if(cnt==1) {
+					productList = new ArrayList<ProductVO>();
+				}
+				
+				String pnum = rs.getString("pnum");
+				String fk_pacname = rs.getString("fk_pacname");
+				String fk_sdname = rs.getString("fk_sdname");
+				String fk_ldname = rs.getString("fk_ldname");
+				String pname = rs.getString("pname");
+				int saleprice = rs.getInt("saleprice");
+				int point = rs.getInt("point");
+				int pqty = rs.getInt("pqty");
+				int salecount = rs.getInt("salecount");
+				int plike = rs.getInt("plike");
+				String pdate = rs.getString("pdate");
+				String titleimg = rs.getString("titleimg");
+				
+				ProductVO pvo = new ProductVO();
+				
+				pvo.setPnum(pnum);
+				pvo.setFk_pacname(fk_pacname);
+				pvo.setFk_sdname(fk_sdname);
+				pvo.setFk_ldname(fk_ldname);
+				pvo.setPname(pname);
+				pvo.setSaleprice(saleprice);
+				pvo.setPoint(point);
+				pvo.setPqty(pqty);
+				pvo.setSalecount(salecount);
+				pvo.setPlike(plike);
+				pvo.setPdate(pdate);
+				pvo.setTitleimg(titleimg);
+				
+				productList.add(pvo);
+			}
+		} finally {
+			close();
+		}
+		return productList;
+	}
+	
+	
+	
+	
+	
+	@Override
+	public int getTotalProductCountAll(String searchWord, String ldname, String sdname) throws SQLException {
+		int count = 0;
+		try {
+			conn = ds.getConnection();
+			
+			String sql = "select count(*) as cnt\n"+
+					"from view_product_join_sd\n"+
+					"where 1=1 "+
+					" and (fk_pacname like '%'|| ? ||'%'\n"+
+					" or pname like '%'|| ? ||'%')\n"+
+					"and fk_ldname like '%'|| ? ||'%'"+
+					"and fk_sdname like '%'|| ? ||'%'";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, searchWord);
+			pstmt.setString(2, searchWord);
+			pstmt.setString(3, ldname);
+			pstmt.setString(4, sdname);
+			
+			rs = pstmt.executeQuery();
+			rs.next();
+			
+			count = rs.getInt("CNT");
+		
+		}  finally {
+			close();	
+		}
+		return count;
+	}
+	
+	
+	@Override
+	public int getTotalProductCount(String searchType, String searchWord, String ldname, String sdname) throws SQLException {
+		int count = 0;
+		try {
+			conn = ds.getConnection();
+			
+			String sql = "select count(*) as cnt\n"+
+					"from view_product_join_sd\n"+
+					"where 1=1 "+
+					" and "+ searchType +" like '%'|| ? ||'%'\n"+
+					" and fk_ldname like '%'|| ? ||'%' \n"+
+					" and fk_sdname like '%'|| ? ||'%' ";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, searchWord);
+			pstmt.setString(2, ldname);
+			pstmt.setString(3, sdname);
+			
+			rs = pstmt.executeQuery();
+			rs.next();
+			
+			count = rs.getInt("CNT");
+		
+		}  finally {
+			close();	
+		}
+		return count;
+	}
+	
+	
+	
+	public ProductVO getOneProductDetail(String pnum) throws SQLException {
+		ProductVO pvo = null;
+		
+		try {
+			conn = ds.getConnection();
+			
+			
+			String sql = "select pnum, fk_pacname, fk_sdname, fk_ldname, fk_ctname, fk_stname, fk_etname, pname, price, saleprice, point, pqty, pcontents, pcompanyname, pexpiredate, allergy, weight, salecount, plike, pdate, titleimg\n"+
+					"from view_product_join_sd"+
+					" where pnum = ? ";
+			
+			
+			
+		} finally {
+			close();
+		}
+		
+		
+		
+		return pvo;
+		
+		
+		
+		
+		
+	}
 }

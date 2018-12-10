@@ -3,7 +3,8 @@ package product.model;
 public class ProductVO {
 	private String pnum;  // 상품번호 
 	private String fk_pacname;	//상품패키지명
-	private String fk_sdname; // 소분류상세명 
+	private String fk_sdname; // 소분류상세명
+	private String fk_ldname; // 대분류상세명
 	private String fk_ctname; // 카테고리태그명 
 	private String fk_stname; // 카테고리태그명 
 	private String fk_etname; // 카테고리태그명 
@@ -110,6 +111,14 @@ public class ProductVO {
 
 	public void setFk_sdname(String fk_sdname) {
 		this.fk_sdname = fk_sdname;
+	}
+	
+	public String getFk_ldname() {
+		return fk_ldname;
+	}
+
+	public void setFk_ldname(String fk_ldname) {
+		this.fk_ldname = fk_ldname;
 	}
 
 	public String getFk_ctname() {

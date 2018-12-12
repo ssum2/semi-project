@@ -1,4 +1,4 @@
-package product.controller;
+package product.controller.admin;
 
 import java.io.IOException;
 import java.util.HashMap;

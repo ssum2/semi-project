@@ -1,4 +1,4 @@
-package product.controller;
+package product.controller.admin;
 
 import java.util.HashMap;
 import java.util.List;
@@ -16,7 +16,6 @@ public class A_ProductListAction extends AbstractController {
 	@Override
 	public void execute(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		InterProductDAO pdao = new ProductDAO();
-		
 		
 		
 		List<HashMap<String, String>> ldnameList = pdao.getLdnameList();

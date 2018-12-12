@@ -19,7 +19,7 @@ public class IdDuplicateCheckAction extends AbstractController {
 		if("POST".equalsIgnoreCase(method)) {
 			MemberDAO memberdao = new MemberDAO();
 			String userid = req.getParameter("userid");
-			
+			userid = userid.trim();
 			System.out.println("IdDuplicateCheckAction success 2/4 userid: "+userid);
 			int isUseUserid = memberdao.idDuplicateCheck(userid);
 			

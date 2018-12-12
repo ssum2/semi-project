@@ -1,4 +1,4 @@
-package product.controller;
+package product.controller.admin;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -9,15 +9,17 @@ import common.controller.AbstractController;
 import product.model.InterProductDAO;
 import product.model.ProductDAO;
 
-public class A_deleteCategoryTagAction extends AbstractController {
+public class A_addCategoryTagAction extends AbstractController {
 
 	@Override
 	public void execute(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		String ctnum = req.getParameter("ctnum");
-
+		
+		String ctname = req.getParameter("addCategoryName");
+		
+		System.out.println(ctname);
 		InterProductDAO pdao = new ProductDAO();
 		
-		int result = pdao.deleteCategoryTag(ctnum);
+		int result = pdao.addCategoryTag(ctname);
 		
 		
 		JSONObject jsonObj = new JSONObject();
@@ -26,8 +28,7 @@ public class A_deleteCategoryTagAction extends AbstractController {
 		req.setAttribute("jsonObj", jsonObj);
 		
 		super.setRedirect(false);
-		super.setViewPage("/WEB-INF/admin/JSON/deleteCategoryTagJSON.jsp");
-
+		super.setViewPage("/WEB-INF/admin/JSON/addCategoryTagJSON.jsp");
 		
 		
 	}

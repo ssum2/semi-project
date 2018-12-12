@@ -1,4 +1,4 @@
-package product.controller;
+package product.controller.admin;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

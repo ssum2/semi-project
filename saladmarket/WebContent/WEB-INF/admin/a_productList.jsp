@@ -141,8 +141,8 @@
 
 	                     var pageNo = Math.floor((currentShowPageNo - 1)/blockSize) * blockSize + 1; 
 
-					      if(pageNo != 1) {	lvnum, searchType, searchWord, pageNo
-					    	  pageBarHTML += "<a class='nav-link active' href='javascript:goSearch(\""+ldname+"\" , \""+sdname+"\", "+searchType+"\" , \""+searchWord+"\", \""+(pageNo-1)+"\")'>"+
+					      if(pageNo != 1) {	
+					    	  pageBarHTML += "<a class='nav-link active' href='javascript:getProductList(\""+ldname+"\" , \""+sdname+"\", "+searchType+"\" , \""+searchWord+"\", \""+(pageNo-1)+"\")'>"+
 					      					"<i class='tim-icons icon-minimal-left'></i></a>";
 					      }
 
@@ -152,7 +152,7 @@
 					    		  pageBarHTML += "&nbsp;<span class='nav-link active' style=\"text-decoration: underline; \">"+pageNo+"</span>&nbsp;";
 					    	  }
 					    	  else {
-					    	  	  pageBarHTML += "&nbsp;<a class='nav-link active' href='javascript:goSearch(\""+lvnum+"\" , \""+sdname+"\", \""+searchType+"\" , \""+searchWord+"\", \""+pageNo+"\")'>"+pageNo+"</a>&nbsp;";
+					    	  	  pageBarHTML += "&nbsp;<a class='nav-link active' href='javascript:getProductList(\""+ldname+"\" , \""+sdname+"\", \""+searchType+"\" , \""+searchWord+"\", \""+pageNo+"\")'>"+pageNo+"</a>&nbsp;";
 					     	  }
 	                     
 					       	 loop++;
@@ -160,7 +160,7 @@
 					      } // end of while
 
 					     if( !(pageNo > totalPage) ) {
-					    	 pageBarHTML += "<a class='nav-link active' href='javascript:goSearch(\""+lvnum+"\" , , \""+sdname+"\", \""+searchType+"\" , \""+searchWord+"\", \""+pageNo+"\")'>"+
+					    	 pageBarHTML += "<a class='nav-link active' href='javascript:getProductList(\""+ldname+"\" , \""+sdname+"\", \""+searchType+"\" , \""+searchWord+"\", \""+pageNo+"\")'>"+
 		      					"<i class='tim-icons icon-minimal-right'></i></a>";
 					     }
 						 	
@@ -182,14 +182,24 @@
 		
 	}// end of makePageBar
 	
-	function goDetail() {
+	function goDetail(pnum) {
+		var url = "a_productDetail.do?pnum="+pnum;
+		window.open(url, "상품 상세 정보",
+				    "width=800px, height=800px, top=50px, left=800px");
 		
-		var frm = document.productFrm;
-		frm.method = "POST";
-		frm.action = "a_productDetail.do";
-		frm.submit();
+	}
+	
+	function goDelete(pnum){
+		var bool = confirm("해당 상품을 삭제하시겠습니까?");
 		
-	}// end of goDetail()----------------------------
+		if(bool){
+			location.href="a_deleteProduct.do?pnum="+pnum;
+		}
+		else{
+			return false;
+		}
+		
+	}
 
 
 </script>
@@ -284,9 +294,9 @@
 		</div>
 
 
-            </div>
-          </div>
-        </div>
+      </div>
+    </div>
+  </div>
 <jsp:include page="admin_footer.jsp"/> 
 
 

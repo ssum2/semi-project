@@ -1,4 +1,4 @@
-package product.controller;
+package product.controller.admin;
 
 import java.util.HashMap;
 import java.util.List;

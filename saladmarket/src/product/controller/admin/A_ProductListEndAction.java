@@ -1,4 +1,4 @@
-package product.controller;
+package product.controller.admin;
 
 import java.util.ArrayList;
 import java.util.List;

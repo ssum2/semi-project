@@ -19,6 +19,10 @@ public interface InterProductDAO {
 //	admin; 카테고리태그 삭제하기
 	int deleteCategoryTag(String ctnum) throws SQLException;
 
+//	admin; 카테고리태그 수정하기
+	int updateCtname(String ctnum, String ctname) throws SQLException;
+	
+	
 //	admin; 물품 등록하기
 //	# 패키지 및 태그 불러오기
 	List<HashMap<String, String>> getPacnameList() throws SQLException;
@@ -60,6 +64,25 @@ public interface InterProductDAO {
 
 	int getTotalProductCountAll(String searchWord, String ldname, String sdname) throws SQLException;
 	int getTotalProductCount(String searchType, String searchWord, String ldname, String sdname) throws SQLException;
+
+//	#상품디테일; 상품정보
+	ProductVO getOneProductDetail(String pnum) throws SQLException;
+//	#상품디테일; 추가이미지
+	List<HashMap<String, String>> getAttachImgList(String pnum) throws SQLException;
+
+	
+//	#상품수정; 상품 추가이미지 삭제
+	int deleteAttachProductImg(String pimgnum) throws SQLException;
+
+//	#상품수정; 상품 정보 update
+	int updateProduct(ProductVO pvo) throws SQLException;
+
+//	#상품 삭제
+	int deleteProductByPnum(String pnum) throws SQLException;
+
+
+
+
 
 
 	

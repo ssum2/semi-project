@@ -62,7 +62,7 @@ request.setCharacterEncoding("UTF-8");
 			$.ajax({
 				url: "idDuplicateCheck.do",
 				type: "POST",
-				data: {"userid":$("#userid").val()},
+				data: {"userid":$("#userid").val().trim()},
 				dataType: "json",
 				success: function(json){
 					if(json.isUseUserid==0){

@@ -16,23 +16,15 @@ import product.model.InterProductDAO;
 import product.model.ProductDAO;
 import product.model.ProductVO;
 
-public class A_EventEditAction extends AbstractController {
+public class A_EventAddAction extends AbstractController {
 
 	@Override
 	public void execute(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		String method = req.getMethod();
 		
 		if(!"POST".equalsIgnoreCase(method)) {
-			
-			String etnum = req.getParameter("etnum");
-			
-			InterProductDAO pdao = new ProductDAO();
-			
-			HashMap<String, String> map = pdao.getOneEventTag(etnum);
-			
-			req.setAttribute("map", map);
 			super.setRedirect(false);
-			super.setViewPage("/WEB-INF/admin/a_eventEdit.jsp");
+			super.setViewPage("/WEB-INF/admin/a_eventAdd.jsp");
 		}
 		else {
 			HttpSession session = req.getSession();
@@ -56,8 +48,8 @@ public class A_EventEditAction extends AbstractController {
 //			3. 파일 업로드 후 상품정보(상품명, 정가, 제품설명...)를  DB jsp_product 테이블에 insert 
 			InterProductDAO pdao = new ProductDAO();
 
+			int etnum = pdao.getEtnum();	
 			String etname = mtreq.getParameter("etname");
-			String etnum = mtreq.getParameter("etnum");
 			String etimagefilename = mtreq.getFilesystemName("etimagefilename");
 			
 			if(etimagefilename==null) {
@@ -65,22 +57,22 @@ public class A_EventEditAction extends AbstractController {
 			}
 			HashMap<String, String> map = new HashMap<String, String>();
 			map.put("etname", etname);
-			map.put("etnum", etnum);
+			map.put("etnum", Integer.toString(etnum));
 			map.put("etimagefilename", etimagefilename);
 
-			int n = pdao.updateEventTag(map);
+			int n = pdao.insertEventTag(map);
 			
 			String msg = "";
 			String loc = "";
 			if(n==1) {
-				msg = "수정 성공";
+				msg = "이벤트 태그  추가 완료";
 				loc = req.getContextPath()+"/a_eventList.do";
 				String script1="window.opener.location.reload();\n" + "window.close();";
 				req.setAttribute("script1", script1);
 			}
 			else {
-				msg = "수정 실패";
-				loc = req.getContextPath()+"/a_eventEdit.do?etnum="+etnum;
+				msg = "추가 실패";
+				loc = req.getContextPath()+"/a_eventList.do";
 			}
 			
 			req.setAttribute("msg", msg);

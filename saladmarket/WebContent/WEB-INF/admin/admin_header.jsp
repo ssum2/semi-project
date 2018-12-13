@@ -189,13 +189,6 @@
               <p>회원 목록</p>
             </a>
           </li>
-          <li class="active ">
-            <a href="<%= ctxPath %>/a_memberDetail.do">
-              <i class="tim-icons icon-single-02"></i>
-              <p>회원 상세 정보/수정</p>
-            </a>
-          </li>
-          <li>
             <a href="<%= ctxPath %>/a_orderList.do">
               <i class="tim-icons icon-chart-pie-36"></i>
               <p>전체 주문 목록</p>
@@ -207,12 +200,6 @@
               <p>상품 등록</p>
             </a>
           </li>
-          <li>
-            <a href="<%= ctxPath %>/a_productEdit.do">
-              <i class="tim-icons icon-puzzle-10"></i>
-              <p>물품 수정</p>
-            </a>
-          </li>
           
           <li>
             <a href="<%= ctxPath %>/a_productList.do">
@@ -221,9 +208,9 @@
             </a>
           </li>
           <li>
-            <a href="<%= ctxPath %>/a_productDetail.do">
+            <a href="<%= ctxPath %>/a_packageList.do">
               <i class="tim-icons icon-puzzle-10"></i>
-              <p>상품 상세정보</p>
+              <p>패키지 목록</p>
             </a>
           </li>
       	  <li>
@@ -262,18 +249,7 @@
               <p>이벤트 태그 관리</p>
             </a>
           </li>
-          <li>
-            <a href="<%= ctxPath %>/a_eventRegister.do">
-              <i class="tim-icons icon-bell-55"></i>
-              <p>이벤트 태그 등록</p>
-            </a>
-          </li>
-		  <li>
-            <a href="<%= ctxPath %>/a_eventEdit.do">
-              <i class="tim-icons icon-bell-55"></i>
-              <p>이벤트 태그 수정</p>
-            </a>
-          </li>
+
         </ul>
       </div>
     </div>

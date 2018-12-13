@@ -348,6 +348,20 @@ insert into product_package values(seq_product_Package_pacnum.nextval, '없음',
 
 commit;
 
+
+select pacnum, pacname, pacimage, count(pnum) as cnt
+from 
+(
+select pacnum, pacname, pacimage, pnum
+from product_package A left join product B
+on ctname = fk_ctname
+) v
+where pacname like '%'||'치료식'||'%'
+group by pacnum, pacname, pacimage
+order by pacnum;
+
+
+
 -- 대분류상세(large_detail) 테이블 생성 
 create table large_detail 
 (ldnum   number         not null  -- 대분류상세번호 
@@ -459,14 +473,14 @@ select *
 from category_tag;
 
 -- 카테고리 태그에 따른 물품 수량 구하기
-select ctnum, ctname, sum(pqty) as pqty
+select ctnum, ctname, count(pnum) as cnt
 from 
 (
-select ctnum, ctname, pqty
+select ctnum, ctname, pnum
 from category_tag A left join product B
 on ctname = fk_ctname
 ) v
-where ctname like '%'||''||'%'
+where ctname like '%'||'치료식'||'%'
 group by ctnum, ctname
 order by ctnum;
 
@@ -514,6 +528,18 @@ commit;
 
 select *
 from event_tag;
+
+
+select etnum, etname, etimagefilename, count(pnum) as cnt
+from 
+(
+select etnum, etname, etimagefilename, pnum
+from event_tag A left join product B
+on etname = fk_etname
+) v
+ where etname like '%'|| '연말' ||'%' 
+group by etnum, etname, etimagefilename 
+order by etnum;
 
 
 -- 상품(product) 테이블 생성
@@ -576,13 +602,12 @@ drop constraint FK_product_pacname;
 -- > 제약조건 추가하기
 alter table product
 add constraint FK_product_pacname foreign key(fk_pacname)
-                                      references product_package(pacname);
+                                      references product_package(pacname) on delete set null;
 
 create or replace trigger trg_product_pac
 after delete of pacname on product_package for each row
 begin
-    update product
-    set fk_pacname=:'없음' where fk_pacname=:OLD.pacname;
+    update product set fk_pacname='없음' where fk_pacname=:OLD.pacname
 END;
 
 commit;

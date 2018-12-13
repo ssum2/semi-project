@@ -12,7 +12,7 @@
   <link rel="apple-touch-icon" sizes="76x76" href="../assets/img/apple-icon.png">
   <link rel="icon" type="image/png" href="<%= ctxPath %>/assets/img/favicon.png">
   <title>
-     이벤트 수정
+     이벤트 태그 생성
   </title>
   <!--     Fonts and icons     -->
   <link href="https://fonts.googleapis.com/css?family=Poppins:200,300,400,600,700,800" rel="stylesheet" />
@@ -45,9 +45,9 @@
 
 $(document).ready(function(){
 	$("#btnEdit").click(function(){
-		var frm = document.etEditFrm;
+		var frm = document.etAddFrm;
 		frm.method="POST";
-		frm.action="a_eventEdit.do";
+		frm.action="a_eventAdd.do";
 		frm.submit();
 	});
 });
@@ -69,7 +69,7 @@ $(document).ready(function(){
               </div>
 
               <div class="card-body">
-                <form name="etEditFrm" enctype="multipart/form-data">
+                <form name="etAddFrm" enctype="multipart/form-data">
                 	<input type="hidden" name="etnum" value="${map.etnum}">
                    <div class="row">
                     <div class="col-md-3 pr-md-1">
@@ -79,21 +79,9 @@ $(document).ready(function(){
                       </div>
                     </div>
                   </div>
-                   <div class="row">
-                   	<div class="col-md-3 pr-md-1">
-                   	
-                   	<label>이벤트이미지</label><br/>
-                   	<c:if test='${map.etimagefilename == null || map.etimagefilename eq ""}'>
-                   		등록된 이미지가 없습니다.
-                   	</c:if>
-                   <c:if test='${map.etimagefilename != null && map.etimagefilename ne ""}'>
-                   	<img src="/saladmarket/img/${map.etimagefilename}" width="200px" height="100px;">
-                   </c:if>
-                   	</div> 
-                   </div>
                    <div class="row" style="margin-top: 5%;">
                     <div class="col-md-3 pr-md-1">
-                    	<label>이벤트이미지 수정</label><br/>
+                    	<label>이벤트이미지</label><br/>
                     	<input type="file" name="etimagefilename" id="etimagefilename" class="infoData btn btn-primary btn-simple" />
                     	
                     </div>

@@ -61,7 +61,7 @@ $(document).ready(function(){
 					      			"<td colspan='4'>"+
 					      			"<div class='col-md-3 form-inline ml-auto categoryeditattach'>"+
 					      				"<br/>"+
-										"<input type='text' id='categoryedit' name='categoryedit' class='form-control'/>&nbsp;&nbsp;"+
+										"<input type='text' id='categoryedit"+entry.ctnum+"' name='categoryedit' class='form-control'/>&nbsp;&nbsp;"+
 										"<button type='button' rel='tooltip' class='btn btn-default btn-md btn-icon' onClick='categoryEdit("+entry.ctnum+");'>수정</button>"+
 					  				"</div>"+
 					  				"</td>"+
@@ -111,7 +111,8 @@ $(document).ready(function(){
 	}
 	
 	function categoryEdit(ctnum){
-		var categoryedit = $("#categoryedit").val();
+		var categoryedit = $("#categoryedit"+ctnum).val();
+		
 		var form_data={"ctnum":ctnum,
 				       "ctname":categoryedit};
 		
@@ -145,7 +146,7 @@ $(document).ready(function(){
 		
 	}
 	
-function goDel(ctnum){
+	function goDel(ctnum){
 		
 		var form_data={"ctnum":ctnum};
 		

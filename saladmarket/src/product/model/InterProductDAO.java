@@ -80,6 +80,37 @@ public interface InterProductDAO {
 //	#상품 삭제
 	int deleteProductByPnum(String pnum) throws SQLException;
 
+//	#이벤트 태그
+//	1) 이벤트 태그 리스트 불러오기
+	List<HashMap<String, String>> getEnvetTagList(String searchWord) throws SQLException;
+
+//	2) 이벤트 수정; 이벤트태그 1개 가져오기
+	HashMap<String, String> getOneEventTag(String etnum) throws SQLException;
+
+//	2) 이벤트 수정; 수정 메소드
+	int updateEventTag(HashMap<String, String> map) throws SQLException;
+
+//	3) 이벤트태그 생성하기; 시퀀스 채번
+	int getEtnum() throws SQLException;
+
+//	3) 이벤트태그 생성 메소드
+	int insertEventTag(HashMap<String, String> map) throws SQLException;
+
+//	4) 이벤트태그 삭제하기
+	int deleteEventTagByEtnum(String etnum) throws SQLException;
+
+//	#패키지 목록 불러오기
+	List<PackageVO> getPackageList(int sizePerPage, int currentShowPageNo, String searchWord) throws SQLException;
+
+//	#패키지 페이징바
+	int getTotalPackageCount(String searchWord) throws SQLException;
+
+//	#페이지 시퀀스 채번
+	int getPacnum() throws SQLException;
+
+//	#패키지 추가하기
+	int insertPackage(PackageVO pacvo) throws SQLException;
+
 
 
 

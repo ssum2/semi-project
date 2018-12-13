@@ -63,6 +63,7 @@ public class A_ProductEditEndAction extends AbstractController {
 		String allergy=mtreq.getParameter("allergy");
 		String weight=mtreq.getParameter("weight");
 		String titleimg=mtreq.getFilesystemName("titleimg");
+		
 		if(titleimg==null) {
 			titleimg ="";
 		}

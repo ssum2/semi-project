@@ -1150,13 +1150,6 @@ public class ProductDAO implements InterProductDAO {
 	
 	
 	
-//	
-	
-	
-	
-	
-	
-	
 //	#admin; 상품디테일
 	@Override
 	public ProductVO getOneProductDetail(String pnum) throws SQLException {
@@ -1379,10 +1372,334 @@ public class ProductDAO implements InterProductDAO {
 			
 			pstmt = conn.prepareStatement(sql);
 			
-			pstmt.setString(1, ctnum);
-			pstmt.setString(2, ctname);
+			pstmt.setString(1, ctname);
+			pstmt.setString(2, ctnum);
 			
 			result = pstmt.executeUpdate();
+			
+		} finally {
+			close();
+		}	
+		return result;
+	}
+
+	
+//	#이벤트 태그 리스트 불러오기
+	@Override
+	public List<HashMap<String, String>> getEnvetTagList(String searchWord) throws SQLException {
+		List<HashMap<String, String>> eventTagList = null;
+		
+		try {
+			conn = ds.getConnection();
+			
+			String sql = "select etnum, etname, etimagefilename, count(pnum) as cnt\n"+
+					"from \n"+
+					"(\n"+
+					"select etnum, etname, etimagefilename, pnum\n"+
+					"from event_tag A left join product B\n"+
+					"on etname = fk_etname\n"+
+					") v\n"+
+					" where etname like '%'|| ? ||'%' "+
+					" group by etnum, etname, etimagefilename "
+					+ " order by etnum ";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, searchWord);
+			rs = pstmt.executeQuery();
+			
+			int n=0;
+			while(rs.next()) {
+				n++;
+				if(n==1) {
+					eventTagList = new ArrayList<HashMap<String, String>>();
+				}
+				
+				String etnum = rs.getString("etnum");
+				String etname = rs.getString("etname");
+				String v_cnt = rs.getString("cnt");
+				String etimagefilename = rs.getString("etimagefilename");
+				if(v_cnt==null) {
+					v_cnt="0";
+				}
+				
+				String cnt = v_cnt;
+				
+				HashMap<String, String> map = new HashMap<String, String>();
+				map.put("etnum", etnum);
+				map.put("etname", etname);
+				map.put("etimagefilename",etimagefilename);
+				map.put("cnt", cnt);
+				
+				eventTagList.add(map);
+			}
+						
+		} finally {
+			close();
+		}
+
+		return eventTagList;
+	}
+
+//	#이벤트 수정; 이벤트태그 정보 1개 가져오기
+	@Override
+	public HashMap<String, String> getOneEventTag(String etnum) throws SQLException {
+		HashMap<String, String> map = null;
+		
+		try {
+			conn = ds.getConnection();
+			
+			String sql = " select etnum, etname, etimagefilename from event_tag where etnum = ? ";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, etnum);
+			rs = pstmt.executeQuery();
+			if(rs.next()) {
+				map = new HashMap<String, String>();
+				
+				map.put("etnum", rs.getString("etnum"));
+				map.put("etname", rs.getString("etname"));
+				map.put("etimagefilename", rs.getString("etimagefilename"));
+			}
+			
+		} finally {
+			close();
+		}
+
+		return map;
+	}
+	
+//	#이벤트태그 수정
+	@Override
+	public int updateEventTag(HashMap<String, String> map) throws SQLException{
+		int result = 0;
+		try {
+			conn = ds.getConnection();
+			
+			String sql = " update event_tag set etname=?";
+			if(map.get("etimagefilename")!="") {
+				sql+=", etimagefilename=? ";
+			}
+					sql+=" where etnum = ? ";
+			
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setString(1, map.get("etname"));
+			
+			if(map.get("etimagefilename")!="") {
+				pstmt.setString(2, map.get("etimagefilename"));
+				pstmt.setString(3, map.get("etnum"));
+			}
+			else{
+				pstmt.setString(2, map.get("etnum"));
+			}
+			result = pstmt.executeUpdate();
+		} finally {
+			close();
+		}	
+		return result;
+	}
+	
+//	#이벤트태그 시퀀스 채번 하는 메소드
+	@Override
+	public int getEtnum() throws SQLException {
+		int etnum = 0;
+		
+		try {
+			conn = ds.getConnection();
+			String sql = " select seq_event_tag_etnum.nextval as seq"
+						+ " from dual ";
+			
+			pstmt = conn.prepareStatement(sql);
+			rs = pstmt.executeQuery();
+			rs.next();
+			
+			etnum = rs.getInt("seq");
+			
+		} finally {
+			close();
+		}
+		return etnum;
+	}
+	
+//	#이벤트태그 추가하기
+	@Override
+	public int insertEventTag(HashMap<String, String> map) throws SQLException{
+		int result = 0;
+		try {
+			conn = ds.getConnection();
+			
+			String sql = " insert into event_tag(etnum, etname, etimagefilename) values(?, ?, ?)";
+			
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setString(1, map.get("etnum"));
+			pstmt.setString(2, map.get("etname"));
+			pstmt.setString(3, map.get("etimagefilename"));
+			
+			
+			result = pstmt.executeUpdate();
+			
+		} finally {
+			close();
+		}	
+		return result;
+	}
+
+//	#이벤트 태그 삭제하기
+	@Override
+	public int deleteEventTagByEtnum(String etnum) throws SQLException {
+		int result = 0;
+		try {
+			conn = ds.getConnection();
+
+			String sql = " delete from event_tag where etnum = ?";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, etnum);
+			
+			result = pstmt.executeUpdate();
+			
+		} finally {
+			close();
+		}
+	
+		return result;
+	}
+
+	
+	
+//	#패키지 목록 불러오기
+	@Override
+	public List<PackageVO> getPackageList(int sizePerPage, int currentShowPageNo, String searchWord)
+			throws SQLException {
+		List<PackageVO> packageList = null;
+		conn = ds.getConnection();
+		
+		try {
+			String sql = "select rno, pacnum, pacname, pacimage, cnt\n"+
+					"from\n"+
+					"(\n"+
+					"    select rownum as rno, pacnum, pacname, pacimage, cnt\n"+
+					"    from\n"+
+					"    (\n"+
+					"        select pacnum, pacname, pacimage, count(pnum) as cnt\n"+
+					"        from \n"+
+					"        (\n"+
+					"            select pacnum, pacname, pacimage, pnum\n"+
+					"            from product_package A left join product B\n"+
+					"            on pacname = fk_pacname\n"+
+					"        ) v\n"+
+					"        where pacname like '%'|| ? ||'%'\n"+
+					"        group by pacnum, pacname, pacimage\n"+
+					"        order by pacnum\n"+
+					"    ) T\n"+
+					") N\n"+
+					"where N.rno between ? and ?";
+			
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, searchWord);
+			pstmt.setInt(2, (currentShowPageNo*sizePerPage) - (sizePerPage - 1) );
+			pstmt.setInt(3, (currentShowPageNo*sizePerPage) );
+			
+			rs = pstmt.executeQuery();
+			
+			int n = 0;
+			
+			while(rs.next()) {
+				n++;
+				if(n==1) {
+					packageList = new ArrayList<PackageVO>();
+				}
+				
+				String pacnum = rs.getString("pacnum");
+				String pacname = rs.getString("pacname");
+				String pacimage = rs.getString("pacimage");
+				String cnt = rs.getString("cnt");
+
+				PackageVO pacvo = new PackageVO();
+				
+				pacvo.setPacnum(pacnum);
+				pacvo.setPacname(pacname);
+				pacvo.setPacimage(pacimage);
+				pacvo.setCnt(cnt);
+
+				packageList.add(pacvo);
+			}
+		} finally {
+			close();
+		}
+		return packageList;
+	}
+
+//	#패키지 개수 가져오기
+	@Override
+	public int getTotalPackageCount(String searchWord) throws SQLException {
+		int count = 0;
+		try {
+			conn = ds.getConnection();
+			
+			String sql = "select count(*) as cnt\n"+
+					"from product_package\n"+
+					"where 1=1 "+
+					" and pacname like '%'|| ? ||'%'\n";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, searchWord);
+			
+			rs = pstmt.executeQuery();
+			rs.next();
+			
+			count = rs.getInt("CNT");
+		
+		}  finally {
+			close();	
+		}
+		return count;
+	}
+	
+	
+//	#패키지 시퀀스 채번 하는 메소드
+	@Override
+	public int getPacnum() throws SQLException {
+		int pacnum = 0;
+		
+		try {
+			conn = ds.getConnection();
+			String sql = " select seq_product_Package_pacnum.nextval as seq"
+						+ " from dual ";
+			
+			pstmt = conn.prepareStatement(sql);
+			rs = pstmt.executeQuery();
+			rs.next();
+			
+			pacnum = rs.getInt("seq");
+			
+		} finally {
+			close();
+		}
+		return pacnum;
+	}
+	
+	
+//	#패키지 추가하기
+	@Override
+	public int insertPackage(PackageVO pacvo) throws SQLException{
+		int result = 0;
+		try {
+			conn = ds.getConnection();
+			
+			String sql = " insert into product_package(pacnum, pacname, paccontents, pacimage) values(?, ?, ?, ?)";
+			
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setString(1, pacvo.getPacnum());
+			pstmt.setString(2, pacvo.getPacname());
+			pstmt.setString(3, pacvo.getPaccontents());
+			pstmt.setString(4, pacvo.getPacimage());
+			
+			
+			result = pstmt.executeUpdate();
+			
 		} finally {
 			close();
 		}	

@@ -10,6 +10,7 @@ public class PackageVO {
 	
 //	private ProductVO items;		// 패키지에 딸려있는 물품 객체
 
+	private String cnt; // 물품갯수
 	
 	public PackageVO() {}
 
@@ -55,7 +56,15 @@ public class PackageVO {
 		this.pacimage = pacimage;
 	}
 
+	public String getCnt() {
+		return cnt;
+	}
 
+	public void setCnt(String cnt) {
+		this.cnt = cnt;
+	}
+
+	
 	
 	
 	

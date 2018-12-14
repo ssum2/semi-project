@@ -142,7 +142,7 @@
 	                     var pageNo = Math.floor((currentShowPageNo - 1)/blockSize) * blockSize + 1; 
 
 					      if(pageNo != 1) {	
-					    	  pageBarHTML += "<a class='nav-link active' href='javascript:getProductList(\""+ldname+"\" , \""+sdname+"\", "+searchType+"\" , \""+searchWord+"\", \""+(pageNo-1)+"\")'>"+
+					    	  pageBarHTML += "<a class='nav-link active' href='javascript:getProductList(\""+ldname+"\" , \""+sdname+"\", \""+searchType+"\" , \""+searchWord+"\", \""+(pageNo-1)+"\")'>"+
 					      					"<i class='tim-icons icon-minimal-left'></i></a>";
 					      }
 

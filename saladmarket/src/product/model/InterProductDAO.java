@@ -52,7 +52,7 @@ public interface InterProductDAO {
 
 //	#물품 리스트 가져오기
 //	1) 아무 조건 없었을 때(페이지 처음 이동 했을 때)
-	List<ProductVO> getProductList(int sizePerPage, int currentShowPageNo) throws SQLException;
+	List<ProductVO> getProductListAdmin(int sizePerPage, int currentShowPageNo) throws SQLException;
 	
 //	2) 
 	List<ProductVO> getProductListByDname(int sizePerPage, int currentShowPageNo, String fk_name, String dname) throws SQLException;
@@ -110,6 +110,28 @@ public interface InterProductDAO {
 
 //	#패키지 추가하기
 	int insertPackage(PackageVO pacvo) throws SQLException;
+
+//	#패키지 수정하기
+	int updatePackage(PackageVO pacvo) throws SQLException;
+
+//	#패키지 1개의 정보 가져오기
+	PackageVO getOnePackage(String pacnum) throws SQLException;
+
+//	#패키지 삭제하기
+	int deletePackageByPacnum(String pacnum) throws SQLException;
+
+//	#물품 목록관련 메소드 (고은)
+	int getCountByfk_ldnameNword(String fk_ldname, String searchword) throws SQLException;
+	int getCountBysdnameNword(String sdname, String searchword) throws SQLException;
+	List<HashMap<String, Object>> getContentListbyfk_ldname(String fk_ldname, int sizePerPage, int currentShowPageNo,
+			String searchword, String orderby) throws SQLException;
+	List<HashMap<String, Object>> getContentListbysdname(String sdname, int sizePerPage, int currentShowPageNo,
+			String searchword, String orderby) throws SQLException;
+	List<ProductVO> getProductList(String fk_ldname, String sdname, String orderby) throws SQLException;
+
+
+//	이벤트
+	List<ProductVO> getProductsByStnameAppend(String stname, int startRno, int endRno) throws SQLException;
 
 
 

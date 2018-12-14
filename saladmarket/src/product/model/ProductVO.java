@@ -34,6 +34,20 @@ public class ProductVO {
 	private int totalPrice;   // 주문량 * 제품판매가(할인해서 팔 것이므로)
 	private int totalPoint;   // 주문량 * 포인트점수
 	
+	private String pimgfilename;
+	private List<String> pimgfileList;
+	private String pacnum;          // 패키지번호
+	/*
+        제품판매가(할인해서 팔 것이므로)와 
+        포인트점수 컬럼의 값은 관리자에 의해서
+        변경(update)될 수 있으므로 
+        해당 제품의 판매총액과 포인트부여 총액은
+        판매당시의 제품판매가와 포인트점수로 
+        구해와야 한다. 
+    */
+	private int rnum;
+	private String paccontents; 	// 패키지내용 
+	private String pacimage;		// 상품패키지 대표 이미지명
 	
 	public ProductVO() {}
 	
@@ -372,5 +386,55 @@ public class ProductVO {
 		
 		return result;
 	}
+	
+	public String getPimgfilename() {
+		return pimgfilename;
+	}
+
+	public void setPimgfilename(String pimgfilename) {
+		this.pimgfilename = pimgfilename;
+	}
+
+	public String getPacnum() {
+		return pacnum;
+	}
+
+	public void setPacnum(String pacnum) {
+		this.pacnum = pacnum;
+	}
+	
+	public List<String> getPimgfileList() {
+		return pimgfileList;
+	}
+
+	public void setPimgfileList(List<String> pimgfileList) {
+		this.pimgfileList = pimgfileList;
+	}
+
+	public int getRnum() {
+		return rnum;
+	}
+
+	public void setRnum(int rnum) {
+		this.rnum = rnum;
+	}
+
+	public String getPaccontents() {
+		return paccontents;
+	}
+
+	public void setPaccontents(String paccontents) {
+		this.paccontents = paccontents;
+	}
+
+	public String getPacimage() {
+		return pacimage;
+	}
+
+	public void setPacimage(String pacimage) {
+		this.pacimage = pacimage;
+	}
+	
+	
 	
 }

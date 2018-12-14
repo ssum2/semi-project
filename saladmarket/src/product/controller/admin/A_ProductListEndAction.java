@@ -57,7 +57,7 @@ public class A_ProductListEndAction extends AbstractController {
 		
 		if(searchType=="" && searchWord=="") {
 			if(ldname=="" && sdname=="") {
-				productList = pdao.getProductList(sizePerPage, currentShowPageNo);
+				productList = pdao.getProductListAdmin(sizePerPage, currentShowPageNo);
 			}
 			else if(ldname!="" && sdname=="") {
 				fk_name="fk_ldname";

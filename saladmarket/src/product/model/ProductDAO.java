@@ -615,10 +615,7 @@ public class ProductDAO implements InterProductDAO {
 		
 		return ldnameList;
 	}
-	
-	
-	
-	
+
 //	#대분류명에 따른 소분류명 목록 가져오기
 	@Override
 	public List<HashMap<String, String>> getSdnameListByLdname(String ldname) throws SQLException {
@@ -663,9 +660,9 @@ public class ProductDAO implements InterProductDAO {
 		return sdnameList;
 	}
 	
-//	#물품 목록 가져오기(where 조건절 마다 메소드 분리(
+//	#물품 목록 가져오기(where 조건절 마다 메소드 분리)
 	@Override
-	public List<ProductVO> getProductList(int sizePerPage, int currentShowPageNo) throws SQLException{
+	public List<ProductVO> getProductListAdmin(int sizePerPage, int currentShowPageNo) throws SQLException{
 		List<ProductVO> productList = null;
 		conn = ds.getConnection();
 		
@@ -1705,4 +1702,433 @@ public class ProductDAO implements InterProductDAO {
 		}	
 		return result;
 	}
+
+//	#패키지 수정하기
+	@Override
+	public int updatePackage(PackageVO pacvo) throws SQLException {
+		int result = 0;
+		try {
+			conn = ds.getConnection();
+			String sql = " update product_package set pacname=?, paccontents=?";
+			if(pacvo.getPacimage() != "") {
+				sql+=", pacimage=? ";
+			}
+					sql+=" where pacnum = ? ";
+			
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setString(1, pacvo.getPacname());
+			pstmt.setString(2, pacvo.getPaccontents());
+			if(pacvo.getPacimage() != "") {
+				pstmt.setString(3, pacvo.getPacimage());
+				pstmt.setString(4, pacvo.getPacnum());
+			}
+			else{
+				pstmt.setString(3, pacvo.getPacnum());
+			}
+			result = pstmt.executeUpdate();
+		} finally {
+			close();
+		}	
+		return result;
+	}
+
+//	#패키지 1개 정보 가져오기
+	@Override
+	public PackageVO getOnePackage(String pacnum) throws SQLException {
+		PackageVO pacvo = null;
+		try {
+			conn = ds.getConnection();
+			String sql = " select pacnum, pacname, paccontents, pacimage from product_package where pacnum = ?";
+
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setString(1, pacnum);
+
+			rs = pstmt.executeQuery();
+			
+			if(rs.next()) {
+				pacvo = new PackageVO();
+				
+				pacvo.setPacnum(rs.getString("pacnum"));
+				pacvo.setPacname(rs.getString("pacname"));
+				pacvo.setPaccontents(rs.getString("paccontents"));
+				pacvo.setPacimage(rs.getString("pacimage"));
+			}
+			
+		} finally {
+			close();
+		}	
+		
+		return pacvo;
+	}
+
+//	#패키지 삭제하기(물품 없음으로 바꾸고 패키지 딜리트)
+	@Override
+	public int deletePackageByPacnum(String pacnum) throws SQLException {
+		int result = 0;
+		
+		try {
+			
+			conn = ds.getConnection();
+			conn.setAutoCommit(false);
+			
+			String sql = " update product set fk_pacname = '없음' "
+					+ " where fk_pacname = (select pacname from product_package where pacnum = ? )";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, pacnum);
+			
+			pstmt.executeUpdate();
+			
+			sql = " delete from product_package where pacnum = ? ";	
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, pacnum);
+			result = pstmt.executeUpdate();
+			
+			if(result == 1) {
+				conn.commit();
+				conn.setAutoCommit(true);
+			}
+			else {
+				conn.rollback();
+				conn.setAutoCommit(true);
+			}
+		} finally {
+			close();
+		}
+
+		return result;
+	}
+	
+	
+// -----------------------------------------------------------------------------
+//	[물품목록. 고은]
+	   // *** 제품 리스트 (대분류, 소분류(있을때만), 스펙별, 정렬기준)를 불러오는 추상 메소드 *** //
+	   @Override
+	   public List<ProductVO> getProductList(String fk_ldname, String sdname, String orderby) throws SQLException {
+	      
+	      List<ProductVO> productList = null;
+	      
+	      try {
+
+	         conn = ds.getConnection();
+	         
+	         String sql = "select pacnum, case pacname when '없음' then pname else pacname end as pacname, pnum, pacimage, saleprice, stname\n"+
+	               "from view_productList\n"+
+	               "where sdname in (select sdname from small_detail where fk_ldname = ? and sdname like ?)\n"+
+	               "order by ? desc";
+	         
+	         
+	         pstmt = conn.prepareStatement(sql);
+	         pstmt.setString(1, fk_ldname);
+	         pstmt.setString(2, sdname);
+	         pstmt.setString(3, orderby);
+	         
+	         rs = pstmt.executeQuery();
+	         
+	         int cnt = 0;
+	         while(rs.next()) {
+	            cnt++;
+	            
+	            if(cnt == 1) {
+	               productList = new ArrayList<ProductVO>();
+	            }
+	            
+	            String pacnum = rs.getString("pacnum");
+	            String pnum = rs.getString("pnum");
+	            String pacname = rs.getString("pacname");
+	            int saleprice = rs.getInt("saleprice");
+	            String pimgfilename = rs.getString("pacimage");
+	            String v_stname = rs.getString("stname");
+	            
+	            ProductVO productvo = new ProductVO();
+	            
+	            productvo.setPnum(pnum);
+	            productvo.setFk_pacname(pacname);
+	            productvo.setPacnum(pacnum); 
+	            productvo.setSaleprice(saleprice);
+	            productvo.setPimgfilename(pimgfilename);
+	            productvo.setFk_stname(v_stname);
+	            
+	            productList.add(productvo);
+	            
+	         }// end of while()-------------------------------------------
+	         
+	      } finally {
+	         close();
+	      }
+	      
+	      return productList;
+	      
+	   }
+	
+	
+	@Override
+	public int getCountByfk_ldnameNword(String fk_ldname, String searchword) throws SQLException {
+		
+		int totalCount = 0;
+		
+		try {
+			conn = ds.getConnection();
+
+			String sql = "select count(*) as CNT\n"+
+						"from view_productList\n"+
+						"where sdname in (select sdname from small_detail where fk_ldname = ?)\n"+
+						"and lower(pname) like '%' || lower(?) || '%'";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, fk_ldname);
+			pstmt.setString(2, searchword);
+			
+			rs = pstmt.executeQuery();
+			
+			rs.next();
+			
+			totalCount = rs.getInt("CNT");
+			
+		} finally {
+			close();
+		}
+		
+		return totalCount;
+		
+	}
+
+
+	@Override
+	public int getCountBysdnameNword(String sdname, String searchword) throws SQLException {
+		
+		int totalCount = 0;
+		
+		try {
+			conn = ds.getConnection();
+	
+			String sql = "select count(*) as CNT\n"+
+					"from view_productList\n"+
+					"where sdname = ?\n"+
+					"and lower(pname) like '%' || lower(?) || '%'";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, sdname);
+			pstmt.setString(2, searchword);
+			
+			rs = pstmt.executeQuery();
+			
+			rs.next();
+			
+			totalCount = rs.getInt("CNT");
+			
+		} finally {
+			close();
+		}
+		
+		return totalCount;
+		
+	}
+
+
+	@Override
+	public List<HashMap<String, Object>> getContentListbyfk_ldname(String fk_ldname, int sizePerPage,
+			int currentShowPageNo, String searchword, String orderby) throws SQLException {
+	
+		List<HashMap<String, Object>> mapList = null;
+		
+		try {
+			conn = ds.getConnection();
+			
+			String sql = "select rno, pacnum, pacname, pnum, pacimage, saleprice, stname\n"+
+						"from\n"+
+						"(\n"+
+						"select rownum as rno, pacnum, pacname, pnum, pacimage, saleprice, stname, pdate, plike\n"+
+						"from\n"+
+						"    (\n"+
+						"    select pacnum, case pacname when '없음' then pname else pacname end as pacname, pnum, pacimage, saleprice, stname, pdate, plike\n"+
+						"    from view_productList\n"+
+						"    where sdname in (select sdname from small_detail where fk_ldname = ?)\n"+
+						"	 order by "+orderby+
+						"    ) V\n"+
+						"where lower(pacname) like '%' || lower(?) || '%'\n"+
+						") T\n"+
+						"where T.rno between ? and ?\n";
+			
+			pstmt = conn.prepareStatement(sql); 
+			pstmt.setString(1, fk_ldname);
+			pstmt.setString(2, searchword);
+			pstmt.setInt(3, (currentShowPageNo*sizePerPage) - (sizePerPage - 1) ); // 공식!!!
+			pstmt.setInt(4, (currentShowPageNo*sizePerPage) ); // 공식!!!
+		    
+			rs = pstmt.executeQuery();
+			
+			int cnt = 0;
+			while(rs.next()) {
+				cnt++;
+				if(cnt == 1) {
+					mapList = new ArrayList<HashMap<String, Object>>();
+				}
+				
+				String pacname = rs.getString("pacname"); 
+				String pacnum = rs.getString("pacnum"); 
+			    String pnum = rs.getString("pnum"); 
+			    String pacimage = rs.getString("pacimage"); 
+			    int saleprice = rs.getInt("saleprice");
+			    String stname = rs.getString("stname");
+			    
+			    HashMap<String, Object> map = new HashMap<String, Object>();
+			    map.put("pacname", pacname);
+			    map.put("pacnum", pacnum);
+			    map.put("pnum", pnum);
+			    map.put("pimgfilename", pacimage);
+			    map.put("saleprice", saleprice);
+			    map.put("stname", stname);
+			      
+			    mapList.add(map);  
+			    
+			}// end of while
+		} finally {
+			close();
+		}
+		return mapList;
+	}
+
+
+	@Override
+	public List<HashMap<String, Object>> getContentListbysdname(String sdname, int sizePerPage, int currentShowPageNo,
+			String searchword, String orderby) throws SQLException {
+	
+		List<HashMap<String, Object>> mapList = null;
+		
+		try {
+			conn = ds.getConnection();
+			
+			String sql = "select rno, pacnum, pacname, pnum, pacimage, saleprice, stname\n"+
+						"from\n"+
+						"(\n"+
+						"select rownum as rno, pacnum, pacname, pnum, pacimage, saleprice, stname, pdate, plike\n"+
+						"from\n"+
+						"    (\n"+
+						"    select pacnum, case pacname when '없음' then pname else pacname end as pacname, pnum, pacimage, saleprice, stname, pdate, plike\n"+
+						"    from view_productList\n"+
+						"    where sdname = ?\n"+
+						"    order by "+orderby+
+						"    ) V\n"+
+						"where lower(pacname) like '%' || lower(?) || '%'\n"+
+						") T\n"+
+						"where T.rno between ? and ?\n";
+
+			pstmt = conn.prepareStatement(sql); 
+			pstmt.setString(1, sdname);
+			pstmt.setString(2, searchword);
+			pstmt.setInt(3, (currentShowPageNo*sizePerPage) - (sizePerPage - 1) ); // 공식!!!
+			pstmt.setInt(4, (currentShowPageNo*sizePerPage) ); // 공식!!!
+		    
+			
+			rs = pstmt.executeQuery();
+			
+			int cnt = 0;
+			while(rs.next()) {
+				cnt++;
+				if(cnt == 1) {
+					mapList = new ArrayList<HashMap<String, Object>>();
+				}
+				
+				String pacname = rs.getString("pacname"); 
+				String pacnum = rs.getString("pacnum"); 
+			    String pnum = rs.getString("pnum"); 
+			    String pimgfilename = rs.getString("pacimage"); 
+			    int saleprice = rs.getInt("saleprice");
+			    String stname = rs.getString("stname");
+			    
+			    HashMap<String, Object> map = new HashMap<String, Object>();
+			    map.put("pacname", pacname);
+			    map.put("pacnum", pacnum);
+			    map.put("pnum", pnum);
+			    map.put("pimgfilename", pimgfilename);
+			    map.put("saleprice", saleprice);
+			    map.put("stname", stname);
+			      
+			    mapList.add(map);  
+			    
+			}// end of while
+		} finally {
+			close();
+		}
+		return mapList;
+	
+	}
+	
+	
+//	
+	// ** AJAX를 이용한 index에서 스펙대로 제품 리스트를 보여주는 추상 메소드
+		@Override
+		public List<ProductVO> getProductsByStnameAppend(String stname, int startRno, int endRno) throws SQLException {
+			List<ProductVO> productList = null;
+			
+			try {
+				conn = ds.getConnection();
+				
+				String sql = "select rnum, pacnum, pacname, paccontents, pacimage, pnum \n"+
+						"        , sdname, ctname, stname, etname, pname, price\n"+
+						"        , saleprice, point, pqty, pcontents\n"+
+						"        , pcompanyname, pexpiredate, allergy, weight, salecount, plike, pdate \n"+
+						" from \n"+
+						" (\n"+
+						"    select rownum as rnum,pacnum,  case when pacname = '없음' then pname else pacname end as pacname,paccontents, pacimage, pnum \n"+
+						"            , sdname, ctname, stname, etname, pname, price \n"+
+						"            , saleprice, point, pqty, pcontents \n"+
+						"            , pcompanyname, pexpiredate, allergy, weight, salecount, plike, pdate \n"+
+						"    from view_Product \n"+
+						"        where stname = ? \n"+
+						"        order by rnum asc, pname asc \n"+
+						" ) F where rnum between ? and ? ";
+				
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setString(1, stname);
+				pstmt.setInt(2, startRno);
+				pstmt.setInt(3, endRno);
+				
+				rs = pstmt.executeQuery();
+				
+				int cnt = 0;
+				while(rs.next()) {
+					cnt++;
+					
+					if(cnt==1) {
+						productList = new ArrayList<ProductVO>();
+					}
+					
+				     int rnum = rs.getInt("rnum");
+					 String pnum = rs.getString("pacnum");
+					 String pacname = rs.getString("pacname");
+					 String paccontents = rs.getString("paccontents");
+					 String pacimage = rs.getString("pacimage");
+					 String ctname = rs.getString("ctname");
+					 String sdname = rs.getString("sdname");
+					 int price = rs.getInt("price");
+					 int plike = rs.getInt("plike");
+					 int saleprice = rs.getInt("saleprice");
+					 System.out.println(pacname); 
+					 ProductVO pvo = new ProductVO();
+					 pvo.setRnum(rnum);
+					 pvo.setPnum(pnum);
+					 pvo.setFk_pacname(pacname);
+					 pvo.setPaccontents(paccontents);
+					 pvo.setPacimage(pacimage);
+					 pvo.setFk_ctname(ctname);
+					 pvo.setFk_sdname(sdname);
+					 pvo.setPrice(price);
+					 pvo.setPlike(plike);
+					 pvo.setSaleprice(saleprice);
+					 
+					 productList.add(pvo);				 
+					
+				} // end of while-------------------
+							
+			} finally {
+				close();
+			}
+			
+			return productList;	
+			
+		}
 }

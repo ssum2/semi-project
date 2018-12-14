@@ -161,7 +161,7 @@ public class ProductDAO implements InterProductDAO {
 		try {
 			conn = ds.getConnection();
 			
-			String sql = "select ctnum, ctname, sum(pqty) as pqty\n"+
+			String sql = "select ctnum, ctname, count(pqty) as pqty\n"+
 					"from \n"+
 					"(\n"+
 					"select ctnum, ctname, pqty\n"+
@@ -663,6 +663,1046 @@ public class ProductDAO implements InterProductDAO {
 		return sdnameList;
 	}
 	
+//	#물품 목록 가져오기(where 조건절 마다 메소드 분리(
+	@Override
+	public List<ProductVO> getProductList(int sizePerPage, int currentShowPageNo) throws SQLException{
+		List<ProductVO> productList = null;
+		conn = ds.getConnection();
+		
+		try {
+			String sql = "select rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg\n"+
+					"from\n"+
+					"(\n"+
+					"select rownum as rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg \n"+
+					"from view_product_join_sd\n"+
+					") V\n"+
+					"where V.rno between ? and ? \n"+
+					"order by rno asc ";
+			
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, (currentShowPageNo*sizePerPage) - (sizePerPage - 1) );
+			pstmt.setInt(2, (currentShowPageNo*sizePerPage) );
+			
+			rs = pstmt.executeQuery();
+			
+			int cnt = 0;
+			
+			while(rs.next()) {
+				cnt++;
+				if(cnt==1) {
+					productList = new ArrayList<ProductVO>();
+				}
+				
+				String pnum = rs.getString("pnum");
+				String fk_pacname = rs.getString("fk_pacname");
+				String fk_sdname = rs.getString("fk_sdname");
+				String fk_ldname = rs.getString("fk_ldname");
+				String pname = rs.getString("pname");
+				int saleprice = rs.getInt("saleprice");
+				int point = rs.getInt("point");
+				int pqty = rs.getInt("pqty");
+				int salecount = rs.getInt("salecount");
+				int plike = rs.getInt("plike");
+				String pdate = rs.getString("pdate");
+				String titleimg = rs.getString("titleimg");
+				
+				ProductVO pvo = new ProductVO();
+				
+				pvo.setPnum(pnum);
+				pvo.setFk_pacname(fk_pacname);
+				pvo.setFk_sdname(fk_sdname);
+				pvo.setFk_ldname(fk_ldname);
+				pvo.setPname(pname);
+				pvo.setSaleprice(saleprice);
+				pvo.setPoint(point);
+				pvo.setPqty(pqty);
+				pvo.setSalecount(salecount);
+				pvo.setPlike(plike);
+				pvo.setPdate(pdate);
+				pvo.setTitleimg(titleimg);
+				
+				productList.add(pvo);
+			}
+		} finally {
+			close();
+		}
+		return productList;
+	}
 	
 	
+	@Override
+	public List<ProductVO> getProductListByDname(int sizePerPage, int currentShowPageNo, String fk_name, String dname) throws SQLException{
+		List<ProductVO> productList = null;
+		conn = ds.getConnection();
+		
+		try {
+			String sql = "select rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg\n"+
+					"from\n"+
+					"(\n"+
+					"select rownum as rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg \n"+
+					"from view_product_join_sd\n"+
+					"where 1=1 and "+fk_name+" like '%'|| ? || '%'\n"+
+					") V\n"+
+					"where V.rno between ? and ? \n"+
+					"order by rno asc";
+			
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, dname);
+			pstmt.setInt(2, (currentShowPageNo*sizePerPage) - (sizePerPage - 1) );
+			pstmt.setInt(3, (currentShowPageNo*sizePerPage) );
+			
+			rs = pstmt.executeQuery();
+			
+			int cnt = 0;
+			
+			while(rs.next()) {
+				cnt++;
+				if(cnt==1) {
+					productList = new ArrayList<ProductVO>();
+				}
+				
+				String pnum = rs.getString("pnum");
+				String fk_pacname = rs.getString("fk_pacname");
+				String fk_sdname = rs.getString("fk_sdname");
+				String fk_ldname = rs.getString("fk_ldname");
+				String pname = rs.getString("pname");
+				int saleprice = rs.getInt("saleprice");
+				int point = rs.getInt("point");
+				int pqty = rs.getInt("pqty");
+				int salecount = rs.getInt("salecount");
+				int plike = rs.getInt("plike");
+				String pdate = rs.getString("pdate");
+				String titleimg = rs.getString("titleimg");
+				
+				ProductVO pvo = new ProductVO();
+				
+				pvo.setPnum(pnum);
+				pvo.setFk_pacname(fk_pacname);
+				pvo.setFk_sdname(fk_sdname);
+				pvo.setFk_ldname(fk_ldname);
+				pvo.setPname(pname);
+				pvo.setSaleprice(saleprice);
+				pvo.setPoint(point);
+				pvo.setPqty(pqty);
+				pvo.setSalecount(salecount);
+				pvo.setPlike(plike);
+				pvo.setPdate(pdate);
+				pvo.setTitleimg(titleimg);
+				
+				productList.add(pvo);
+			}
+		} finally {
+			close();
+		}
+		return productList;
+	}
+	
+
+	
+	@Override
+	public List<ProductVO> getProductListBySearch(int sizePerPage, int currentShowPageNo, String searchType, String searchWord) throws SQLException{
+		List<ProductVO> productList = null;
+		conn = ds.getConnection();
+		
+		try {
+			String sql = "select rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg\n"+
+					"from\n"+
+					"(\n"+
+					"select rownum as rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg \n"+
+					"from view_product_join_sd\n"+
+					"where 1=1 and "+searchType+" like '%'|| ? || '%'\n"+
+					") V\n"+
+					"where V.rno between ? and ? \n"+
+					"order by rno asc";
+			
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, searchWord);
+			pstmt.setInt(2, (currentShowPageNo*sizePerPage) - (sizePerPage - 1) );
+			pstmt.setInt(3, (currentShowPageNo*sizePerPage) );
+			
+			rs = pstmt.executeQuery();
+			
+			int cnt = 0;
+			
+			while(rs.next()) {
+				cnt++;
+				if(cnt==1) {
+					productList = new ArrayList<ProductVO>();
+				}
+				
+				String pnum = rs.getString("pnum");
+				String fk_pacname = rs.getString("fk_pacname");
+				String fk_sdname = rs.getString("fk_sdname");
+				String fk_ldname = rs.getString("fk_ldname");
+				String pname = rs.getString("pname");
+				int saleprice = rs.getInt("saleprice");
+				int point = rs.getInt("point");
+				int pqty = rs.getInt("pqty");
+				int salecount = rs.getInt("salecount");
+				int plike = rs.getInt("plike");
+				String pdate = rs.getString("pdate");
+				String titleimg = rs.getString("titleimg");
+				
+				ProductVO pvo = new ProductVO();
+				
+				pvo.setPnum(pnum);
+				pvo.setFk_pacname(fk_pacname);
+				pvo.setFk_sdname(fk_sdname);
+				pvo.setFk_ldname(fk_ldname);
+				pvo.setPname(pname);
+				pvo.setSaleprice(saleprice);
+				pvo.setPoint(point);
+				pvo.setPqty(pqty);
+				pvo.setSalecount(salecount);
+				pvo.setPlike(plike);
+				pvo.setPdate(pdate);
+				pvo.setTitleimg(titleimg);
+				
+				productList.add(pvo);
+			}
+		} finally {
+			close();
+		}
+		return productList;
+	}
+	
+	@Override
+	public List<ProductVO> getProductListBySearchWithDname(int sizePerPage, int currentShowPageNo
+			, String fk_name, String dname, String searchType, String searchWord) throws SQLException{
+		List<ProductVO> productList = null;
+		conn = ds.getConnection();
+		
+		try {
+			String sql = "select rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg\n"+
+					"from\n"+
+					"(\n"+
+					"select rownum as rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg \n"+
+					"from view_product_join_sd\n"+
+					"where 1=1 and "+fk_name+" like '%'|| ? || '%'\n"+
+					"      and "+ searchType+" like '%'|| ? || '%' \n"+
+					") V\n"+
+					"where V.rno between ? and ? \n"+
+					"order by rno asc";
+			
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, dname);
+			pstmt.setString(2, searchWord);
+			pstmt.setInt(3, (currentShowPageNo*sizePerPage) - (sizePerPage - 1) );
+			pstmt.setInt(4, (currentShowPageNo*sizePerPage) );
+			
+			rs = pstmt.executeQuery();
+			
+			int cnt = 0;
+			
+			while(rs.next()) {
+				cnt++;
+				if(cnt==1) {
+					productList = new ArrayList<ProductVO>();
+				}
+				
+				String pnum = rs.getString("pnum");
+				String fk_pacname = rs.getString("fk_pacname");
+				String fk_sdname = rs.getString("fk_sdname");
+				String fk_ldname = rs.getString("fk_ldname");
+				String pname = rs.getString("pname");
+				int saleprice = rs.getInt("saleprice");
+				int point = rs.getInt("point");
+				int pqty = rs.getInt("pqty");
+				int salecount = rs.getInt("salecount");
+				int plike = rs.getInt("plike");
+				String pdate = rs.getString("pdate");
+				String titleimg = rs.getString("titleimg");
+				
+				ProductVO pvo = new ProductVO();
+				
+				pvo.setPnum(pnum);
+				pvo.setFk_pacname(fk_pacname);
+				pvo.setFk_sdname(fk_sdname);
+				pvo.setFk_ldname(fk_ldname);
+				pvo.setPname(pname);
+				pvo.setSaleprice(saleprice);
+				pvo.setPoint(point);
+				pvo.setPqty(pqty);
+				pvo.setSalecount(salecount);
+				pvo.setPlike(plike);
+				pvo.setPdate(pdate);
+				pvo.setTitleimg(titleimg);
+				
+				productList.add(pvo);
+			}
+		} finally {
+			close();
+		}
+		return productList;
+	}
+
+	@Override
+	public List<ProductVO> getProductListBySearchAll(int sizePerPage, int currentShowPageNo, String searchWord) throws SQLException{
+		List<ProductVO> productList = null;
+		conn = ds.getConnection();
+		
+		try {
+			String sql = "select rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg\n"+
+					"from\n"+
+					"(\n"+
+					"select rownum as rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg \n"+
+					"from view_product_join_sd\n"+
+					"where 1=1 and ( pname like '%'|| ? || '%' \n"+
+					"    or fk_pacname like '%'|| ? || '%') \n"+
+					") V\n"+
+					"where V.rno between ? and ? \n"+
+					"order by rno asc";
+			 
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, searchWord);
+			pstmt.setString(2, searchWord);
+			pstmt.setInt(3, (currentShowPageNo*sizePerPage) - (sizePerPage - 1) );
+			pstmt.setInt(4, (currentShowPageNo*sizePerPage) );
+			
+			rs = pstmt.executeQuery();
+			
+			int cnt = 0;
+			
+			while(rs.next()) {
+				cnt++;
+				if(cnt==1) {
+					productList = new ArrayList<ProductVO>();
+				}
+				
+				String pnum = rs.getString("pnum");
+				String fk_pacname = rs.getString("fk_pacname");
+				String fk_sdname = rs.getString("fk_sdname");
+				String fk_ldname = rs.getString("fk_ldname");
+				String pname = rs.getString("pname");
+				int saleprice = rs.getInt("saleprice");
+				int point = rs.getInt("point");
+				int pqty = rs.getInt("pqty");
+				int salecount = rs.getInt("salecount");
+				int plike = rs.getInt("plike");
+				String pdate = rs.getString("pdate");
+				String titleimg = rs.getString("titleimg");
+				
+				ProductVO pvo = new ProductVO();
+				
+				pvo.setPnum(pnum);
+				pvo.setFk_pacname(fk_pacname);
+				pvo.setFk_sdname(fk_sdname);
+				pvo.setFk_ldname(fk_ldname);
+				pvo.setPname(pname);
+				pvo.setSaleprice(saleprice);
+				pvo.setPoint(point);
+				pvo.setPqty(pqty);
+				pvo.setSalecount(salecount);
+				pvo.setPlike(plike);
+				pvo.setPdate(pdate);
+				pvo.setTitleimg(titleimg);
+				
+				productList.add(pvo);
+			}
+		} finally {
+			close();
+		}
+		return productList;
+	}
+	
+	@Override
+	public List<ProductVO> getProductListBySearchAllWithDname(int sizePerPage, int currentShowPageNo, String fk_name, String dname, String searchWord) throws SQLException{
+		List<ProductVO> productList = null;
+		conn = ds.getConnection();
+		
+		try {
+			String sql = "select rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg\n"+
+					"from\n"+
+					"(\n"+
+					"select rownum as rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg \n"+
+					"from view_product_join_sd\n"+
+					"where 1=1 and "+fk_name+" like '%'|| ? || '%'\n"+
+					"      and ( pname like '%'|| ? || '%' \n"+
+					"      or fk_pacname like '%'|| ? || '%')\n"+
+					") V\n"+
+					"where V.rno between ? and ? \n"+
+					"order by rno asc";
+			
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, dname);
+			pstmt.setString(2, searchWord);
+			pstmt.setString(3, searchWord);
+			
+			pstmt.setInt(4, (currentShowPageNo*sizePerPage) - (sizePerPage - 1) );
+			pstmt.setInt(5, (currentShowPageNo*sizePerPage) );
+			
+			rs = pstmt.executeQuery();
+			
+			int cnt = 0;
+			
+			while(rs.next()) {
+				cnt++;
+				if(cnt==1) {
+					productList = new ArrayList<ProductVO>();
+				}
+				
+				String pnum = rs.getString("pnum");
+				String fk_pacname = rs.getString("fk_pacname");
+				String fk_sdname = rs.getString("fk_sdname");
+				String fk_ldname = rs.getString("fk_ldname");
+				String pname = rs.getString("pname");
+				int saleprice = rs.getInt("saleprice");
+				int point = rs.getInt("point");
+				int pqty = rs.getInt("pqty");
+				int salecount = rs.getInt("salecount");
+				int plike = rs.getInt("plike");
+				String pdate = rs.getString("pdate");
+				String titleimg = rs.getString("titleimg");
+				
+				ProductVO pvo = new ProductVO();
+				
+				pvo.setPnum(pnum);
+				pvo.setFk_pacname(fk_pacname);
+				pvo.setFk_sdname(fk_sdname);
+				pvo.setFk_ldname(fk_ldname);
+				pvo.setPname(pname);
+				pvo.setSaleprice(saleprice);
+				pvo.setPoint(point);
+				pvo.setPqty(pqty);
+				pvo.setSalecount(salecount);
+				pvo.setPlike(plike);
+				pvo.setPdate(pdate);
+				pvo.setTitleimg(titleimg);
+				
+				productList.add(pvo);
+			}
+		} finally {
+			close();
+		}
+		return productList;
+	}
+	
+	
+	
+	
+	
+	@Override
+	public int getTotalProductCountAll(String searchWord, String ldname, String sdname) throws SQLException {
+		int count = 0;
+		try {
+			conn = ds.getConnection();
+			
+			String sql = "select count(*) as cnt\n"+
+					"from view_product_join_sd\n"+
+					"where 1=1 "+
+					" and (fk_pacname like '%'|| ? ||'%'\n"+
+					" or pname like '%'|| ? ||'%')\n"+
+					"and fk_ldname like '%'|| ? ||'%'"+
+					"and fk_sdname like '%'|| ? ||'%'";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, searchWord);
+			pstmt.setString(2, searchWord);
+			pstmt.setString(3, ldname);
+			pstmt.setString(4, sdname);
+			
+			rs = pstmt.executeQuery();
+			rs.next();
+			
+			count = rs.getInt("CNT");
+		
+		}  finally {
+			close();	
+		}
+		return count;
+	}
+	
+	
+	@Override
+	public int getTotalProductCount(String searchType, String searchWord, String ldname, String sdname) throws SQLException {
+		int count = 0;
+		try {
+			conn = ds.getConnection();
+			
+			String sql = "select count(*) as cnt\n"+
+					"from view_product_join_sd\n"+
+					"where 1=1 "+
+					" and "+ searchType +" like '%'|| ? ||'%'\n"+
+					" and fk_ldname like '%'|| ? ||'%' \n"+
+					" and fk_sdname like '%'|| ? ||'%' ";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, searchWord);
+			pstmt.setString(2, ldname);
+			pstmt.setString(3, sdname);
+			
+			rs = pstmt.executeQuery();
+			rs.next();
+			
+			count = rs.getInt("CNT");
+		
+		}  finally {
+			close();	
+		}
+		return count;
+	}
+	
+	
+	
+//	#admin; 상품디테일
+	@Override
+	public ProductVO getOneProductDetail(String pnum) throws SQLException {
+		ProductVO pvo = null;
+		
+		try {
+			conn = ds.getConnection();
+			
+			
+			String sql = "select pnum, fk_pacname, fk_sdname, fk_ldname, fk_ctname, fk_stname, fk_etname\n"+
+					", pname, price, saleprice, point, pqty, pcontents, pcompanyname, pexpiredate \n"+
+					", allergy, weight, salecount, plike, to_char(pdate, 'yyyymmdd') as pdate, titleimg\n"+
+					"from view_product_join_sd\n"+
+					"where pnum = ?";
+			
+			pstmt=conn.prepareStatement(sql);
+			pstmt.setString(1, pnum);
+			
+			rs = pstmt.executeQuery();
+			rs.next();
+			
+			String v_pnum = rs.getString("pnum");
+			String fk_pacname = rs.getString("fk_pacname");
+			String fk_ldname = rs.getString("fk_ldname");
+			String fk_sdname = rs.getString("fk_sdname");
+			String fk_ctname = rs.getString("fk_ctname");
+			String fk_stname = rs.getString("fk_stname");
+			String fk_etname = rs.getString("fk_etname");
+			
+			String pname = rs.getString("pname");
+			int price = rs.getInt("price");
+			int saleprice = rs.getInt("saleprice");
+			int point = rs.getInt("point");
+			int pqty = rs.getInt("pqty");
+			String pcontents = rs.getString("pcontents");
+			String pcompanyname = rs.getString("pcompanyname");
+			
+			String pexpiredate = rs.getString("pexpiredate");
+			String allergy = rs.getString("allergy");
+			int weight = rs.getInt("weight");
+			int salecount = rs.getInt("salecount");
+			int plike = rs.getInt("plike");
+			String pdate = rs.getString("pdate");
+			String titleimg = rs.getString("titleimg");
+			
+			
+			
+			pvo = new ProductVO();
+			
+			pvo.setPnum(v_pnum);
+			pvo.setFk_pacname(fk_pacname);
+			pvo.setFk_ldname(fk_ldname);
+			pvo.setFk_sdname(fk_sdname);
+			pvo.setFk_ctname(fk_ctname);
+			pvo.setFk_stname(fk_stname);
+			pvo.setFk_etname(fk_etname);
+			
+			pvo.setPname(pname);
+			pvo.setPrice(price);
+			pvo.setSaleprice(saleprice);
+			pvo.setPoint(point);
+			pvo.setPqty(pqty);
+			pvo.setPcontents(pcontents);
+			pvo.setPcompanyname(pcompanyname);
+			pvo.setPexpiredate(pexpiredate);
+			pvo.setAllergy(allergy);
+			pvo.setWeight(weight);
+			pvo.setSalecount(salecount);
+			pvo.setPlike(plike);
+			pvo.setPdate(pdate);
+			pvo.setTitleimg(titleimg);
+			
+			
+		} finally {
+			close();
+		}
+		
+		return pvo;
+
+	}
+	
+	
+//	#상품 상세; 추가이미지 가져오기
+	@Override
+	public List<HashMap<String, String>> getAttachImgList(String pnum) throws SQLException{
+		List<HashMap<String, String>> imgList =null;
+		
+		try {
+			conn = ds.getConnection();
+			
+			
+			String sql = " select pimgnum, pimgfilename "+
+					" from product_images "+
+					" where fk_pnum=?";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, pnum);
+			rs = pstmt.executeQuery();
+			
+			int cnt = 0;
+			while(rs.next()) {
+				cnt++;
+				if(cnt==1) {
+					imgList = new ArrayList<HashMap<String, String>>();
+				}
+				HashMap<String, String> map = new HashMap<String, String>();
+				
+				String pimgnum = rs.getString("pimgnum");
+				String pimgfilename = rs.getString("pimgfilename");
+				
+				
+				map.put("pimgnum", pimgnum);
+				map.put("pimgfilename",pimgfilename);
+				
+				imgList.add(map);
+			}
+			
+		} finally {
+			close();
+		}
+		return imgList;
+	}
+
+//	#상품수정; 추가이미지 삭제
+	@Override
+	public int deleteAttachProductImg(String pimgnum) throws SQLException {
+		int result = 0;
+		try {
+			conn = ds.getConnection();
+
+			String sql = " delete from product_images where pimgnum = ?";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, pimgnum);
+			
+			result = pstmt.executeUpdate();
+			
+		} finally {
+			close();
+		}
+	
+		return result;
+	}
+
+	
+	@Override
+	public int updateProduct(ProductVO pvo) throws SQLException{
+		int result = 0;
+		try {
+			conn = ds.getConnection();
+			
+			
+			String sql = " update product set fk_pacname=?, fk_sdname=?, fk_ctname=?, fk_stname=?, fk_etname=?"
+					+ "		, pname=?, price=?, saleprice=?, point=?, pqty=?, pcontents=?, pcompanyname=?, pexpiredate=?, allergy=?, weight=?, pdate=sysdate";
+			if(pvo.getTitleimg()!="") {
+				sql+=", titleimg=? ";
+			}
+					sql+=" where pnum = ? ";
+			
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setString(1, pvo.getFk_pacname());
+			pstmt.setString(2, pvo.getFk_sdname());
+			pstmt.setString(3, pvo.getFk_ctname());
+			pstmt.setString(4, pvo.getFk_stname());
+			pstmt.setString(5, pvo.getFk_etname());
+			pstmt.setString(6, pvo.getPname());
+			pstmt.setInt(7, pvo.getPrice());
+			pstmt.setInt(8, pvo.getSaleprice());
+			pstmt.setInt(9, pvo.getPoint());
+			pstmt.setInt(10, pvo.getPqty());
+			pstmt.setString(11, pvo.getPcontents());
+			pstmt.setString(12, pvo.getPcompanyname());
+			pstmt.setString(13, pvo.getPexpiredate());
+			pstmt.setString(14, pvo.getAllergy());
+			pstmt.setInt(15, pvo.getWeight());
+			if(pvo.getTitleimg()!="") {
+				pstmt.setString(16, pvo.getTitleimg());
+				pstmt.setString(17, pvo.getPnum());
+			}
+			else{
+				pstmt.setString(16, pvo.getPnum());
+			}
+			result = pstmt.executeUpdate();
+		} finally {
+			close();
+		}	
+		return result;
+	}
+	
+//	#상품 삭제
+	@Override
+	public int deleteProductByPnum(String pnum) throws SQLException {
+		int result = 0;
+		try {
+			conn = ds.getConnection();
+
+			String sql = " delete from product where pnum = ?";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, pnum);
+			
+			result = pstmt.executeUpdate();
+			
+		} finally {
+			close();
+		}
+	
+		return result;
+	}
+
+	@Override
+	public int updateCtname(String ctnum, String ctname) throws SQLException {
+		int result = 0;
+		try {
+			conn = ds.getConnection();
+			
+			
+			String sql = " update category_tag set ctname=? where ctnum = ?";
+			
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setString(1, ctname);
+			pstmt.setString(2, ctnum);
+			
+			result = pstmt.executeUpdate();
+			
+		} finally {
+			close();
+		}	
+		return result;
+	}
+
+	
+//	#이벤트 태그 리스트 불러오기
+	@Override
+	public List<HashMap<String, String>> getEnvetTagList(String searchWord) throws SQLException {
+		List<HashMap<String, String>> eventTagList = null;
+		
+		try {
+			conn = ds.getConnection();
+			
+			String sql = "select etnum, etname, etimagefilename, count(pnum) as cnt\n"+
+					"from \n"+
+					"(\n"+
+					"select etnum, etname, etimagefilename, pnum\n"+
+					"from event_tag A left join product B\n"+
+					"on etname = fk_etname\n"+
+					") v\n"+
+					" where etname like '%'|| ? ||'%' "+
+					" group by etnum, etname, etimagefilename "
+					+ " order by etnum ";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, searchWord);
+			rs = pstmt.executeQuery();
+			
+			int n=0;
+			while(rs.next()) {
+				n++;
+				if(n==1) {
+					eventTagList = new ArrayList<HashMap<String, String>>();
+				}
+				
+				String etnum = rs.getString("etnum");
+				String etname = rs.getString("etname");
+				String v_cnt = rs.getString("cnt");
+				String etimagefilename = rs.getString("etimagefilename");
+				if(v_cnt==null) {
+					v_cnt="0";
+				}
+				
+				String cnt = v_cnt;
+				
+				HashMap<String, String> map = new HashMap<String, String>();
+				map.put("etnum", etnum);
+				map.put("etname", etname);
+				map.put("etimagefilename",etimagefilename);
+				map.put("cnt", cnt);
+				
+				eventTagList.add(map);
+			}
+						
+		} finally {
+			close();
+		}
+
+		return eventTagList;
+	}
+
+//	#이벤트 수정; 이벤트태그 정보 1개 가져오기
+	@Override
+	public HashMap<String, String> getOneEventTag(String etnum) throws SQLException {
+		HashMap<String, String> map = null;
+		
+		try {
+			conn = ds.getConnection();
+			
+			String sql = " select etnum, etname, etimagefilename from event_tag where etnum = ? ";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, etnum);
+			rs = pstmt.executeQuery();
+			if(rs.next()) {
+				map = new HashMap<String, String>();
+				
+				map.put("etnum", rs.getString("etnum"));
+				map.put("etname", rs.getString("etname"));
+				map.put("etimagefilename", rs.getString("etimagefilename"));
+			}
+			
+		} finally {
+			close();
+		}
+
+		return map;
+	}
+	
+//	#이벤트태그 수정
+	@Override
+	public int updateEventTag(HashMap<String, String> map) throws SQLException{
+		int result = 0;
+		try {
+			conn = ds.getConnection();
+			
+			String sql = " update event_tag set etname=?";
+			if(map.get("etimagefilename")!="") {
+				sql+=", etimagefilename=? ";
+			}
+					sql+=" where etnum = ? ";
+			
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setString(1, map.get("etname"));
+			
+			if(map.get("etimagefilename")!="") {
+				pstmt.setString(2, map.get("etimagefilename"));
+				pstmt.setString(3, map.get("etnum"));
+			}
+			else{
+				pstmt.setString(2, map.get("etnum"));
+			}
+			result = pstmt.executeUpdate();
+		} finally {
+			close();
+		}	
+		return result;
+	}
+	
+//	#이벤트태그 시퀀스 채번 하는 메소드
+	@Override
+	public int getEtnum() throws SQLException {
+		int etnum = 0;
+		
+		try {
+			conn = ds.getConnection();
+			String sql = " select seq_event_tag_etnum.nextval as seq"
+						+ " from dual ";
+			
+			pstmt = conn.prepareStatement(sql);
+			rs = pstmt.executeQuery();
+			rs.next();
+			
+			etnum = rs.getInt("seq");
+			
+		} finally {
+			close();
+		}
+		return etnum;
+	}
+	
+//	#이벤트태그 추가하기
+	@Override
+	public int insertEventTag(HashMap<String, String> map) throws SQLException{
+		int result = 0;
+		try {
+			conn = ds.getConnection();
+			
+			String sql = " insert into event_tag(etnum, etname, etimagefilename) values(?, ?, ?)";
+			
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setString(1, map.get("etnum"));
+			pstmt.setString(2, map.get("etname"));
+			pstmt.setString(3, map.get("etimagefilename"));
+			
+			
+			result = pstmt.executeUpdate();
+			
+		} finally {
+			close();
+		}	
+		return result;
+	}
+
+//	#이벤트 태그 삭제하기
+	@Override
+	public int deleteEventTagByEtnum(String etnum) throws SQLException {
+		int result = 0;
+		try {
+			conn = ds.getConnection();
+
+			String sql = " delete from event_tag where etnum = ?";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, etnum);
+			
+			result = pstmt.executeUpdate();
+			
+		} finally {
+			close();
+		}
+	
+		return result;
+	}
+
+	
+	
+//	#패키지 목록 불러오기
+	@Override
+	public List<PackageVO> getPackageList(int sizePerPage, int currentShowPageNo, String searchWord)
+			throws SQLException {
+		List<PackageVO> packageList = null;
+		conn = ds.getConnection();
+		
+		try {
+			String sql = "select rno, pacnum, pacname, pacimage, cnt\n"+
+					"from\n"+
+					"(\n"+
+					"    select rownum as rno, pacnum, pacname, pacimage, cnt\n"+
+					"    from\n"+
+					"    (\n"+
+					"        select pacnum, pacname, pacimage, count(pnum) as cnt\n"+
+					"        from \n"+
+					"        (\n"+
+					"            select pacnum, pacname, pacimage, pnum\n"+
+					"            from product_package A left join product B\n"+
+					"            on pacname = fk_pacname\n"+
+					"        ) v\n"+
+					"        where pacname like '%'|| ? ||'%'\n"+
+					"        group by pacnum, pacname, pacimage\n"+
+					"        order by pacnum\n"+
+					"    ) T\n"+
+					") N\n"+
+					"where N.rno between ? and ?";
+			
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, searchWord);
+			pstmt.setInt(2, (currentShowPageNo*sizePerPage) - (sizePerPage - 1) );
+			pstmt.setInt(3, (currentShowPageNo*sizePerPage) );
+			
+			rs = pstmt.executeQuery();
+			
+			int n = 0;
+			
+			while(rs.next()) {
+				n++;
+				if(n==1) {
+					packageList = new ArrayList<PackageVO>();
+				}
+				
+				String pacnum = rs.getString("pacnum");
+				String pacname = rs.getString("pacname");
+				String pacimage = rs.getString("pacimage");
+				String cnt = rs.getString("cnt");
+
+				PackageVO pacvo = new PackageVO();
+				
+				pacvo.setPacnum(pacnum);
+				pacvo.setPacname(pacname);
+				pacvo.setPacimage(pacimage);
+				pacvo.setCnt(cnt);
+
+				packageList.add(pacvo);
+			}
+		} finally {
+			close();
+		}
+		return packageList;
+	}
+
+//	#패키지 개수 가져오기
+	@Override
+	public int getTotalPackageCount(String searchWord) throws SQLException {
+		int count = 0;
+		try {
+			conn = ds.getConnection();
+			
+			String sql = "select count(*) as cnt\n"+
+					"from product_package\n"+
+					"where 1=1 "+
+					" and pacname like '%'|| ? ||'%'\n";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, searchWord);
+			
+			rs = pstmt.executeQuery();
+			rs.next();
+			
+			count = rs.getInt("CNT");
+		
+		}  finally {
+			close();	
+		}
+		return count;
+	}
+	
+	
+//	#패키지 시퀀스 채번 하는 메소드
+	@Override
+	public int getPacnum() throws SQLException {
+		int pacnum = 0;
+		
+		try {
+			conn = ds.getConnection();
+			String sql = " select seq_product_Package_pacnum.nextval as seq"
+						+ " from dual ";
+			
+			pstmt = conn.prepareStatement(sql);
+			rs = pstmt.executeQuery();
+			rs.next();
+			
+			pacnum = rs.getInt("seq");
+			
+		} finally {
+			close();
+		}
+		return pacnum;
+	}
+	
+	
+//	#패키지 추가하기
+	@Override
+	public int insertPackage(PackageVO pacvo) throws SQLException{
+		int result = 0;
+		try {
+			conn = ds.getConnection();
+			
+			String sql = " insert into product_package(pacnum, pacname, paccontents, pacimage) values(?, ?, ?, ?)";
+			
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setString(1, pacvo.getPacnum());
+			pstmt.setString(2, pacvo.getPacname());
+			pstmt.setString(3, pacvo.getPaccontents());
+			pstmt.setString(4, pacvo.getPacimage());
+			
+			
+			result = pstmt.executeUpdate();
+			
+		} finally {
+			close();
+		}	
+		return result;
+	}
 }

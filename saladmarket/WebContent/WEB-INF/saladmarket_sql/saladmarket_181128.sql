@@ -184,7 +184,8 @@ String sql = "select count(*) as cnt\n"+
 "where name like '%'||''||'%'\n"+
 "and fk_lvnum like '%'||''||'%'";
 
-
+select *
+from member;
 
 
 commit;
@@ -347,6 +348,20 @@ insert into product_package values(seq_product_Package_pacnum.nextval, '없음',
 
 commit;
 
+
+select pacnum, pacname, pacimage, count(pnum) as cnt
+from 
+(
+select pacnum, pacname, pacimage, pnum
+from product_package A left join product B
+on ctname = fk_ctname
+) v
+where pacname like '%'||'치료식'||'%'
+group by pacnum, pacname, pacimage
+order by pacnum;
+
+
+
 -- 대분류상세(large_detail) 테이블 생성 
 create table large_detail 
 (ldnum   number         not null  -- 대분류상세번호 
@@ -458,14 +473,14 @@ select *
 from category_tag;
 
 -- 카테고리 태그에 따른 물품 수량 구하기
-select ctnum, ctname, sum(pqty) as pqty
+select ctnum, ctname, count(pnum) as cnt
 from 
 (
-select ctnum, ctname, pqty
+select ctnum, ctname, pnum
 from category_tag A left join product B
 on ctname = fk_ctname
 ) v
-where ctname like '%'||''||'%'
+where ctname like '%'||'치료식'||'%'
 group by ctnum, ctname
 order by ctnum;
 
@@ -513,6 +528,18 @@ commit;
 
 select *
 from event_tag;
+
+
+select etnum, etname, etimagefilename, count(pnum) as cnt
+from 
+(
+select etnum, etname, etimagefilename, pnum
+from event_tag A left join product B
+on etname = fk_etname
+) v
+ where etname like '%'|| '연말' ||'%' 
+group by etnum, etname, etimagefilename 
+order by etnum;
 
 
 -- 상품(product) 테이블 생성
@@ -567,6 +594,21 @@ commit;
 
 alter table product
 drop constraint FK_product_pacname;
+
+
+alter table product
+drop constraint FK_product_pacname;
+
+-- > 제약조건 추가하기
+alter table product
+add constraint FK_product_pacname foreign key(fk_pacname)
+                                      references product_package(pacname) on delete set null;
+
+create or replace trigger trg_product_pac
+after delete of pacname on product_package for each row
+begin
+    update product set fk_pacname='없음' where fk_pacname=:OLD.pacname
+END;
 
 commit;
 select *
@@ -774,8 +816,202 @@ String sql = "select *\n"+
 "where A.fk_sdname like '%%'\n"+
 "order by  A.pdate desc, B.pacnum, A.pnum asc";
 
+-- 관리자 상품목록 불러오기
+create or replace view view_product_join_sd
+as
+select pnum, fk_pacname, fk_sdname, fk_ldname, fk_ctname, fk_stname, fk_etname, pname, price, saleprice, point, pqty, pcontents, pcompanyname, pexpiredate, allergy, weight, salecount, plike, pdate, titleimg
+from product a join small_detail b
+on a.fk_sdname = b.sdname
+order by pnum desc;
 
 
+String sql = "select pnum, fk_pacname, fk_sdname, fk_ldname, fk_ctname, fk_stname, fk_etname, pname, price, saleprice, point, pqty, pcontents, pcompanyname, pexpiredate, allergy, weight, salecount, plike, pdate, titleimg\n"+
+"from view_product_join_sd"+
+" where pnum = ? ";
+
+
+-- 아무 조건 없는 버전
+select rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg
+from
+(
+select rownum as rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg 
+from view_product_join_sd
+) V
+where V.rno between 1 and 10 
+order by rno asc;
+
+String sql = "select rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg\n"+
+"from\n"+
+"(\n"+
+"select rownum as rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg \n"+
+"from view_product_join_sd\n"+
+") V\n"+
+"where V.rno between ? and ? \n"+
+"order by rno asc ";
+
+
+
+-- ldname
+select rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg
+from
+(
+select rownum as rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg 
+from view_product_join_sd
+where fk_ldname like '%'|| ? || '%'
+) V
+where V.rno between 1 and 10 
+order by rno asc;
+
+
+String sql = "select rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg\n"+
+"from\n"+
+"(\n"+
+"select rownum as rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg \n"+
+"from view_product_join_sd\n"+
+"where ? like '%'|| ? || '%'\n"+
+") V\n"+
+"where V.rno between ? and ? \n"+
+"order by rno asc";
+
+-- sdname
+select rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg
+from
+(
+select rownum as rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg 
+from view_product_join_sd
+where fk_sdname like '%'|| ? || '%'
+) V
+where V.rno between 1 and 10 
+order by rno asc;
+
+-- searchType==전체, searchWord
+select rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg
+from
+(
+select rownum as rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg 
+from view_product_join_sd
+where fk_pacname like '%'|| '샐러드' || '%' 
+    or pname like '%'|| '샐러드' || '%'
+) V
+where V.rno between 1 and 10 
+order by rno asc;
+
+String sql = "select rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg\n"+
+"from\n"+
+"(\n"+
+"select rownum as rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg \n"+
+"from view_product_join_sd\n"+
+"where searchType like '%'|| ? || '%' \n"+
+"    or searchType2 like '%'|| ? || '%'\n"+
+") V\n"+
+"where V.rno between ? and ? \n"+
+"order by rno asc";
+
+
+
+-- searchType==전체, searchWord, detail type
+select rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg
+from
+(
+select rownum as rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg 
+from view_product_join_sd
+where fk_sdname like '%'|| '샐러드' || '%'
+      and ( fk_pacname like '%'|| '샐러드' || '%' 
+      or pname like '%'|| '샐러드' || '%')
+) V
+where V.rno between 1 and 10 
+order by rno asc;
+
+
+
+String sql = "select rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg\n"+
+"from\n"+
+"(\n"+
+"select rownum as rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg \n"+
+"from view_product_join_sd\n"+
+"where fk_sdname like '%'|| '샐러드' || '%'\n"+
+"      and ( fk_pacname like '%'|| '샐러드' || '%' \n"+
+"      or pname like '%'|| '샐러드' || '%')\n"+
+") V\n"+
+"where V.rno between 1 and 10 \n"+
+"order by rno asc";
+
+
+-- searchType, searchWord
+select rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg
+from
+(
+select rownum as rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg 
+from view_product_join_sd
+where pname like '%'|| '샐러드' || '%' 
+) V
+where V.rno between 1 and 10 
+order by rno asc;
+
+-- searchType, searchWord
+select rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg
+from
+(
+select rownum as rno, pnum, fk_pacname, fk_sdname, fk_ldname, pname, saleprice, point, pqty, salecount, plike, pdate, titleimg 
+from view_product_join_sd
+where searchType like '%'|| ? || '%'
+and fk_sdname '%' || ? || '%'
+) V
+where V.rno between 1 and 10 
+order by rno asc;
+
+
+String sql = "select pnum, fk_pacname, fk_sdname, fk_ldname, fk_ctname, fk_stname, fk_etname\n"+
+", pname, price, saleprice, point, pqty, pcontents, pcompanyname, pexpiredate\n"+
+", allergy, weight, salecount, plike, pdate, titleimg, pimgfilename\n"+
+"from view_product_join_sd join product_images\n"+
+"on pnum = fk_pnum\n"+
+"where pnum = ?";
+
+
+select *
+from product_images;
+
+
+String sql = "select pnum, fk_pacname, fk_sdname, fk_ldname, fk_ctname, fk_stname, fk_etname\n"+
+", pname, price, saleprice, point, pqty, pcontents, pcompanyname, pexpiredate \n"+
+", allergy, weight, salecount, plike, to_char(pdate, 'yyyymmdd') as pdate, titleimg\n"+
+"from view_product_join_sd\n"+
+"where pnum = 52";
+
+String sql = "select pimgnum, pimgfilename"+
+"from product_images"+
+" where fk_pnum=?";
+
+select pnum, fk_pacname, fk_sdname, fk_ldname, fk_ctname, fk_stname, fk_etname
+, pname, price, saleprice, point, pqty, pcontents, pcompanyname, pexpiredate 
+, allergy, weight, salecount, plike, to_char(pdate, 'yyyymmdd') as pdate, titleimg, pimgnum, pimgfilename
+from view_product_join_sd join product_images
+on pnum = fk_pnum
+where pnum = 52;
+
+
+-- update 트리거
+create or replace trigger trg_package
+after update of pacname on product_package for each row
+begin
+    update product
+    set fk_pacname=:NEW.pacname where fk_pacname=:OLD.pacname;
+END;
+
+create or replace trigger trg_categorytag
+after update of ctname on category_tag for each row
+begin
+    update product
+    set fk_ctname=:NEW.ctname where fk_ctname=:OLD.ctname;
+END;
+
+create or replace trigger trg_eventtag
+after update of etname on event_tag for each row
+begin
+    update product
+    set fk_etname=:NEW.etname where fk_etname=:OLD.etname;
+END;
 
 
 
@@ -864,7 +1100,7 @@ create table product_images
 ,fk_pnum       number         not null -- 상품번호 
 ,constraint PK_product_images primary key(pimgnum)
 ,constraint FK_product_images_ldnum foreign key(fk_pnum)
-                                      references product(pnum)
+                                      references product(pnum)on delete cascade
 );
 
 create sequence seq_product_images_pimgnum
@@ -874,6 +1110,20 @@ nomaxvalue
 nominvalue
 nocycle
 nocache;
+
+-- 이미지 테이블 on delete cascade 추가하기
+alter table product_images
+drop constraint FK_product_images_ldnum;
+
+-- > 제약조건 추가하기
+alter table product_images
+add constraint FK_product_images_ldnum foreign key(fk_pnum)
+                                      references product(pnum)on delete cascade;
+
+commit;
+
+
+
 
 
 -- 리뷰게시판(review_board) 테이블 생성 

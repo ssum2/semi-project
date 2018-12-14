@@ -61,7 +61,7 @@ $(document).ready(function(){
 					      			"<td colspan='4'>"+
 					      			"<div class='col-md-3 form-inline ml-auto categoryeditattach'>"+
 					      				"<br/>"+
-										"<input type='text' name='categoryedit' class='form-control'/>&nbsp;&nbsp;"+
+										"<input type='text' id='categoryedit"+entry.ctnum+"' name='categoryedit' class='form-control'/>&nbsp;&nbsp;"+
 										"<button type='button' rel='tooltip' class='btn btn-default btn-md btn-icon' onClick='categoryEdit("+entry.ctnum+");'>수정</button>"+
 					  				"</div>"+
 					  				"</td>"+
@@ -108,6 +108,42 @@ $(document).ready(function(){
 				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 			}
 		});
+	}
+	
+	function categoryEdit(ctnum){
+		var categoryedit = $("#categoryedit"+ctnum).val();
+		
+		var form_data={"ctnum":ctnum,
+				       "ctname":categoryedit};
+		
+		var bool = confirm("해당 카테고리태그명을 변경하시겠습니까?");
+		
+		if(bool){
+			$.ajax({
+				url: "a_modifyCategoryTag.do",
+				type: "POST",
+				data: form_data,
+				dataType: "JSON",
+				success: function(json){
+					if(json.result==1){
+						alert("수정 성공");
+						window.location.reload();
+					}
+					else{
+						alert("수정 실패");
+						window.location.reload();
+					}
+				},
+				error: function(request, status, error){
+					alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+				}
+			});
+		}
+		else{
+			return false;
+		}
+		
+		
 	}
 	
 	function goDel(ctnum){

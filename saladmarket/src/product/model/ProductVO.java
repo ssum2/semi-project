@@ -1,9 +1,14 @@
 package product.model;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 public class ProductVO {
 	private String pnum;  // 상품번호 
 	private String fk_pacname;	//상품패키지명
-	private String fk_sdname; // 소분류상세명 
+	private String fk_sdname; // 소분류상세명
+	private String fk_ldname; // 대분류상세명
 	private String fk_ctname; // 카테고리태그명 
 	private String fk_stname; // 카테고리태그명 
 	private String fk_etname; // 카테고리태그명 
@@ -23,6 +28,7 @@ public class ProductVO {
 	private String titleimg; // 대표이미지
 	
 	private ProductImageVO images;	// 상세이미지
+	private List<HashMap<String, String>> imgList;	// 이미지파일명 목록
 	private PackageVO pac;		// 패키지
 	
 	private int totalPrice;   // 주문량 * 제품판매가(할인해서 팔 것이므로)
@@ -110,6 +116,14 @@ public class ProductVO {
 
 	public void setFk_sdname(String fk_sdname) {
 		this.fk_sdname = fk_sdname;
+	}
+	
+	public String getFk_ldname() {
+		return fk_ldname;
+	}
+
+	public void setFk_ldname(String fk_ldname) {
+		this.fk_ldname = fk_ldname;
 	}
 
 	public String getFk_ctname() {
@@ -239,7 +253,19 @@ public class ProductVO {
 	public void setPdate(String pdate) {
 		this.pdate = pdate;
 	}
-
+	
+//	pdate 날짜형태로 바꿔서 내보내기
+	public String getShowPdate() {
+		String result = "";
+		String pdateyear = pdate.substring(0, 4);
+		String pdatemonth = pdate.substring(4, 6);
+		String pdateteday = pdate.substring(6);
+		// 19930222 
+		// 01234567
+		result = pdateyear+"년 "+pdatemonth+"월 "+pdateteday+"일";
+		
+		return result;
+	}
 	
 	public String getTitleimg() {
 		return titleimg;
@@ -302,5 +328,49 @@ public class ProductVO {
 		return (int)percent;
 		
 	}// end of getPercent()---------------
+
+	public List<HashMap<String, String>> getImgList() {
+		return imgList;
+	}
+
+	public void setImgList(List<HashMap<String, String>> imgList) {
+		this.imgList = imgList;
+	}
+	
+	
+//	#금액 콤마 찍어서 내보내기
+	public String getShowPrice() {
+		String result=String.format("%,d", price);
+		
+		return result;
+	}
+	
+	public String getShowSaleprice() {
+		String result=String.format("%,d", saleprice);
+		
+		return result;
+	}
+	
+	public String getShowPoint() {
+		String result=String.format("%,d", point);
+		
+		return result;
+	}
+	
+	public String getShowPqty() {
+		String result=String.format("%,d", pqty);
+		
+		return result;
+	}
+	public String getShowWeight() {
+		String result=String.format("%,d", weight);
+		
+		return result;
+	}
+	public String getShowSalecount() {
+		String result=String.format("%,d", salecount);
+		
+		return result;
+	}
 	
 }

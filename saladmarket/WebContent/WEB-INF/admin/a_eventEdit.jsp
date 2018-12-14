@@ -40,9 +40,26 @@
   <script src="<%= ctxPath %>/assets/js/black-dashboard.min.js?v=1.0.0"></script>
   <!-- Black Dashboard DEMO methods, don't include it in your project! -->
   <script src="<%= ctxPath %>/assets/demo/demo.js"></script>
+
+<script type="text/javascript">
+
+$(document).ready(function(){
+	$("#btnEdit").click(function(){
+		var frm = document.etEditFrm;
+		frm.method="POST";
+		frm.action="a_eventEdit.do";
+		frm.submit();
+	});
+});
+
+
+
+</script>
+
+
 </head>
 
-<body class="">
+<body class="container">
 <div class="row">
           <div class="col-md-3"></div>
           <div class="col-md-6" style="margin-top: 3%;">
@@ -50,28 +67,41 @@
               <div class="card-header">
                 <h5 class="title">이벤트 태그 수정 </h5>
               </div>
+
               <div class="card-body">
-                <form>
-                
+                <form name="etEditFrm" enctype="multipart/form-data">
+                	<input type="hidden" name="etnum" value="${map.etnum}">
                    <div class="row">
                     <div class="col-md-3 pr-md-1">
                       <div class="form-group">
                         <label>이벤트명</label>
-                        <input type="text" class="form-control" placeholder="" value="">
+                        <input type="text" name="etname" class="form-control" placeholder="" value="${map.etname}">
                       </div>
                     </div>
                   </div>
-                  
                    <div class="row">
+                   	<div class="col-md-3 pr-md-1">
+                   	
+                   	<label>이벤트이미지</label><br/>
+                   	<c:if test='${map.etimagefilename == null || map.etimagefilename eq ""}'>
+                   		등록된 이미지가 없습니다.
+                   	</c:if>
+                   <c:if test='${map.etimagefilename != null && map.etimagefilename ne ""}'>
+                   	<img src="/saladmarket/img/${map.etimagefilename}" width="200px" height="100px;">
+                   </c:if>
+                   	</div> 
+                   </div>
+                   <div class="row" style="margin-top: 5%;">
                     <div class="col-md-3 pr-md-1">
-                    	<label>이벤트이미지</label>
-                    	<input type="file" />
+                    	<label>이벤트이미지 수정</label><br/>
+                    	<input type="file" name="etimagefilename" id="etimagefilename" class="infoData btn btn-primary btn-simple" />
+                    	
                     </div>
                   </div>
                 </form>
               </div>
               <div class="card-footer">
-                <button type="submit" class="btn btn-fill btn-primary">Save</button>
+                <button type="button" id="btnEdit" class="btn btn-fill btn-primary">Save</button>
               </div>
             </div>
           </div>

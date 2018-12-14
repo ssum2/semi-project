@@ -90,6 +90,54 @@
       </div>
    </div> 
 </div> --%>
+
+
+<%-- 스펙태그 시작 --%>
+   <div align="center" style=" margin-top: 50px;">
+      <div style="width: 70%;">
+         <div class="tab" style="margin-bottom: 50px;"><!-- 각 태그별 상품 이미지는 8개씩!!!! -->
+              <button class="tablinks BEST active" onclick="openCity(event, 'BEST')">BEST</button>
+              <button class="tablinks HIT" onclick="openCity(event, 'HIT')">HIT</button>
+              <button class="tablinks NEW" onclick="openCity(event, 'NEW')">NEW</button>
+         </div>
+      
+      
+         <div id="HIT" class="tabcontent" style="display: block;">
+            <div id="page">
+               <div class="colorlib-shop">
+                  <div class="row hitdata">
+                  
+                     </div>
+                  </div>
+               </div>
+            </div>
+            
+            
+         <div id="NEW" class="tabcontent" style="display: block;">
+            <div id="page">
+               <div class="colorlib-shop">
+                  <div class="row newdata">
+                  
+                     </div>
+                  </div>
+               </div>
+            </div>
+      
+      
+         <div id="BEST" class="tabcontent" style="display: block;">
+            <div id="page">
+               <div class="colorlib-shop">
+                  <div class="row bestdata">
+
+                     </div>
+                  </div>
+               </div>
+            </div><!-- Best Product -->
+      </div>
+   </div> <%-- 스펙태그  끝 --%>
+</div> <!-- horizontal -->
+<!-- Navbar Area-->
+
 <div class="classy-nav-container breakpoint-off" >
    <div class="container">
       <!-- Menu -->
@@ -101,30 +149,6 @@
       
          <!-- Nav Start -->
          <div class="classynav">
-            <div class="col-md-offset-3 col-md-6 search-form">
-               <form action="#" method="get">
-                  <ul style="border: 0px solid gray;">
-                     <li style="float: center; ">
-                        <input type="search" placeholder="검색할 상품명을 입력하세요" style="border: 2px solid #b7b7b7; border-radius: 0; width: 80%; height: 50px; font-size: 15px; position: relative; top: 30%;" >
-                        <button type="submit" value="Submit" style="height: 50px; border: none;">
-                           <img src="<%=CtxPath%>/store/images/search.png" style="width:20px; height:20px;"alt="">
-                        </button>
-                     </li>
-                     <%-- <li style="float: right;">
-                        <div class="dropdown">
-                           <button class="btn dropdown-toggle" type="button" data-toggle="dropdown" style="border-radius: 0; height: 50px; background-color: #FFC300;">정렬<span class="caret"></span></button>
-                           <ul class="dropdown-menu">
-                              <li><a href="#">이름순</a></li>
-                              <li><a href="#">인기순</a></li>
-                              <li><a href="#">신상품순</a></li>
-                              <li><a href="#">가격순</a></li>
-                           </ul>
-                        </div>
-                     </li> --%>
-                  </ul>
-               </form>
-               
-            </div>
             <ul>
                <li style="float: right;">
                   <div class="dropdown">

@@ -27,7 +27,9 @@ public class MemberRegisterEndAction extends AbstractController {
 		else {
 			// POST방식으로 들어왔을 때
 			String userid = req.getParameter("userid");
+			userid = userid.trim();
 			String pwd = req.getParameter("pwd");
+			
 			String name = req.getParameter("name");
 			String email = req.getParameter("email");
 			String phone = req.getParameter("phone");

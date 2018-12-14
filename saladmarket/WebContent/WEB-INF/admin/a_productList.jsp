@@ -7,15 +7,13 @@
 
 <script type="text/javascript">
 	$(document).ready(function(){
+
+		getProductList("", "", "", "", "1");
 		
 		var sdnameOptions = "";
 		sdnameOptions = "<option class='dropdown-item' value=''>소분류</option>";
 		$("#sdname").empty().append(sdnameOptions);
-		
-		
-		
-		
-		
+
 	 	$("#ldname").bind("change", function(){
 	    	var form_data = {"ldname":$(this).val()};
 	    	$.ajax({
@@ -42,22 +40,166 @@
 					error: function(request, status, error){
 						alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 					}
-				});// end of $.ajax()
-				
+			});// end of $.ajax()
+			var ldname = $(this).val();
+	    	getProductList(ldname, "", "", "", "1");	
 	    });
+	 	
+	 	$("#sdname").bind("change", function(){
+	 		var ldname = $("#ldname").val();
+	 		var sdname = $(this).val();
+	 		var pageNo = "1";
+	    	getProductList(ldname, sdname, "", "", pageNo);
+	 	});
 		
-		
+	 	$("#btnSearch").click(function(){
+	 		var ldname = $("#ldname").val();
+	 		var sdname = $("#sdname").val();
+			var searchType= $("#searchType").val();
+			var searchWord=$("#searchWord").val();
+			var pageNo="1";
+			getProductList(ldname, sdname, searchType, searchWord, pageNo);
+		});
 	});
 	
+	function getProductList(ldname, sdname, searchType, searchWord, pageNo){
+		var form_data = {"ldname":ldname,
+						"sdname":sdname,
+						"searchType":searchType,
+						"searchWord":searchWord,
+						"currentShowPageNo":pageNo};
+			
+		$.ajax({
+			url: "a_productListEnd.do",
+			type: "GET",
+			data: form_data,
+			dataType: "JSON",
+			success: function(data){
+				if(data.length > 0) { 
+				     var resultHTML = "";
+				
+				 	$.each(data, function(entryIndex, entry){
+					
+					 resultHTML += "<tr>"+
+		                            "<td class='text-center'>"+entry.pnum+"</td>"+
+		                            "<td>"+entry.fk_ldname+"</td>"+
+		                            "<td>"+entry.fk_sdname+"</td>"+
+		                            "<td>"+entry.fk_pacname+"</td>"+
+		                            "<td><img src='/saladmarket/img/"+entry.titleimg+"' width='100px'></td>"+
+		                            "<td>"+entry.pname+"</td>"+		                 
+		                            "<td>"+(entry.saleprice).toLocaleString('en')+"</td>"+
+		                            "<td>"+entry.pqty+"</td>"+
+		                            "<td>"+entry.plike+"</td>"+
+		                            "<td class='td-actions text-right'>"+
+		                            "<button type='button' rel='tooltip' class='btn btn-info btn-sm btn-icon' OnClick='goDetail("+entry.pnum+");'>"+
+		                                "<i class='tim-icons icon-single-copy-04'></i>"+
+		                            "</button>"+
+		                            "<button type='button' rel='tooltip' class='btn btn-danger btn-sm btn-icon' OnClick='goDelete("+entry.pnum+");'>"+
+		                                "<i class='tim-icons icon-simple-remove'></i>"+
+		                            "</button>"+
+		                        	"</td>"+
+		                            "</tr>";
+		      	        
+				 });// end of $.each
+				 	
+				 $("#displayResult").empty().html(resultHTML);
+				 makePageBar(ldname, sdname, searchType, searchWord, pageNo);
+			}
+			else { // 검색된 데이터가 없는 경우
+				 $("#displayResult").empty();
+			}
+			
+			},// end of success
+			error: function(request, status, error){
+				if(request.readyState == 0 || request.status == 0) return;
+				else alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			}
+		});// end of $.ajax
+	}
 	
-	function goDetail() {
+	function makePageBar(ldname, sdname, searchType, searchWord, currentShowPageNo) {
 		
-		var frm = document.productFrm;
-		frm.method = "POST";
-		frm.action = "a_productDetail.do";
-		frm.submit();
+		var form_data = {"ldname":ldname,
+						"sdname":sdname,
+						"searchType":searchType,
+						"searchWord":searchWord,
+				        "len":"10"};
 		
-	}// end of goDetail()----------------------------
+		$.ajax({
+				url: "a_productListPageBarJSON.do",
+				type: "GET",
+				data: form_data,
+				dataType: "JSON",
+				success: function(json){
+										
+					if(json.totalPage != 0) { 
+					     var totalPage = json.totalPage;
+					     var pageBarHTML = "";
+	
+					     var blockSize = 3;
+					     var loop = 1;
+
+	                     var pageNo = Math.floor((currentShowPageNo - 1)/blockSize) * blockSize + 1; 
+
+					      if(pageNo != 1) {	
+					    	  pageBarHTML += "<a class='nav-link active' href='javascript:getProductList(\""+ldname+"\" , \""+sdname+"\", "+searchType+"\" , \""+searchWord+"\", \""+(pageNo-1)+"\")'>"+
+					      					"<i class='tim-icons icon-minimal-left'></i></a>";
+					      }
+
+					      while( !(loop > blockSize || pageNo > totalPage) ) {
+					       	 
+					    	  if(pageNo == currentShowPageNo) {
+					    		  pageBarHTML += "&nbsp;<span class='nav-link active' style=\"text-decoration: underline; \">"+pageNo+"</span>&nbsp;";
+					    	  }
+					    	  else {
+					    	  	  pageBarHTML += "&nbsp;<a class='nav-link active' href='javascript:getProductList(\""+ldname+"\" , \""+sdname+"\", \""+searchType+"\" , \""+searchWord+"\", \""+pageNo+"\")'>"+pageNo+"</a>&nbsp;";
+					     	  }
+	                     
+					       	 loop++;
+					    	 pageNo++;
+					      } // end of while
+
+					     if( !(pageNo > totalPage) ) {
+					    	 pageBarHTML += "<a class='nav-link active' href='javascript:getProductList(\""+ldname+"\" , \""+sdname+"\", \""+searchType+"\" , \""+searchWord+"\", \""+pageNo+"\")'>"+
+		      					"<i class='tim-icons icon-minimal-right'></i></a>";
+					     }
+						 	
+					     $("#pageBar").empty().html(pageBarHTML);
+					     
+					     pageBarHTML = "";
+					}
+					
+					else { 
+						 $("#pageBar").empty();
+					}
+
+				},// end of success: function()
+				error: function(request, status, error){
+					if(request.readyState == 0 || request.status == 0) return;
+					else alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+				}
+			});// end of $.ajax()-------------------
+		
+	}// end of makePageBar
+	
+	function goDetail(pnum) {
+		var url = "a_productDetail.do?pnum="+pnum;
+		window.open(url, "상품 상세 정보",
+				    "width=800px, height=800px, top=50px, left=800px");
+		
+	}
+	
+	function goDelete(pnum){
+		var bool = confirm("해당 상품을 삭제하시겠습니까?");
+		
+		if(bool){
+			location.href="a_deleteProduct.do?pnum="+pnum;
+		}
+		else{
+			return false;
+		}
+		
+	}
 
 
 </script>
@@ -90,7 +232,7 @@
 		<div class="form-group no-border">
 			<select class="btn btn-secondary" id="searchType" name="searchType" style="padding: 5px;">
 				<option class="dropdown-item" value="">전체</option>
-				<option class="dropdown-item" value="pacname">패키지명</option>
+				<option class="dropdown-item" value="fk_pacname">패키지명</option>
 				<option class="dropdown-item" value="pname">상품명</option>
 			</select>
 		    <input type="text" id="searchWord" name="searchWord" class="form-control" placeholder="검색어를 입력하세요.">
@@ -112,22 +254,22 @@
 		            <th>대분류</th>
 		            <th>소분류</th>
 		            <th>패키지명</th>
-		            <th>상품명</th>
 		            <th>대표이미지</th>
+		            <th>상품명</th>
 		            <th>판매가</th>
 		            <th>재고량</th>
 		            <th>좋아요수</th>
-		            <th class="text-right">상세&nbsp;&nbsp;&nbsp;&nbsp;수정&nbsp;&nbsp;&nbsp;&nbsp;삭제</th>
+		            <th class="text-right">상세&nbsp;&nbsp;&nbsp;&nbsp;삭제</th>
 		        </tr>
 		    </thead>
-		    <tbody>
+		    <tbody id="displayResult">
 		        <tr>
 		            <td class="text-center">1</td>
 		            <td>디톡스</td>
 		            <td>물/주스</td>
 		            <td>델몬트</td>
 		            <td>[델몬트] 오렌지주스</td>
-		            <td><img src="/saladmarket/img/111.JPG" width="100px"></td>
+		            <td><img src="/saladmarket/img/111.jpg" width="100px"></td>
 		            <td>2000</td>
 		            <td>100</td>
 		            <td>23</td>
@@ -152,9 +294,9 @@
 		</div>
 
 
-            </div>
-          </div>
-        </div>
+      </div>
+    </div>
+  </div>
 <jsp:include page="admin_footer.jsp"/> 
 
 

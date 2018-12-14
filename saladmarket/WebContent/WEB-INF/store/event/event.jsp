@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"  %>
 <% String CtxPath = request.getContextPath(); %>
 <jsp:include page="../header.jsp" />
 
@@ -41,27 +42,17 @@
 	</div>
 	<%-- 이벤트 리스트  --%>
 	<div align="center">
+	<c:forEach var="event" items="${eventList}">
+		<c:if test="${event.etnum != 4}">
 		<%-- 이벤트 1 --%>
 		<div style="margin-bottom: 10px;">
-			<span> <%-- 이벤트 넘어가는 주소 넣는 곳 --%> <a href="eventDetail.jsp"><img
-					src="<%= CtxPath %>/store/images/index/MerryChristmas.PNG"
+			<%-- 이벤트 넘어가는 주소 넣는 곳 --%> <span> <a href="eventDetail.do?etnum=${event.etnum}&etname=${event.etname}">
+			<img src="<%= CtxPath %>/store/images/index/${event.etimagefilename}"
 					width="70%" height="20%" /></a>
 			</span>
 		</div>
-		<%-- 이벤트 2 --%>
-		<div style="margin-bottom: 10px;">
-			<%-- 이벤트 넘어가는 주소 넣는 곳 --%>
-			<a href=""> <img
-				src="<%= CtxPath %>/store/images/index/LastSale.png" width="70%"
-				height="20%" /></a>
-		</div>
-		<%-- 이벤트 3 --%>
-		<div>
-			<%-- 이벤트 넘어가는 주소 넣는 곳 --%>
-			<a href=""><img
-				src="<%= CtxPath %>/store/images/index/NewYearSale.png" width="70%"
-				height="20%" /></a>
-		</div>
+		</c:if>
+	</c:forEach>
 	</div>
 	<%-- 이벤트 리스트 끝  --%>
 </div>

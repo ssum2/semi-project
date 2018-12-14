@@ -79,7 +79,7 @@ create table member
 (mnum               number                not null  -- 회원번호
 ,userid             varchar2(100)         not null  -- 회원아이디
 ,pwd                 varchar2(200)         not null  -- 비밀번호(SHA256 암호화)
-,name               varchar2(10)          not null  -- 회원명
+,name               varchar2(100)          not null  -- 회원명
 ,email              varchar2(200)         not null  -- 이메일(AES256 암호화)
 ,phone              varchar2(400)         not null  -- 휴대폰(AES256 암호화)
 ,birthday           date                  not null  -- 생년월일
@@ -102,7 +102,7 @@ create table member
 
 alter table member modify(fk_lvnum number default 1); 
 alter table member modify(name varchar2(100));
-
+alter table member modify(name varchar2
 
 -- 우편번호 varchar2타입으로 변경
 alter table member modify(postnum number null); -- 14409
@@ -146,15 +146,6 @@ select *
 from member
 order by mnum desc;
 
-update member set address1='경기도 부천시 고리울로 64번길 19', address2='유저집' where mnum in(5, 6, 7, 8, 9, 10, 11);
-update member set name='유저이' where mnum=9;
-update member set name='유저삼' where mnum=10;
-update member set name='유저사' where mnum=11;
-
-commit;
-
-commit;
-
 select rno, mnum,userid, name,email,phone , status, summoney ,fk_lvnum
 from
     (
@@ -187,11 +178,6 @@ String sql = "select count(*) as cnt\n"+
 select *
 from member;
 
-
-commit;
-
-commit;
-
 create sequence seq_member_mnum
 start with 1
 increment by 1
@@ -216,8 +202,32 @@ values(seq_member_mnum.nextval, 'hongkd', '9695b88a59a1610320897fa84cb7e144cc51f
 '홍길동',  'blue_christmas@naver.com', '01099821387', add_months(sysdate, -60), 14409, '경기도 부천시 고리울로 64번길 19', '예다움 502호',
 default, default, default, default, default, default, default);
 
+
+
+-- 회원가입 프로시저(페이징처리용)
+declare
+    v_cnt   number(3) := 1;
+begin
+    loop
+        insert  into member(mnum,userid, pwd, name,email,phone ,birthday,postnum ,address1,address2,point,registerdate ,last_logindate ,last_changepwdate ,status,summoney ,fk_lvnum)
+       values(seq_member_mnum.nextval, 'leess'||v_cnt, '9695b88a59a1610320897fa84cb7e144cc51f2984520efb77111d94b402a8382', 
+    '이순신'||v_cnt,  'ceLUMtKVBfBFzHtCcLl4manuOE15mgsrRCFwv4GIlbA', 'WIn7zkFgYQjkwmjQlrWbwQ==', add_months(sysdate, -80), 14409, '서울시 강남구 어쩌구 저쩌구', '100'||v_cnt,
+    default, default, default, default, default, default, default);
+        v_cnt := v_cnt+1;
+    exit when v_cnt > 90;
+    end loop;
+end;
+
+
 select *
 from member;
+
+
+
+
+
+
+
 
 insert into member(mnum,userid, pwd, name,email,phone ,birthday,postnum ,address1,address2,point,registerdate ,last_logindate ,last_changepwdate ,status,summoney ,fk_lvnum)
 values(seq_member_mnum.nextval, 'admin', '9695b88a59a1610320897fa84cb7e144cc51f2984520efb77111d94b402a8382', 
@@ -349,17 +359,63 @@ insert into product_package values(seq_product_Package_pacnum.nextval, '없음',
 commit;
 
 
-select pacnum, pacname, pacimage, count(pnum) as cnt
-from 
-(
-select pacnum, pacname, pacimage, pnum
-from product_package A left join product B
-on ctname = fk_ctname
-) v
-where pacname like '%'||'치료식'||'%'
-group by pacnum, pacname, pacimage
-order by pacnum;
 
+select rno, pacnum, pacname, pacimage, cnt
+from
+(
+    select rownum as rno, pacnum, pacname, pacimage, cnt
+    from
+    (
+        select pacnum, pacname, pacimage, count(pnum) as cnt
+        from 
+        (
+            select pacnum, pacname, pacimage, pnum
+            from product_package A left join product B
+            on pacname = fk_pacname
+        ) v
+        where pacname like '%'||''||'%'
+        group by pacnum, pacname, pacimage
+        order by pacnum
+    ) T
+) N
+where N.rno between 1 and 10;
+
+String sql = "select rno, pacnum, pacname, pacimage, cnt\n"+
+"from\n"+
+"(\n"+
+"    select rownum as rno, pacnum, pacname, pacimage, cnt\n"+
+"    from\n"+
+"    (\n"+
+"        select pacnum, pacname, pacimage, count(pnum) as cnt\n"+
+"        from \n"+
+"        (\n"+
+"            select pacnum, pacname, pacimage, pnum\n"+
+"            from product_package A left join product B\n"+
+"            on pacname = fk_pacname\n"+
+"        ) v\n"+
+"        where pacname like '%'||''||'%'\n"+
+"        group by pacnum, pacname, pacimage\n"+
+"        order by pacnum\n"+
+"    ) T\n"+
+") N\n"+
+"where N.rno between ? and ?";
+
+String sql = "select pacnum, pacname, pacimage, count(pnum) as cnt\n"+
+"from \n"+
+"(\n"+
+"select pacnum, pacname, pacimage, pnum\n"+
+"from product_package A left join product B\n"+
+"on pacname = fk_pacname\n"+
+") v\n"+
+"where pacname like '%'|| ? ||'%'\n"+
+"group by pacnum, pacname, pacimage\n"+
+"order by pacnum";
+
+
+select count(*) as cnt
+from product_package
+where 1=1
+and pacname like '%'|| ' ' ||'%';
 
 
 -- 대분류상세(large_detail) 테이블 생성 
@@ -611,6 +667,7 @@ begin
 END;
 
 commit;
+
 select *
 from product;
 
@@ -635,6 +692,72 @@ order by B.pacnum, A.pnum asc;
 select *
 from product
 where fk_sdname='물/주스';
+
+
+
+
+-- 상품 리스트 뷰....
+create view view_productList as
+select rnum, pacnum, pacname, paccontents, pacimage, pnum
+        , sdname, ctname, stname, etname, pname, price
+        , saleprice, point, pqty, pcontents
+        , pcompanyname, pexpiredate, allergy, weight, salecount, plike, pdate
+from
+(
+    select rownum as rnum,pacnum, pacname, paccontents, pacimage, pnum
+            , sdname, ctname, stname, etname, pname, price
+            , saleprice, point, pqty, pcontents
+            , pcompanyname, pexpiredate, allergy, weight, salecount, plike, pdate
+    from 
+    (
+        select pacnum, pacname, paccontents, pacimage, pnum
+                , sdname, ctname, stname, etname, pname, price
+                , saleprice, point, pqty, pcontents
+                , pcompanyname, pexpiredate, allergy, weight, salecount, plike, pdate
+        from
+        (
+            select pacnum, pacname, paccontents, pacimage, pnum
+                    , sdname, ctname, stname, etname, pname, price
+                    , saleprice, point, pqty, pcontents
+                    , pcompanyname, pexpiredate, allergy, weight, salecount, plike, pdate
+            from
+            (
+                select row_number() over(partition by pacnum order by saleprice) as rno
+                    , b.pacnum, b.pacname, b.paccontents, b.pacimage, a.pnum
+                    , fk_sdname as sdname, a.fk_ctname as ctname, a.fk_stname as stname, a.fk_etname as etname
+                    , a.pname, a.price, a.saleprice, a.point, a.pqty, a.pcontents
+                    , a.pcompanyname, a.pexpiredate, allergy, a.weight, a.salecount, a.plike, a.pdate
+                from product a JOIN product_package b
+                ON a.fk_pacname = b.pacname
+            ) V
+            where rno = 1 and pacnum != 1
+            union all
+            select pacnum, pacname, paccontents, pimgfilename, pnum
+                    , sdname, ctname, stname, etname, pname
+                    , price, saleprice, point, pqty, pcontents
+                    , pcompanyname, pexpiredate, allergy, weight, salecount
+                    , plike, pdate
+            from
+            (
+                select row_number() over(partition by pname order by saleprice) as rno
+                        , b.pacnum, b.pacname, b.paccontents, b.pacimage, pnum
+                        , fk_sdname AS sdname, a.fk_ctname AS ctname, a.fk_stname AS stname, a.fk_etname AS etname, a.pname
+                        , a.price, a.saleprice, a.point, a.pqty, a.pcontents
+                        , a.pcompanyname, a.pexpiredate, allergy, a.weight, a.salecount
+                        , a.plike, a.pdate, c.pimgfilename
+                from product a JOIN product_package b
+                ON a.fk_pacname = b.pacname
+                JOIN product_images c
+                ON a.pnum = c.fk_pnum
+                where pacnum = 1
+            ) V
+            where rno = 1
+        ) T
+        order by pdate desc, pname asc
+    ) E
+) F;
+
+
 
 -- insert
 String sql = "insert into product(pnum, fk_pacname, fk_sdname, fk_ctname, fk_stname, fk_etname, \n"+
@@ -679,7 +802,7 @@ join
     from product_images) v
     where v.rno =1
     )t
-on pnum = fk_pnum;
+on pnum = fk_pnum
 where fk_sdname like '%샐러드%';
 
 

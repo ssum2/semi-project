@@ -82,7 +82,7 @@ public class AdminDAO implements InterAdminDAO {
 			
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, adminid);
-			pstmt.setString(2, adminpw);
+			pstmt.setString(2, SHA256.encrypt(adminpw));
 			
 			rs = pstmt.executeQuery();
 			

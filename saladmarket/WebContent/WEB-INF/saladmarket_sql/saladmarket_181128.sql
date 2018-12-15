@@ -222,11 +222,11 @@ end;
 select *
 from member;
 
+commit;
 
 
-
-
-
+update member set fk_lvnum = 2 where mnum > 40 and mnum < 80;
+update member set fk_lvnum = 3 where mnum > 80 and mnum < 95;
 
 
 insert into member(mnum,userid, pwd, name,email,phone ,birthday,postnum ,address1,address2,point,registerdate ,last_logindate ,last_changepwdate ,status,summoney ,fk_lvnum)
@@ -2251,3 +2251,75 @@ order by pacnum asc;
 commit;
 
 
+select etname,rnum, pacnum, pacname, paccontents, pacimage, pnum
+        , sdname, ctname, stname, etname, pname, price
+        , saleprice, point, pqty, pcontents
+        , pcompanyname, pexpiredate, allergy, weight, salecount, plike, pdate
+from
+(
+    select rownum as rnum,pacnum, pacname, paccontents, pacimage, pnum
+            , sdname, ctname, stname, etname, pname, price
+            , saleprice, point, pqty, pcontents
+            , pcompanyname, pexpiredate, allergy, weight, salecount, plike, pdate
+    from 
+    (
+        select pacnum, pacname, paccontents, pacimage, pnum
+                , sdname, ctname, stname, etname, pname, price
+                , saleprice, point, pqty, pcontents
+                , pcompanyname, pexpiredate, allergy, weight, salecount, plike, pdate
+        from
+        
+        where etname = ? 
+        order by pdate desc, pname asc
+    ) E
+) F;
+where 1=1
+
+
+
+create or replace view view_event_product
+as 
+select pacnum, pacname, paccontents, pacimage, pnum
+        , sdname, ctname, stname, etname, pname, price
+        , saleprice, point, pqty, pcontents
+        , pcompanyname, pexpiredate, allergy, weight, salecount, plike, pdate
+from
+(
+    select row_number() over(partition by pacnum order by saleprice) as rno
+        , b.pacnum, b.pacname, b.paccontents, b.pacimage, a.pnum
+        , fk_sdname as sdname, a.fk_ctname as ctname, a.fk_stname as stname, a.fk_etname as etname
+        , a.pname, a.price, a.saleprice, a.point, a.pqty, a.pcontents
+        , a.pcompanyname, a.pexpiredate, allergy, a.weight, a.salecount, a.plike, a.pdate
+    from product a JOIN product_package b
+    ON a.fk_pacname = b.pacname
+) V
+where rno = 1 and pacnum != 1
+union all
+select pacnum, pacname, paccontents, pimgfilename, pnum
+       , sdname, ctname, stname, etname, pname
+       , price, saleprice, point, pqty, pcontents
+       , pcompanyname, pexpiredate, allergy, weight, salecount
+       , plike, pdate
+from
+(
+    select row_number() over(partition by pname order by saleprice) as rno
+            , b.pacnum, b.pacname, b.paccontents, b.pacimage, pnum
+            , fk_sdname AS sdname, a.fk_ctname AS ctname, a.fk_stname AS stname, a.fk_etname AS etname, a.pname
+            , a.price, a.saleprice, a.point, a.pqty, a.pcontents
+            , a.pcompanyname, a.pexpiredate, allergy, a.weight, a.salecount
+            , a.plike, a.pdate, c.pimgfilename
+    from product a JOIN product_package b
+    ON a.fk_pacname = b.pacname
+    JOIN product_images c
+    ON a.pnum = c.fk_pnum
+    where pacnum = 1
+) T
+where rno = 1;
+
+
+ select cartno, fk_userid, fk_pnum, oqty, status, B.pname, B.price, B.saleprice, B.titleimg, C.pacname 
+ from product_cart A JOIN product B 
+ on A.fk_pnum=B.pnum 
+ JOIN product_package C 
+ on B.fk_pacname= C.pacname 
+ where fk_userid = 'leess';

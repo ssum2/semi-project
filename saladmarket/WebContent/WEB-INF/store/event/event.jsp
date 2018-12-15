@@ -8,7 +8,7 @@
 	<div class="flexslider">
 		<ul class="slides">
 			<li
-				style="background-image: url(<%= CtxPath %>/store/images/cover-img-1.jpg);">
+				style="background-image: url(<%= CtxPath %>/store/images/PFPI-WEBSITE-SLIDERS-1.png);">
 				<div class="overlay"></div>
 				<div class="container-fluid">
 					<div class="row">

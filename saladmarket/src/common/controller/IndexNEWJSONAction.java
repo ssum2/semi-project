@@ -58,7 +58,7 @@ public class IndexNEWJSONAction extends AbstractController {
 		req.setAttribute("str_jsonArray", str_jsonArray);
 		
 		super.setRedirect(false);
-		super.setViewPage("/WEB-INF/store/indexNEWJSON.jsp");  
+		super.setViewPage("/WEB-INF/store/JSON/indexNEWJSON.jsp");  
 	}
 
 }

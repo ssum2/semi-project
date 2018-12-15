@@ -129,12 +129,31 @@ public interface InterProductDAO {
 			String searchword, String orderby) throws SQLException;
 	List<ProductVO> getProductList(String fk_ldname, String sdname, String orderby) throws SQLException;
 
-
 //	이벤트
 	List<ProductVO> getProductsByStnameAppend(String stname, int startRno, int endRno) throws SQLException;
 
+//	장바구니
+	// *** product, small_detai, product_images, product_package 테이블에서 상품리스트 정보 (아직)
+	List<HashMap<String, Object>> getProductListInfo() throws SQLException;
+	
+	// *** view_productList 뷰에서 스펙태그이름별(stname) 제품 리스트
+	List<HashMap<String, Object>> getStnameList(String stname) throws SQLException; 
 
-
+	// *** view_productList 안에 있는 패키지번호(pacnum)로 제품 상세
+	HashMap<String, Object> getProductDetailPacnum(String pacnum) throws SQLException; 
+	
+	// *** product 안에 있는 단품번호(pnum)로 제품 상세
+	HashMap<String, Object> getProductDetailPnum(String pnum) throws SQLException; 
+	
+	// *** product_images 안에 있는 단품번호(pnum)로 제품이미지 
+	List<HashMap<String, String>> getProductImagePnum(String pnum) throws SQLException;
+	
+	// *** view_productList 뷰에서 대분류별(ldname) 제품 리스트
+	List<HashMap<String, Object>> getSdnameList(String sdname) throws SQLException; 
+	
+	// *** cart 테이블에서 로그인한 userid의 장바구니 리스트 
+	List<HashMap<String, String>> getCartList(String userid) throws SQLException;
+	
 
 
 

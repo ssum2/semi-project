@@ -10,7 +10,7 @@
 <aside id="colorlib-hero" class="breadcrumbs">
 	<div class="flexslider">
 		<ul class="slides">
-	   	<li style="background-image: url(<%=ctxPath %>/store/images/cover-img-1.jpg);">
+	   	<li style="background-image: url(<%=ctxPath %>/store/images/PFPI-WEBSITE-SLIDERS-1.png);">
 	   		<div class="overlay"></div>
 	   		<div class="container-fluid">
 	   			<div class="row">
@@ -69,7 +69,7 @@
 						<div class="one-forth">
 							<div class="display-tc">
 								<strong style="font-size: 15pt; "><span>${cpvo.cpname}</span></strong><br>
-								<a href="#">상세보기</a>
+								<%--a href="#">상세보기</a> --%>
 							</div>
 						</div>
 						<div class="one-eight text-center">

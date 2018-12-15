@@ -59,7 +59,7 @@ public class IndexBestJSONAction extends AbstractController {
 		req.setAttribute("str_jsonArray", str_jsonArray);
 		
 		super.setRedirect(false);
-		super.setViewPage("/WEB-INF/store/indexBestJSON.jsp");  
+		super.setViewPage("/WEB-INF/store/JSON/indexBestJSON.jsp");  
 	}
 
 }

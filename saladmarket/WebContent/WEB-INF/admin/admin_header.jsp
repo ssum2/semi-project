@@ -183,12 +183,13 @@
           </a>
         </div>
         <ul class="nav">
-         <li class="active ">
+         <li class="background-color span">
             <a href="<%= ctxPath %>/a_memberList.do">
               <i class="tim-icons icon-single-02"></i>
               <p>회원 목록</p>
             </a>
           </li>
+          <li>
             <a href="<%= ctxPath %>/a_orderList.do">
               <i class="tim-icons icon-chart-pie-36"></i>
               <p>전체 주문 목록</p>
@@ -213,30 +214,7 @@
               <p>패키지 목록</p>
             </a>
           </li>
-      	  <li>
-            <a href="<%= ctxPath %>/a_reviewList.do">
-              <i class="tim-icons icon-bell-55"></i>
-              <p>전체 리뷰 리스트</p>
-            </a>
-          </li>
-          <li>
-            <a href="<%= ctxPath %>/a_reviewDetail.do">
-              <i class="tim-icons icon-bell-55"></i>
-              <p>리뷰 상세</p>
-            </a>
-          </li>
-          <li>
-            <a href="<%= ctxPath %>/a_qnaList.do">
-              <i class="tim-icons icon-bell-55"></i>
-              <p>전체 Q&A 리스트</p>
-            </a>
-          </li>
-          <li>
-            <a href="<%= ctxPath %>/a_qnaDetail.do">
-              <i class="tim-icons icon-bell-55"></i>
-              <p>Q&A 상세</p>
-            </a>
-          </li>
+
           <li>
             <a href="<%= ctxPath %>/a_categoryTagList.do">
               <i class="tim-icons icon-bell-55"></i>

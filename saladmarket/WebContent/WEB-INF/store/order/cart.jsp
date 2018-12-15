@@ -1,15 +1,79 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <% String CtxPath = request.getContextPath(); %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <jsp:include page="../header.jsp" />
 
-<<script type="text/javascript">
-//#전체 체크박스(관리자모드; 배송시작, 배송완료)
-function allCheckBox() {
-	var bool = $("#allCheck").is(':checked');
-	$(".cartCheck").prop('checked', bool)	
-}
+<script>
+
+   $(document).ready(function(){
+	   showCart();
+	   
+   }); // $(document).ready()
+
+   
+   
+   function showCart(){
+	   
+	   $.ajax({
+	          url:"ajaxShowCart.do",
+	          type:"GET",
+	          dataType:"JSON",
+	          success:function(json){
+	        	  var html = "";
+	            
+            	  if (json.length > 0) {
+            		  $.each(json, function(entryIndex, entry){
+	            	  	html += " <div class='product-cart'> "+
+								"<div class='one-forth'>"+
+									" <div class='product-img' style='background-image: url(saladmarket/img/"+entry.titleimg+"););'>"+
+								"	</div>"+
+								"	<div class='display-tc'>"+
+								"		<h3>"+entry.pacname+"<br>-"+entry.pname+"</h3>"+
+								"	</div>"+
+								"</div>"+
+								"<div class='one-eight text-center'>"+
+								"	<div class='display-tc'>"+
+								"		<span style='text-decoration: line-through;'>"+entry.price+"원</span> -> "+
+								"		<span class='price'>"+entry.saleprice+"원</span>"+
+								"	</div>"+
+								"</div>"+
+								"<div class=\"one-eight text-center\">"+
+								"	<div class=\"display-tc\">"+
+								"		<input type=\"number\" id=\"quantity\" name=\"quantity\" class=\"form-control input-number text-center\" value=\""+entry.oqty+"\" min=\"1\" max=\"100\">"+
+								"	</div>"+
+								"</div>"+
+								"<div class=\"one-eight text-center\">"+
+								"	<div class=\"display-tc\">"+
+								"		<span class=\"price\">6900원</span>"+
+								"	</div>"+
+								"</div>"+
+								"<div class=\"one-eight text-center\">"+
+								"	<div class=\"display-tc\">"+
+								"		<a href=\"#\" class=\"closed\"></a>"+
+								"	</div>"+
+								"</div>"+
+							"</div>";
+            		  }); 
+            	  }
+            	  else {
+            		  html += "상품이 없습니다.";
+            	  }
+            	  $("#result").empty().html(html);
+	            	  
+	          },
+	          error: function(request, status, error){
+	            alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+	         }
+	       });
+	   
+   } // showCart
+   
+   
 </script>
+
+
+
 	<aside id="colorlib-hero" class="breadcrumbs">
 			<div class="flexslider">
 				<ul class="slides">
@@ -52,15 +116,11 @@ function allCheckBox() {
 						</div>
 					</div>
 				</div>
+				
+				
 				<div class="row row-pb-md">
 					<div class="col-md-10 col-md-offset-1">
 						<div class="product-name">
-							<div class="text-left">
-								<input type="checkbox" id="allCheck" onClick="allCheckBox();">
-								<label for="allCheck">
-								<span style="font-weight: bold; font-size: 9pt;">전체선택</span>
-								</label>
-							</div>
 							<div class="one-forth text-center">
 								<span>상품</span>
 							</div>
@@ -76,83 +136,17 @@ function allCheckBox() {
 							<div class="one-eight text-center">
 								<span>삭제</span>
 							</div>
-						</div><!-- 장바구니 List 윗부분 -->
+						</div><%-- 장바구니 List 윗부분 --%>
 						
-						<div class="product-cart">
-							<div class="text-center">
-								<div class="display-tc">
-									<input type="checkbox" id="cartCheck1" name="cartCheck" class="cartCheck"/>
-								</div>
-							</div>
-							<div class="one-forth">
-								<div class="product-img" style="background-image: url(<%=CtxPath %>/store/images/index/coupon.jpg););">
-								</div>
-								<div class="display-tc">
-									<h3>[퀸즈프레시] 프리미엄 샐러드 3종<br>
-									 - 베리</h3>
-								</div>
-							</div>
-							<div class="one-eight text-center">
-								<div class="display-tc">
-									<span style="text-decoration: line-through;">6900원</span> -> 
-									<span class="price">6900원</span>
-								</div>
-							</div>
-							<div class="one-eight text-center">
-								<div class="display-tc">
-									<input type="text" id="quantity" name="quantity" class="form-control input-number text-center" value="1" min="1" max="100">
-								</div>
-							</div>
-							<div class="one-eight text-center">
-								<div class="display-tc">
-									<span class="price">6900원</span>
-								</div>
-							</div>
-							<div class="one-eight text-center">
-								<div class="display-tc">
-									<a href="#" class="closed"></a>
-								</div>
-							</div>
+					
+						<div id="result">
 						</div>
 						
-						<div class="product-cart">
-							<div class="text-center">
-								<div class="display-tc">
-									<input type="checkbox" id="cartCheck2" name="cartCheck" class="cartCheck"/>
-								</div>
-							</div>
-							<div class="one-forth">
-								<div class="product-img" style="background-image: url(<%=CtxPath %>/store/images/index/coupon.jpg););">
-								</div>
-								<div class="display-tc">
-									<h3>[퀸즈프레시] 프리미엄 샐러드 3종<br>
-									 - 쉬림프</h3>
-								</div>
-							</div>
-							<div class="one-eight text-center">
-								<div class="display-tc">
-									<span style="text-decoration: line-through;">6900원</span> -> 
-									<span class="price">6900원</span>
-								</div>
-							</div>
-							<div class="one-eight text-center">
-								<div class="display-tc">
-									<input type="text" id="quantity" name="quantity" class="form-control input-number text-center" value="1" min="1" max="100">
-								</div>
-							</div>
-							<div class="one-eight text-center">
-								<div class="display-tc">
-									<span class="price">6900원</span>
-								</div>
-							</div>
-							<div class="one-eight text-center">
-								<div class="display-tc">
-									<a href="#" class="closed"></a>
-								</div>
-							</div>
-						</div>
+						
 					</div>
 				</div>
+				
+				
 				<div class="row">
 					<div class="col-md-10 col-md-offset-1">
 						<div class="total-wrap">

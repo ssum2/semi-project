@@ -10,7 +10,7 @@
 <aside id="colorlib-hero" class="breadcrumbs">
 	<div class="flexslider">
 		<ul class="slides">
-	   	<li style="background-image: url(<%=ctxPath %>/store/images/cover-img-1.jpg);">
+	   	<li style="background-image: url(<%=ctxPath %>/store/images/PFPI-WEBSITE-SLIDERS-1.png);">
 	   		<div class="overlay"></div>
 	   		<div class="container-fluid">
 	   			<div class="row">
@@ -74,6 +74,8 @@
 				}
 				else{
 					$("#pwdCheckResult").html("비밀번호가 올바르지 않습니다. 다시 입력해주세요.");
+					$("#pwd").val("");
+					$("#pwd").focus();
 					return;
 				}
 			},

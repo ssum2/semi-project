@@ -2058,77 +2058,476 @@ public class ProductDAO implements InterProductDAO {
 	}
 	
 	
-//	
-	// ** AJAX를 이용한 index에서 스펙대로 제품 리스트를 보여주는 추상 메소드
-		@Override
-		public List<ProductVO> getProductsByStnameAppend(String stname, int startRno, int endRno) throws SQLException {
-			List<ProductVO> productList = null;
+// 이벤트
+// ** AJAX를 이용한 index에서 스펙대로 제품 리스트를 보여주는 추상 메소드
+	@Override
+	public List<ProductVO> getProductsByStnameAppend(String stname, int startRno, int endRno) throws SQLException {
+		List<ProductVO> productList = null;
+		
+		try {
+			conn = ds.getConnection();
 			
-			try {
-				conn = ds.getConnection();
+			String sql = "select rnum, pacnum, pacname, paccontents, pacimage, pnum \n"+
+					"        , sdname, ctname, stname, etname, pname, price\n"+
+					"        , saleprice, point, pqty, pcontents\n"+
+					"        , pcompanyname, pexpiredate, allergy, weight, salecount, plike, pdate \n"+
+					" from \n"+
+					" (\n"+
+					"    select rownum as rnum,pacnum,  case when pacname = '없음' then pname else pacname end as pacname,paccontents, pacimage, pnum \n"+
+					"            , sdname, ctname, stname, etname, pname, price \n"+
+					"            , saleprice, point, pqty, pcontents \n"+
+					"            , pcompanyname, pexpiredate, allergy, weight, salecount, plike, pdate \n"+
+					"    from view_event_product \n"+
+					"        where stname = ? \n"+
+					"        order by rnum asc, pname asc \n"+
+					" ) F where rnum between ? and ? ";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, stname);
+			pstmt.setInt(2, startRno);
+			pstmt.setInt(3, endRno);
+			
+			rs = pstmt.executeQuery();
+			
+			int cnt = 0;
+			while(rs.next()) {
+				cnt++;
 				
-				String sql = "select rnum, pacnum, pacname, paccontents, pacimage, pnum \n"+
-						"        , sdname, ctname, stname, etname, pname, price\n"+
-						"        , saleprice, point, pqty, pcontents\n"+
-						"        , pcompanyname, pexpiredate, allergy, weight, salecount, plike, pdate \n"+
-						" from \n"+
-						" (\n"+
-						"    select rownum as rnum,pacnum,  case when pacname = '없음' then pname else pacname end as pacname,paccontents, pacimage, pnum \n"+
-						"            , sdname, ctname, stname, etname, pname, price \n"+
-						"            , saleprice, point, pqty, pcontents \n"+
-						"            , pcompanyname, pexpiredate, allergy, weight, salecount, plike, pdate \n"+
-						"    from view_Product \n"+
-						"        where stname = ? \n"+
-						"        order by rnum asc, pname asc \n"+
-						" ) F where rnum between ? and ? ";
+				if(cnt==1) {
+					productList = new ArrayList<ProductVO>();
+				}
 				
-				pstmt = conn.prepareStatement(sql);
-				pstmt.setString(1, stname);
-				pstmt.setInt(2, startRno);
-				pstmt.setInt(3, endRno);
+			     int rnum = rs.getInt("rnum");
+				 String pnum = rs.getString("pacnum");
+				 String pacname = rs.getString("pacname");
+				 String paccontents = rs.getString("paccontents");
+				 String pacimage = rs.getString("pacimage");
+				 String ctname = rs.getString("ctname");
+				 String sdname = rs.getString("sdname");
+				 int price = rs.getInt("price");
+				 int plike = rs.getInt("plike");
+				 int saleprice = rs.getInt("saleprice");
+				 System.out.println(pacname); 
+				 ProductVO pvo = new ProductVO();
+				 pvo.setRnum(rnum);
+				 pvo.setPnum(pnum);
+				 pvo.setFk_pacname(pacname);
+				 pvo.setPaccontents(paccontents);
+				 pvo.setPacimage(pacimage);
+				 pvo.setFk_ctname(ctname);
+				 pvo.setFk_sdname(sdname);
+				 pvo.setPrice(price);
+				 pvo.setPlike(plike);
+				 pvo.setSaleprice(saleprice);
+				 
+				 productList.add(pvo);				 
 				
-				rs = pstmt.executeQuery();
+			} // end of while-------------------
+						
+		} finally {
+			close();
+		}
+		
+		return productList;	
+	}
+	
+	
+//	장바구니
+	// *** product, small_detai, product_images, product_package 테이블에서 상품리스트 정보
+	@Override
+	public List<HashMap<String, Object>> getProductListInfo() throws SQLException {
+		
+		List<HashMap<String, Object>> productList = null;
+		
+		try {
+			conn = ds.getConnection();
+			
+			String sql = " select rno, pnum, fk_pacname, V.sdnum, V.fk_ldname, fk_sdname, fk_ctname, fk_stname, fk_etname "
+				       + " , pname, price, saleprice, point, pqty, pcontents, pcompanyname, pexpiredate, allergy, weight, salecount, plike, pdate "
+				       + " , V.pimgnum, V.pimgfilename, T.pacnum, T.paccontents, T.pacimage "
+				       + " from "
+				       + " ( "
+				       + " 		select rno, pnum, fk_pacname, C.sdnum, C.fk_ldname, fk_sdname, fk_ctname, fk_stname, fk_etname "
+				       + " 			 , pname, price, saleprice, point, pqty, pcontents, pcompanyname, pexpiredate, allergy, weight, salecount, plike, pdate "
+				       + "			 , D.pimgnum, D.pimgfilename "
+				       + " 		from "
+				       + " 		( "
+				       + " 			select row_number() over(order by pnum desc) AS RNO, pnum, fk_pacname, B.sdnum, B.fk_ldname, fk_sdname, fk_ctname, fk_stname, fk_etname "
+				       + " 			     , pname, price, saleprice, point, pqty, pcontents, pcompanyname, pexpiredate, allergy, weight, salecount, plike, pdate "
+				       + " 			from product A JOIN small_detail B "
+				       + " 			on A.fk_sdname=B.sdname "
+				       + " 		) C JOIN product_images D "
+				       + " 		  on C.pnum = D.fk_pnum "
+				       + " ) V JOIN product_package T "
+				       + " on V.fk_pacname = T.pacname ";
+			
+			pstmt = conn.prepareStatement(sql);
+			rs = pstmt.executeQuery();
+			
+			int cnt = 0;
+			while(rs.next()) {
 				
-				int cnt = 0;
-				while(rs.next()) {
-					cnt++;
-					
-					if(cnt==1) {
-						productList = new ArrayList<ProductVO>();
-					}
-					
-				     int rnum = rs.getInt("rnum");
-					 String pnum = rs.getString("pacnum");
-					 String pacname = rs.getString("pacname");
-					 String paccontents = rs.getString("paccontents");
-					 String pacimage = rs.getString("pacimage");
-					 String ctname = rs.getString("ctname");
-					 String sdname = rs.getString("sdname");
-					 int price = rs.getInt("price");
-					 int plike = rs.getInt("plike");
-					 int saleprice = rs.getInt("saleprice");
-					 System.out.println(pacname); 
-					 ProductVO pvo = new ProductVO();
-					 pvo.setRnum(rnum);
-					 pvo.setPnum(pnum);
-					 pvo.setFk_pacname(pacname);
-					 pvo.setPaccontents(paccontents);
-					 pvo.setPacimage(pacimage);
-					 pvo.setFk_ctname(ctname);
-					 pvo.setFk_sdname(sdname);
-					 pvo.setPrice(price);
-					 pvo.setPlike(plike);
-					 pvo.setSaleprice(saleprice);
-					 
-					 productList.add(pvo);				 
-					
-				} // end of while-------------------
-							
-			} finally {
-				close();
+				cnt++;
+				if(cnt==1) {
+					productList = new ArrayList<HashMap<String, Object>>();
+				}
+				
+				HashMap<String, Object> map = new HashMap<String, Object>();
+				map.put("rno", rs.getInt("rno"));						// 전체번호 총 81
+				map.put("pnum", rs.getInt("pnum"));						// 제품번호
+				map.put("pacname", rs.getString("fk_pacname"));			// 패키지명 
+				map.put("sdnum", rs.getString("sdnum"));				// 소분류 번호 
+				map.put("ldname", rs.getString("fk_ldname"));			// 대분류명 
+				map.put("sdname", rs.getString("fk_sdname"));			// 소분류명 
+				map.put("ctname", rs.getString("fk_ctname"));			// 카테고리테그명
+				map.put("stname", rs.getString("fk_stname"));			// 스펙태그명 
+				map.put("etname", rs.getString("fk_etname"));			// 이벤트태그명
+				map.put("pname", rs.getString("pname"));				// 상품명 
+				map.put("price", rs.getInt("price"));					// 원가 	
+				map.put("saleprice", rs.getInt("saleprice"));			// 판매가 
+				map.put("point", rs.getInt("point"));					// 포인트 
+				map.put("pqty", rs.getInt("pqty"));						// 재고량 
+				map.put("pcontents", rs.getString("pcontents"));		// 상세설명 
+				map.put("pcompanyname", rs.getString("pcompanyname"));	// 회사명 
+				map.put("pexpiredate", rs.getString("pexpiredate"));	// 유통기한 
+				map.put("allergy", rs.getString("allergy"));			// 알레르기 
+				map.put("weight", rs.getString("weight"));				// 용량 
+				map.put("salecount", rs.getInt("salecount"));			// 판매량 
+				map.put("plike", rs.getInt("plike"));					// 좋아요 
+				map.put("pimgnum", rs.getInt("pimgnum"));				// 이미지번호
+				map.put("pimgfilename", rs.getString("pimgfilename"));	// 이미지파일이름 
+				map.put("pacnum", rs.getInt("pacnum"));					// 패키지번호 
+				map.put("paccontents", rs.getString("paccontents"));	// 패키지 상세설명 
+				map.put("pacimage", rs.getString("pacimage"));			// 패키지 이미지
+			
+				productList.add(map);
 			}
 			
-			return productList;	
-			
+		} finally {
+			close();
 		}
+		return productList;
+	} // List<HashMap<String, Object>> getProductListInfo()
+
+
+	// *** view_productList 뷰에서 스펙태그이름별(stname) 제품 리스트
+	@Override
+	public List<HashMap<String, Object>> getStnameList(String stname) throws SQLException {
+		
+		List<HashMap<String, Object>> stnameList = null;
+		
+		try {
+			conn = ds.getConnection();
+			
+			String sql = " select rnum, pacnum, pacname, pacimage, pnum, stname"
+					   + " 		, case when pacname = '없음' then pname else pacname end AS pname "
+					   + "      , price, saleprice "
+					   + " from view_productList "
+					   + " where stname = ? ";
+					
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, stname);
+			rs = pstmt.executeQuery();
+			
+			int cnt = 0;
+			while(rs.next()) {
+				
+				cnt++;
+				if(cnt==1) {
+					stnameList = new ArrayList<HashMap<String, Object>>();
+				}
+				
+				HashMap<String, Object> map = new HashMap<String, Object>();
+				map.put("rnum", rs.getString("rnum"));			// 제품번호
+				map.put("pacnum", rs.getInt("pacnum"));			// 제품번호
+				map.put("pacname", rs.getString("pacname"));		// 패키지명 
+				map.put("pacimage", rs.getString("pacimage"));
+				map.put("pnum", rs.getInt("pnum"));				// 대분류명 
+				map.put("stname", rs.getString("stname"));			// 스펙태그명 
+				map.put("pname", rs.getString("pname"));			// 상품명 
+				map.put("price", rs.getInt("price"));				// 원가 	
+				map.put("saleprice", rs.getInt("saleprice"));		// 판매가 
+				
+				stnameList.add(map);
+			}
+			
+		} finally {
+			close();
+		}
+		return stnameList;
+
+	} // List<HashMap<String, Object>> getStnameList(String stname) --------------------------------
+
+
+	// *** view_productList 안에 있는 패키지번호(pacnum)로 제품 상세
+	@Override
+	public HashMap<String, Object> getProductDetailPacnum(String pacnum) throws SQLException {
+		
+		HashMap<String, Object> map = null;
+		
+		try {
+			conn = ds.getConnection();
+			
+			String sql = " select pacnum, case when pacname = '없음' then pname else pacname end AS pname"
+					   + "		, pacname, paccontents, pacimage, pnum, sdname, price, saleprice, pqty, pcontents "
+					   + " , pcompanyname, pexpiredate, allergy, weight, salecount, plike, pdate "
+					   + " from view_productList "
+					   + " where pacnum = ? ";
+					
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, pacnum);
+			rs = pstmt.executeQuery();
+			
+		
+			if(rs.next()) {
+
+				int v_pacnum = rs.getInt("pacnum");
+				String pname = rs.getString("pname");
+				String pacname = rs.getString("pacname");
+				String paccontents = rs.getString("paccontents");
+				String pacimage = rs.getString("pacimage");
+				int v_pnum = rs.getInt("pnum");
+				String sdname = rs.getString("sdname");
+				int price = rs.getInt("price");
+				int saleprice = rs.getInt("saleprice");
+				int pqty = rs.getInt("pqty");
+				String pcontents = rs.getString("pcontents");
+				String pcompanyname = rs.getString("pcompanyname");
+				String pexpiredate = rs.getString("pexpiredate");
+				String allergy = rs.getString("allergy");
+				String weight = rs.getString("weight");
+				int salecount = rs.getInt("salecount");
+				int plike = rs.getInt("plike");
+				String pdate = rs.getString("pdate");
+				
+				map = new HashMap<String, Object>();
+				
+				map.put("pacnum", v_pacnum);
+				map.put("pname", pname);
+				map.put("pacname", pacname);
+				map.put("paccontents", paccontents);
+				map.put("pacimage", pacimage);
+				map.put("pnum", v_pnum);
+				map.put("sdname", sdname);
+				map.put("price", price);
+				map.put("saleprice", saleprice);
+				map.put("pqty", pqty);
+				map.put("pcontents", pcontents);
+				map.put("pcompanyname", pcompanyname);
+				map.put("pexpiredate", pexpiredate);
+				map.put("allergy", allergy);
+				map.put("weight", weight);
+				map.put("salecount", salecount);
+				map.put("plike", plike);
+				map.put("pdate", pdate);
+				
+			}
+			
+		} finally {
+			close();
+		}
+		return map;
+		
+	} // HashMap<String, Object> getProductDetailPacnum(String pacnum) ---------------------------
+
+	
+	// *** view_productList 안에 있는 패키지번호(pacnum)로 제품 상세
+	@Override
+	public HashMap<String, Object> getProductDetailPnum(String pnum) throws SQLException {
+		
+		HashMap<String, Object> map = null;
+		
+		try {
+			conn = ds.getConnection();
+			
+			String sql = " select fk_sdname, pname, price, saleprice, point, pqty, pcontents, pcompanyname, pexpiredate, allergy, weight, salecount, plike, pdate "
+					   + " from product "
+					   + " where pnum = ? ";
+					
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, pnum);
+			rs = pstmt.executeQuery();
+			
+		
+			if(rs.next()) {
+
+				String sdname = rs.getString("fk_sdname");
+				String pname = rs.getString("pname");
+				int price = rs.getInt("price");
+				int saleprice = rs.getInt("saleprice");
+				int point = rs.getInt("point");
+				int pqty = rs.getInt("pqty");
+				String pcontents = rs.getString("pcontents");
+				String pcompanyname = rs.getString("pcompanyname");
+				String pexpiredate = rs.getString("pexpiredate");
+				String allergy = rs.getString("allergy");
+				String weight = rs.getString("weight");
+				int salecount = rs.getInt("salecount");
+				int plike = rs.getInt("plike");
+				String pdate = rs.getString("pdate");
+				
+				map = new HashMap<String, Object>();
+				
+				map.put("sdname", sdname);
+				map.put("pname", pname);
+				map.put("price", price);
+				map.put("saleprice", saleprice);
+				map.put("point",point);
+				map.put("pqty", pqty);
+				map.put("pcontents", pcontents);
+				map.put("pcompanyname", pcompanyname);
+				map.put("pexpiredate", pexpiredate);
+				map.put("allergy", allergy);
+				map.put("weight", weight);
+				map.put("salecount", salecount);
+				map.put("plike", plike);
+				map.put("pdate", pdate);
+				
+			}
+			
+		} finally {
+			close();
+		}
+		return map;
+		
+	} // HashMap<String, Object> getProductDetailPnum(String pnum) ------------------------------
+
+
+	// *** product_images 안에 있는 단품번호(pnum)로 제품이미지 
+	@Override
+	public List<HashMap<String, String>> getProductImagePnum(String pnum) throws SQLException {
+		List<HashMap<String, String>> imgList = null;
+		
+		try {
+			conn = ds.getConnection();
+			
+			String sql = " select pimgfilename "
+					   + " from product_images "
+					   + " where fk_pnum = ? ";
+					
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, pnum);
+			rs = pstmt.executeQuery();
+			
+			int cnt = 0;
+			while(rs.next()) {
+				
+				cnt++;
+				if(cnt == 1) {
+					imgList = new ArrayList<HashMap<String, String>>();
+				} 
+				String pimgfilename = rs.getString("pimgfilename");
+				
+				HashMap<String, String> map = new HashMap<String, String>();
+				
+				map.put("pimgfilename", pimgfilename);
+				
+				imgList.add(map);
+				
+			}
+			
+		} finally {
+			close();
+		}
+		return imgList;
+	} // List<HashMap<String, String>> getProductImagePnum(String pnum) ---------------------------------
+
+
+	
+	// *** view_productList 뷰에서 대분류별(ldname) 제품 리스트
+	@Override
+	public List<HashMap<String, Object>> getSdnameList(String sdname) throws SQLException {
+		List<HashMap<String, Object>> sdnameList = null;
+		
+		try {
+			conn = ds.getConnection();
+			
+			String sql = " select rnum, pacnum, pacname, pacimage, pnum, stname"
+					   + " 		, case when pacname = '없음' then pname else pacname end AS pname "
+					   + "      , price, saleprice "
+					   + " from view_productList "
+					   + " where sdname = ? ";
+					
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, sdname);
+			rs = pstmt.executeQuery();
+			
+			int cnt = 0;
+			while(rs.next()) {
+				
+				cnt++;
+				if(cnt==1) {
+					sdnameList = new ArrayList<HashMap<String, Object>>();
+				}
+				
+				HashMap<String, Object> map = new HashMap<String, Object>();
+				map.put("rnum", rs.getString("rnum"));			// 제품번호
+				map.put("pacnum", rs.getInt("pacnum"));			// 제품번호
+				map.put("pacname", rs.getString("pacname"));		// 패키지명 
+				map.put("pacimage", rs.getString("pacimage"));
+				map.put("pnum", rs.getInt("pnum"));				// 대분류명 
+				map.put("stname", rs.getString("stname"));			// 스펙태그명 
+				map.put("pname", rs.getString("pname"));			// 상품명 
+				map.put("price", rs.getInt("price"));				// 원가 	
+				map.put("saleprice", rs.getInt("saleprice"));		// 판매가 
+				
+				sdnameList.add(map);
+			}
+			
+		} finally {
+			close();
+		}
+		return sdnameList;
+	} // List<HashMap<String, Object>> getLdnameList(String ldname) --------------------------------------
+
+
+	// *** cart 테이블에서 로그인한 userid의 장바구니 리스트 
+	@Override
+	public List<HashMap<String, String>> getCartList(String userid) throws SQLException {
+		List<HashMap<String, String>> cartList = null;
+		
+		try {
+			conn = ds.getConnection();
+			
+			String sql = " select cartno, fk_userid, fk_pnum, oqty, status, B.pname, B.price, B.saleprice, B.titleimg, C.pacname "
+					   + " from product_cart A JOIN product B "
+					   + " on A.fk_pnum=B.pnum "
+					   + " JOIN product_package C " 
+					   + " on B.fk_pacname= C.pacname "
+					   + " where fk_userid = ? ";
+					
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, userid);
+			rs = pstmt.executeQuery();
+			
+			int cnt = 0;
+			while(rs.next()) {
+				
+				cnt++;
+				if(cnt==1) {
+					cartList = new ArrayList<HashMap<String, String>>();
+				}
+				
+				HashMap<String, String> map = new HashMap<String, String>();
+				map.put("cartno", rs.getString("cartno"));			
+				map.put("fk_userid", rs.getString("fk_userid"));	
+				map.put("fk_pnum", rs.getString("fk_pnum"));	
+				map.put("oqty", rs.getString("oqty"));			
+				map.put("status", rs.getString("status"));
+				map.put("pname", rs.getString("pname"));
+				map.put("price", rs.getString("price"));
+				map.put("saleprice", rs.getString("saleprice"));
+				map.put("titleimg", rs.getString("titleimg"));
+				map.put("pacname", rs.getString("pacname"));
+				
+				System.out.println(map.get("titleimg"));
+				cartList.add(map);
+			}
+			
+		} finally {
+			close();
+		}
+		return cartList;
+	} // List<HashMap<String, String>> getCartList(String userid) --------------------------------
+		
 }

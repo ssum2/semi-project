@@ -139,8 +139,8 @@
 										<li><a href="productList.do?fk_ldname=DIY&sdname=유제품">유제품</a></li>
 									</ul>
 								</li>
-								<li><a href="">EVENT</a></li>
-								<li><a href=""><i class="icon-shopping-cart"></i> Cart [0]</a></li>
+								<li><a href="event.do">EVENT</a></li>
+								<li><a href="cart.do"><i class="icon-shopping-cart"></i> Cart [0]</a></li>
 							</ul>
 						</div> <%-- menu --%>
 						
@@ -162,7 +162,7 @@
 		                                 </li>
 		                                 
 		                                 <li style="float: left;">
-		                                    <button type="submit" value="Submit" style="height: 50px; border: none;">
+		                                    <button type="button" value="Submit" style="height: 50px; border: none;">
 		                                       <img src="<%=ctxPath%>/store/images/search.png" style="width:20px; height:20px;"alt="">
 		                                    </button>
 		                                 </li>

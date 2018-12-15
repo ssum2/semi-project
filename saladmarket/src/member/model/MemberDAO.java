@@ -405,7 +405,7 @@ public class MemberDAO implements InterMemberDAO {
 			conn = ds.getConnection();
 			String sql = " select mnum, userid, name, email, phone, to_char(birthday, 'yyyymmdd') as birthday, postnum "+
 						 " ,address1, address2, point, to_char(registerdate, 'yyyymmdd') as  registerdate"+
-					     " ,summoney ,fk_lvnum"+
+					     " ,summoney ,fk_lvnum, status"+
 					     " from member "+
 					     " where mnum = ?";
 			
@@ -427,6 +427,7 @@ public class MemberDAO implements InterMemberDAO {
 				String registerdate = rs.getString("registerdate");
 				int summoney = rs.getInt("summoney");
 				int fk_lvnum = rs.getInt("fk_lvnum");
+				int status = rs.getInt("status");
 
 				membervo = new MemberVO();
 				
@@ -443,6 +444,7 @@ public class MemberDAO implements InterMemberDAO {
 				membervo.setRegisterdate(registerdate);
 				membervo.setSummoney(summoney);
 				membervo.setFk_lvnum(fk_lvnum);
+				membervo.setStatus(status);
 	
 			}
 		} catch (UnsupportedEncodingException | GeneralSecurityException e) {
@@ -725,4 +727,61 @@ public class MemberDAO implements InterMemberDAO {
 	}
 	
 	
+//	#admin; 주문목록에서 userid로 해당 회원의 정보를 알아오는 메소드
+	@Override
+	public MemberVO getOneMemberByUserid(String userid) throws SQLException {
+		MemberVO membervo = null;
+		try {
+			conn = ds.getConnection();
+			String sql = "select mnum,userid, name, email, summoney, to_char(birthday, 'yyyymmdd') as birthday"
+					+ "			, to_char(registerdate, 'yyyymmdd') as registerdate, fk_lvnum, postnum, address1, address2,\n"+
+					"           point, status, phone \n"+
+					" from member "
+					+ " where userid = ? ";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, userid);
+			
+			rs = pstmt.executeQuery();
+			rs.next();
+			
+			int mnum = rs.getInt("mnum");
+			String v_userid = rs.getString("USERID");
+			String name = rs.getString("NAME");
+			String email = aes.decrypt(rs.getString("EMAIL"));  // AES256 복호화	
+			String phone = aes.decrypt(rs.getString("phone"));	// AES256 복호화		
+			String postnum = rs.getString("postnum");
+			String address1 = rs.getString("address1");
+			String address2 = rs.getString("address2");
+			String birthday = rs.getString("birthday");
+			int point = rs.getInt("point");
+			String registerdate = rs.getString("registerdate");
+			int summoney = rs.getInt("summoney");
+			int fk_lvnum = rs.getInt("fk_lvnum");
+			int status = rs.getInt("status");
+			
+			membervo = new MemberVO();
+			
+			membervo.setMnum(mnum);
+			membervo.setName(name);
+			membervo.setUserid(v_userid);
+			membervo.setEmail(email);
+			membervo.setPhone(phone);
+			membervo.setBirthday(birthday);
+			membervo.setPostnum(postnum);
+			membervo.setAddress1(address1);
+			membervo.setAddress2(address2);
+			membervo.setPoint(point);
+			membervo.setRegisterdate(registerdate);
+			membervo.setSummoney(summoney);
+			membervo.setFk_lvnum(fk_lvnum);
+			membervo.setStatus(status);
+			
+		} catch (UnsupportedEncodingException | GeneralSecurityException e) {
+			e.printStackTrace();	
+		} finally {
+			close();
+		}
+		return membervo;
+	}
+
 }

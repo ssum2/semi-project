@@ -1,6 +1,7 @@
 package member.model;
 
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
 
 public interface InterMemberDAO {
@@ -51,5 +52,11 @@ public interface InterMemberDAO {
 
 //	admin; 회원 정보 수정
 	int updateMemberInfo(MemberVO mvo) throws SQLException;
+	
+	
+// 	admin; 주문목록에서 보는 회원 정보 팝업창으로 회원한명의 정보를 보여주는 메소드 *** //
+	MemberVO getOneMemberByUserid(String userid) throws SQLException;
+
+	
 	
 }

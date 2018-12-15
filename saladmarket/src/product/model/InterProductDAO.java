@@ -155,9 +155,22 @@ public interface InterProductDAO {
 	List<HashMap<String, String>> getCartList(String userid) throws SQLException;
 	
 
+//	#admin; 주문 목록 관리
+	// **** 검색조건에 따른 배송상태 리스트 보기 **** //
+	List<HashMap<String,String>> getDeliverList(String searchType,String searchWord,int currentShowPage,int sizePerPage) throws SQLException;
 
-
+	//** 검색타입별 갯수 알아오기
+	int getTotalCoutBySType(String stype,String sword) throws SQLException;
 	
+	// **** 배송시작으로 변경시켜주는 추상 메소드 **** //
+	int changeDeliverStart(String odrcode) throws SQLException;
+	
+	// **** 배송완료로 변경시켜주는 추상 메소드 **** //
+	int changeDeliverEnd(String odrcode) throws SQLException;
+	
+	// ****주문취소로 변경시켜주는 추상 메소드 **** //
+	int changeDeliverChange(String odrcode) throws SQLException;
+
 
 
 	

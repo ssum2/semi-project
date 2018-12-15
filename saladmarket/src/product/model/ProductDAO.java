@@ -1,6 +1,7 @@
 package product.model;
 
 import java.io.UnsupportedEncodingException;
+import java.security.GeneralSecurityException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -2528,6 +2529,199 @@ public class ProductDAO implements InterProductDAO {
 			close();
 		}
 		return cartList;
-	} // List<HashMap<String, String>> getCartList(String userid) --------------------------------
+	} // List<HashMap<String, String>> getCartList(String userid)
+	
+
+	
+//	#admin; 주문목록 관리
+	// **** 검색조건에 따른 배송상태 리스트 보기 **** //
+	@Override
+	public List<HashMap<String, String>> getDeliverList(String searchType, String searchWord, int currentShowPage,
+			int sizePerPage) throws SQLException {
+		List<HashMap<String, String>> deleverList = null;
+		try {
+			conn = ds.getConnection();
+			if(!"".equals(searchWord)) {
+				String sql = "select rno,odrdnum,odrcode,odrdate,fk_pnum,fk_userid,oqty,odrtotalprice,odrstatus,titleimg\n"+
+						"from \n"+
+						"(\n"+
+						"    select row_number()over(order by B.odrdate desc)as rno,odrdnum,odrcode,B.odrdate as odrdate, fk_pnum, \n"+
+						"           fk_userid, oqty, odrtotalprice,C.titleimg as titleimg,  \n"+
+						"           case odrstatus \n"+
+						"           when 0 then '주문완료' \n"+
+						"           when 1 then '배송중' \n"+
+						"           when 2 then '배송완료' \n"+
+						"           when 3 then '주문취소' \n"+
+						"           else '교환환불' end odrstatus\n"+
+						"    from product_order_detail A \n"+
+						"    join product_order B\n"+
+						"    on A.fk_odrcode = B.odrcode\n"+
+						 "   join product C\r\n" + 
+						"    on A.fk_pnum = C.pnum\n"+
+						" where "+searchType+" like '%'|| ? ||'%' "+
+						")V\n"+
+						"where rno between ? and ? ";
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setString(1, searchWord);
+				pstmt.setInt(2, (currentShowPage*sizePerPage)-(sizePerPage-1));
+				pstmt.setInt(3, (currentShowPage*sizePerPage));
+			}
+			else {
+				String sql = "select rno,odrdnum,odrcode,odrdate,fk_pnum,fk_userid,oqty,odrtotalprice,odrstatus,titleimg\n"+
+						"from \n"+
+						"(\n"+
+						"    select row_number()over(order by B.odrdate desc)as rno,odrdnum,odrcode,B.odrdate as odrdate, fk_pnum, \n"+
+						"           fk_userid, oqty, odrtotalprice,C.titleimg as titleimg, \n"+
+						"           case odrstatus \n"+
+						"           when 0 then '주문완료' \n"+
+						"           when 1 then '배송중' \n"+
+						"           when 2 then '배송완료' \n"+
+						"           when 3 then '주문취소' \n"+
+						"           else '교환환불' end odrstatus\n"+
+						"    from product_order_detail A \n"+
+						"    join product_order B\n"+
+						"    on A.fk_odrcode = B.odrcode"
+						+ "  join product C\r\n" + 
+						"    on A.fk_pnum = C.pnum\n"+
+						")V\n"+
+						"where rno between ? and ? ";
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setInt(1, (currentShowPage*sizePerPage)-(sizePerPage-1));
+				pstmt.setInt(2, (currentShowPage*sizePerPage));
+			}
+			rs = pstmt.executeQuery();
+			
+			int cnt = 0;
+			while(rs.next()) {
+				cnt++;
+				if(cnt == 1) {
+					deleverList = new ArrayList<HashMap<String, String>>();
+				}
+				String odrdnum = rs.getString("odrdnum");
+				String odrcode = rs.getString("odrcode");
+				String odrdate = rs.getString("odrdate");
+				String fk_pnum = rs.getString("fk_pnum");
+				String fk_userid = rs.getString("fk_userid");
+				String oqty = rs.getString("oqty");
+				String odrtotalprice = rs.getString("odrtotalprice");
+				String odrstatus = rs.getString("odrstatus");
+				String titleimg = rs.getString("titleimg");
+				
+				HashMap<String, String> map = new HashMap<String, String>();
+				map.put("odrdnum", odrdnum);
+				map.put("odrcode", odrcode);
+				map.put("odrdate", odrdate);
+				map.put("fk_pnum", fk_pnum);
+				map.put("fk_userid", fk_userid);
+				map.put("oqty", oqty);
+				map.put("odrtotalprice", odrtotalprice);
+				map.put("odrstatus", odrstatus);
+				map.put("titleimg", titleimg);
+				
+				
+				deleverList.add(map);
+			}
+			
+		} finally {
+			close();
+		}
+		return deleverList;
+	}
+	
+	//** 검색타입별 갯수 알아오기
+	@Override
+	public int getTotalCoutBySType(String stype, String sword) throws SQLException {
+		int count = 0;
+		try {
+			conn = ds.getConnection();
+			
+			if( !"".equals(sword)) {
+				String sql = "select count(*)as CNT\n"+
+						"from  product_order_detail A \n"+
+						"join product_order B\n"+
+						"on A.fk_odrcode = B.odrcode"
+						+" where "+stype+" like '%'|| ? ||'%' ";
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setString(1, sword);
+			}
+			else {
+				String sql = "select count(*)as CNT\n"+
+						"from  product_order_detail A \n"+
+						"join product_order B\n"+
+						"on A.fk_odrcode = B.odrcode";
+				pstmt = conn.prepareStatement(sql);
+			}
+			
+			rs = pstmt.executeQuery();
+			rs.next();
+			
+			count = rs.getInt("CNT");
+			
+		} finally {
+			close();
+		}
+		return count;
+	}
+	
+	
+	// **** 배송준비로 변경시켜주는 추상 메소드 **** //
+	@Override
+	public int changeDeliverStart(String odrcode) throws SQLException {
+		int n=0;
+		 try {
+			conn = ds.getConnection();
+			String sql = "update product_order_detail set ODRSTATUS = 1\n"+
+					"where fk_odrcode = ? ";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, odrcode);
+			
+			n = pstmt.executeUpdate();
+			
+		} finally {
+			close();
+		}
+		return n;
+	}
+	
+	
+	// **** 배송완료로 변경시켜주는 추상 메소드 **** //
+	@Override
+	public int changeDeliverEnd(String odrcode) throws SQLException {
+		int n=0;
+		 try {
+			conn = ds.getConnection();
+			String sql = "update product_order_detail set ODRSTATUS = 2\n"+
+					"where fk_odrcode = ? ";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, odrcode);
+			
+			n = pstmt.executeUpdate();
+			
+		} finally {
+			close();
+		}
+		return n;
+	}
+	
+	// ****주문취소로 변경시켜주는 추상 메소드 **** //
+	@Override
+	public int changeDeliverChange(String odrcode) throws SQLException {
 		
+		int n=0;
+		 try {
+			conn = ds.getConnection();
+			String sql = "update product_order_detail set ODRSTATUS = 3\n"+
+					"where fk_odrcode = ? ";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, odrcode);
+			
+			n = pstmt.executeUpdate();
+			
+		} finally {
+			close();
+		}
+		return n;
+	}
+		
+
 }

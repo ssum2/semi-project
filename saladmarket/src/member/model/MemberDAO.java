@@ -41,7 +41,6 @@ public class MemberDAO implements InterMemberDAO {
 		} catch (NamingException e) {
 			e.printStackTrace();
 		} catch (UnsupportedEncodingException e) {
-			System.out.println(">>> key값은 17자 이상이어야 합니다.");
 			e.printStackTrace();
 		} 
 	} // end of default constructor
@@ -467,7 +466,6 @@ public class MemberDAO implements InterMemberDAO {
 			
 			pstmt = conn.prepareStatement(sql);
 			
-			System.out.println("mnum: "+membervo.getMnum());
 			pstmt.setString(1, SHA256.encrypt(membervo.getPwd()));	// SHA256 단방향 암호화
 			pstmt.setString(2, membervo.getName());
 			pstmt.setString(3, aes.encrypt(membervo.getEmail()));	// AES256 양방향 암호화

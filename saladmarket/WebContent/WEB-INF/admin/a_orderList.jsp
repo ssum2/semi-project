@@ -41,7 +41,7 @@
 					$.each(json,function(entryIndex,entry){
 						var odrstatus = entry.odrstatus;
 						resultHtml +=   "<tr>"
-										+"<td class='text-center'>"+(entryIndex+1)+"</td>"
+										+"<td class='text-center'>"+entry.odrdnum+"</td>"
 					                    +"<td class='text-center'><input type='hidden' name='odrcode' value='"+entry.odrcode+"'/>"+entry.odrcode+"</td>"
 					                    +"<td class='text-center'>"+entry.odrdate+"</td>"
 					                    +"<td class='text-center'>"+entry.fk_pnum+"</td>"
@@ -49,20 +49,30 @@
 					                    +"<td class='text-center'><a onClick=\"showUser('"+entry.fk_userid+"');\" style='cursor:pointer; color:yellow;'>"+entry.fk_userid+"</a></td>"
 					                    +"<td class='text-center'>"+entry.oqty+"</td>"
 					                    +"<td class='text-center'>"+entry.odrtotalprice+"</td>"
-					                    +"<td class='text-center' style='font-weight:bold;'>"+entry.odrstatus+"</td>"
-					                    +"<td class='text-center' >";
+					                    
+					                    +"<td class='text-center' style='font-weight:bold;'>"+entry.odrstatus+"";
+					                    if("배송중"==odrstatus){
+					                    	resultHtml += "&nbsp;(KH택배: "+entry.invoice+")</td>";
+					                    }
+					                    
+					                    resultHtml += "<td class='text-center'>";
 					                    if("주문완료"==odrstatus){
-					                    	resultHtml+="<button class='btn btn-success btn-sm' onClick=\"gostart('"+entry.odrcode+"');\" >배송시작</button>"
-					                    	            +"<button class='btn btn-primary btn-sm' onClick=\"goCancel('"+entry.odrcode+"');\" >주문취소</button>";
+					                    	resultHtml+="<button class='btn btn-default btn-sm' onClick=\"goPaymentComplete('"+entry.odrdnum+"');\" >결제확인</button>"
+					                    	            +"<button class='btn btn-primary btn-sm' onClick=\"goCancel('"+entry.odrdnum+"');\" >주문취소</button>";
 								                    	
 					                    }
+					                    else if("결제완료"==odrstatus){
+					                    	resultHtml+="<button class='btn btn-success btn-sm' onClick=\"gostart('"+entry.odrdnum+"');\" >배송시작</button>"
+		                    	            +"<button class='btn btn-primary btn-sm' onClick=\"goCancel('"+entry.odrdnum+"');\" >주문취소</button>";
+					                    	
+		                    			}
 					                    else if("배송중"==odrstatus){
-					                    	resultHtml+="<button class='btn btn-warning btn-sm' onClick=\"goEnd('"+entry.odrcode+"');\" >배송완료</button>";
+					                    	resultHtml+="<button class='btn btn-warning btn-sm' onClick=\"goEnd('"+entry.odrdnum+"');\" >배송완료</button>";
 					                    }
 					                    else if("주문취소"==odrstatus){
-					                    	resultHtml+="<button class='btn btn-primary btn-sm' onClick=\"goCancel('"+entry.odrcode+"');\" disabled>주문취소</button>"
-									                    +"<button class='btn btn-success btn-sm' onClick=\"gostart('"+entry.odrcode+"');\" disabled>배송시작</button>"
-									                    +"<button class='btn btn-warning btn-sm' onClick=\"goEnd('"+entry.odrcode+"');\" disabled>배송완료</button>"
+					                    	resultHtml+="<button class='btn btn-primary btn-sm' onClick=\"goCancel('"+entry.odrdnum+"');\" disabled>주문취소</button>"
+									                    +"<button class='btn btn-success btn-sm' onClick=\"gostart('"+entry.odrdnum+"');\" disabled>배송시작</button>"
+									                    +"<button class='btn btn-warning btn-sm' onClick=\"goEnd('"+entry.odrdnum+"');\" disabled>배송완료</button>"
 					                    }
 					                    else{
 					                    	resultHtml+="<button class='btn btn-primary btn-sm' >배송완료</button>"
@@ -150,14 +160,14 @@
 		});//end of $.ajax-------
 	} 
 
-	function goCancel(odrcode){
+	function goCancel(odrdnum){
 		
 		var bool = confirm("주문취소로 변경하시겠습니까?");
 		
 		if(bool == true){
 			var frm = document.deliverFrm;
 			frm.method="POST";
-			frm.action="a_DeliverChange.do?odrcode="+odrcode;
+			frm.action="a_DeliverChange.do?odrdnum="+odrdnum;
 			frm.submit();
 		}
 		else{
@@ -166,13 +176,28 @@
 		
 	}//end of goCancel-----------
 	
-	function gostart(odrcode){
+	
+	function goPaymentComplete(odrdnum){
+		var bool = confirm("구매자의 결제를 확인하셨습니까? \n 결제완료로 변경하시겠습니까?");
+		if(bool == true){
+			var frm = document.deliverFrm;
+			frm.method="POST";
+			frm.action="a_changePaymentComplete.do?odrdnum="+odrdnum;
+			frm.submit();
+		}
+		else{
+			alert("변경을 취소하였습니다.");
+		}
+	}
+	
+	
+	function gostart(odrdnum){
 		
 		var bool = confirm("배송시작으로 변경하시겠습니까?");
 		if(bool == true){
 			var frm = document.deliverFrm;
 			frm.method="POST";
-			frm.action="a_DeliverStart.do?odrcode="+odrcode;
+			frm.action="a_DeliverStart.do?odrdnum="+odrdnum;
 			frm.submit();
 		}
 		else{
@@ -181,12 +206,12 @@
 		
 	}//end of gostart-----------
 	
-	function goEnd(odrcode){
+	function goEnd(odrdnum){
 		var bool = confirm("배송완료로 변경하시겠습니까?");
 		if(bool == true){
 			var frm = document.deliverFrm;
 			frm.method="POST";
-			frm.action="a_DeliverEnd.do?odrcode="+odrcode;
+			frm.action="a_DeliverEnd.do?odrdnum="+odrdnum;
 			frm.submit();
 		}
 		else{
@@ -246,11 +271,13 @@
                     	<tbody id="result"></tbody>
                   	</table>
                 </div>
+                
+                <div id="pageBar" class="nav justify-content-center"></div>
              </div>
              
          </div>
      </div>
-     <div id="pageBar" align="center" style="color:white;"></div>
+     
 </div>
 </form>
 <jsp:include page="admin_footer.jsp"/> 

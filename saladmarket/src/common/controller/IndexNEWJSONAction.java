@@ -28,7 +28,7 @@ public class IndexNEWJSONAction extends AbstractController {
 		
 		int endRno = startRno+Integer.parseInt(len)-1;
 		// 공식!!!   끝행번호       4(=> 1+4-1)  8(=> 8+4-1)   24(=> 17+8-1) 
-		System.out.println("indexBestJSONAction");
+		
 		InterProductDAO pdao = new ProductDAO();
 		List<ProductVO> productList = pdao.getProductsByStnameAppend(stname, startRno, endRno); 
 		

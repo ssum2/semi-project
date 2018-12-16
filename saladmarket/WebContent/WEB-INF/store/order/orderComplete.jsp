@@ -1,5 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <% String CtxPath = request.getContextPath(); %>
 <jsp:include page="../header.jsp"/>
 
@@ -40,7 +42,7 @@
 		<aside id="colorlib-hero" class="breadcrumbs">
 			<div class="flexslider">
 				<ul class="slides">
-			   	<li style="background-image: url(<%=CtxPath%>/store/images/PFPI-WEBSITE-SLIDERS-1.png);">
+			   	<li style="background-image: url(<%=CtxPath%>/store/images/cover-img-1.jpg);">
 			   		<div class="overlay"></div>
 			   		<div class="container-fluid">
 			   			<div class="row">
@@ -57,7 +59,6 @@
 		  	</div>
 		</aside>
 
-
 		<!-- 결제 완료 메시지 -->
 		<div class="colorlib-shop">
 			<div class="container">
@@ -73,60 +74,84 @@
 		</div>
 		<!-- 결제 완료 끝 -->
 
-
 		<!-- 결제완료된 내역 리스트 시작 -->
 		<div id="colorlib-contact">
 			<div class="container">
 				<div class="row">
-					
 					<div class="col-md-10 col-md-offset-1">
 						<div class="contact-wrap">
 							<h3 align="center" style="margin-top:50px;">결제가 완료되었습니다.</h3>
-							<h4 align="center">이지예님의 결제내용은 다음과 같습니다.</h4>
+							<h4 align="center">${sessionScope.loginUser.name }님의 결제내용은 다음과 같습니다.</h4>
 							<form action="#">
-								<table class="table" style="margin-top:50px;">
+								<table class="table" style="margin-top:50px; border: 1px solid #cfd2d6;">
 								    <tbody>
 										<tr>
-											<th style="padding-left: 50px;"> 주문자명 </th>
-											<td > 이지예님 </td>
+											<th width="40%" style="padding-left: 50px;"> 주문자명 </th>
+											<td width="*">${sessionScope.loginUser.name }님 </td>
 										</tr>
 										<tr>
 											<th style="padding-left: 50px;"> 주문번호 </th>
-											<td > 20182054124 </td>
+											<td>${orderList[0].odrcode } </td>
 										</tr>
+									</tbody>
+								</table>
+								<c:set var="totalPrice" value="0"/>
+								<table class="table" style="margin-top:30px; border: 1px solid #cfd2d6;">
+									<tbody>
+										<c:forEach var="map" items="${orderList}">
 										<tr>
-											<th style="padding-left: 50px;"> 주문상품 </th>
-											<td> 남성의류상의 </td>
+											<th width="40%" style="padding-left: 50px;"> 주문상품 </th>
+											<td width="30%">
+												${map.pname} ${map.oqty}개
+											</td>
+											<td>
+												<span style="text-decoration: line-through;"><fmt:formatNumber value="${map.price * map.oqty}" pattern="###,###"/>원</span> → 
+												<span><fmt:formatNumber value="${map.odrprice * map.oqty}" pattern="###,###"/>원</span>
+											</td>
 										</tr>
-										<tr>
+										<c:set var="totalPrice" value="${totalPrice + (map.price * map.oqty)}"/>
+										<%-- <tr>
 											<th style="padding-left: 50px;"> 주문금액 </th>
-											<td > 250,000원 </td>
+											<td>${map.odrprice * map.oqty}원</td>
 										</tr>
 										<tr>
 											<th style="padding-left: 50px;"> 할인금액 </th>
-											<td> 50,000원 </td>
+											<c:set var="totalPrice" value="${map.price * map.oqty}"/>
+											<c:set var="orderPrice" value="${map.odrprice * map.oqty}"/>
+											<td>${totalPrice-orderPrice}</td>
+										</tr> --%>
+										</c:forEach>
+									</tbody>
+								</table>
+								<table class="table" style="margin-top:30px; border: 1px solid #cfd2d6;">
+									<tbody>
+										<tr>
+											<th width="40%" style="padding-left: 50px;"> 주문금액 </th>
+											<td width="*"><fmt:formatNumber value="${totalPrice}" pattern="###,###"/></td>
 										</tr>
 										<tr>
-											<th style="padding-left: 50px;"> 결제금액 </th>
-											<td > 200,000원 </td>
+											<th width="40%" style="padding-left: 50px;"> 할인금액 </th>
+											<td width="*"><fmt:formatNumber value="${totalPrice-orderList[0].odrtotalprice}" pattern="###,###"/></td>
+										</tr>
+										<tr>
+											<th width="40%" style="padding-left: 50px;"> 결제금액 </th>
+											<td width="*"><fmt:formatNumber value="${orderList[0].odrtotalprice}" pattern="###,###"/></td>
 										</tr>
 										<tr>
 											<th style="padding-left: 50px;"> 포인트적립혜택 </th>
-											<td > 200 point </td>
+											<td><fmt:formatNumber value="${orderList[0].odrtotalpoint}" pattern="###,###"/>point</td>
 										</tr>
 									</tbody>
 								</table>
 							
 							
-									<div class="text-center" style="padding-top:50px;">
-										<p>
-											<a href="index.html"class="btn btn-primary">Home</a>
-											<a href="shop.html"class="btn btn-primary btn-outline">Continue Shopping</a>
-										</p>
-									</div>
-						
-							
-							</form>		
+								<div class="text-center" style="padding-top:50px;">
+									<p>
+										<a href="<%=CtxPath %>/index.do"class="btn btn-primary">Home</a>
+										<a href="<%=CtxPath %>/index.do"class="btn btn-primary btn-outline">Continue Shopping</a>
+									</p>
+								</div>
+							</form>
 						</div>
 					</div>
 				</div>

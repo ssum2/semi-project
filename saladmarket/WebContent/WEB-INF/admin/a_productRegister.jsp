@@ -35,63 +35,70 @@
 	$(document).ready(function(){
 		$("#fk_pacnameSelect").children().click(function(){
 			var len = $(this).html().length;
-			var html = $(this).html();
+			var html = $(this).text().trim();
+			console.log(html);
+			$("#pacname").val(html);
+			
 			if(len>6){
 				html = html.substring(0,10);
 			}
 			$("#btnPacnameSelect").empty().html(html);
 
-
-			$("#pacname").val(html);
 		});
 		
 		
 		$("#fk_sdnameSelect").children().click(function(){
 			var len = $(this).html().length;
 			var html = $(this).html();
+			
+			var sdname = $(this).attr('id');
+			console.log(sdname);
+			$("#sdname").val(sdname);
+			
 			if(len>8){
 				html = html.substring(0,13);
 			}
 			$("#btnSdnameSelect").empty().html(html);
 			
-			var sdname = $(this).attr('id');
-			console.log(sdname);
-			$("#sdname").val(sdname);
+			
 		});
 		
 		
 		$("#fk_ctnameSelect").children().click(function(){
 			var len = $(this).html().length;
-			var html = $(this).html();
+			var html = $(this).text();
+			console.log(html);
+			$("#ctname").val(html);
 			if(len>6){
 				html = html.substring(0,8);
 			}
 			$("#btnCtnameSelect").empty().html(html);
-			$("#ctname").val(html);
+			
 		});
 		
 		$("#fk_stnameSelect").children().click(function(){
 			var len = $(this).html().length;
-			var html = $(this).html();
+			var html = $(this).text();
+			console.log(html);
+			$("#stname").val(html);
 			if(len>6){
 				html = html.substring(0,8);
 			}
 			$("#btnStnameSelect").empty().html(html);
-			$("#stname").val(html);
+			
 		});
 		
 		$("#fk_etnameSelect").children().click(function(){
 			var len = $(this).html().length;
-			var html = $(this).html();
+			var html = $(this).text();
+			console.log(html);
+			$("#etname").val(html);
 			if(len>6){
 				html = html.substring(0,8);
 			}
 			$("#btnEtnameSelect").empty().html(html);
-			$("#etname").val(html);
+			
 		});
-		
-		
-		
 		
 		
 		$("#spinnerPqty").spinner().parent().addClass("custom-spinner-style");
@@ -164,6 +171,9 @@
 					flag = true;
 					return false;
 				}
+				else{
+					$(this).next().text("");
+				}
 			});
 			
 			if(flag){
@@ -200,7 +210,7 @@
 					  <button class="btn btn-primary dropdown-toggle" type="button" id="btnPacnameSelect" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 					     	상품패키지명
 					  </button>
-					  <input type="hidden" name="pacname" id="pacname" value="">
+					  <input type="hidden" class="infoData" name="pacname" id="pacname" value=""><span></span>
 						  <div class="dropdown-menu" id="fk_pacnameSelect" aria-labelledby="btnPacnameSelect">
 							<c:forEach var="map" items="${requestScope.pacnameList}">
 		   						<a class="dropdown-item" id="${map.pacnum}">${map.pacname}</a>
@@ -216,7 +226,7 @@
 					  	<button class="btn btn-primary dropdown-toggle" type="button" id="btnSdnameSelect" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 					     	소분류상세명
 					 	 </button>
-					 	 <input type="hidden" name="sdname" id="sdname" value="">
+					 	 <input type="hidden" class="infoData" name="sdname" id="sdname" value=""><span></span>
 						  <div class="dropdown-menu" id="fk_sdnameSelect" aria-labelledby="btnSdnameSelect">
 						    <c:forEach var="map" items="${requestScope.sdnameList}">
 		   						<a class="dropdown-item" id="${map.sdname}">${map.fk_ldname} > ${map.sdname}</a>
@@ -229,7 +239,7 @@
 					  	<button class="btn btn-primary dropdown-toggle" type="button" id="btnCtnameSelect" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 					     	카테고리태그명
 					 	 </button>
-					 	 <input type="hidden" name="ctname" id="ctname" value="">
+					 	 <input type="hidden" class="infoData" name="ctname" id="ctname" value=""><span></span>
 						  <div class="dropdown-menu" id="fk_ctnameSelect" aria-labelledby="btnCtnameSelect">
 						    <c:forEach var="map" items="${requestScope.ctnameList}">
 		   						<a class="dropdown-item" id="${map.ctnum}">${map.ctname}</a>
@@ -243,7 +253,7 @@
 					  	<button class="btn btn-primary dropdown-toggle" type="button" id="btnStnameSelect" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 					     	스펙태그명
 					 	 </button>
-					 	 <input type="hidden" name="stname" id="stname" value="">
+					 	 <input type="hidden" class="infoData" name="stname" id="stname" value=""><span></span>
 						  <div class="dropdown-menu" id="fk_stnameSelect" aria-labelledby="btnStnameSelect">
 						    <c:forEach var="map" items="${requestScope.stnameList}">
 		   						<a class="dropdown-item" id="${map.stnum}">${map.stname}</a>
@@ -257,7 +267,7 @@
 					  	<button class="btn btn-primary dropdown-toggle" type="button" id="btnEtnameSelect" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 					     	이벤트태그명
 					 	 </button>
-					 	 <input type="hidden" name="etname" id="etname" value="">
+					 	 <input type="hidden" class="infoData" name="etname" id="etname" value=""><span></span>
 						  <div class="dropdown-menu" id="fk_etnameSelect" aria-labelledby="btnEtnameSelect">
 						    <c:forEach var="map" items="${requestScope.etnameList}">
 		   						<a class="dropdown-item" id="${map.etnum}">${map.etname}</a>
@@ -331,7 +341,7 @@
                     <div class="col-md-2 pr-md-1">
                       <div class="form-group">
                         <label>용량</label>
-                        <input type="text" class="form-control infoData" name="weight" id="weight"><span></span>
+                        <input type="text" class="form-control infoData" name="weight" id="weight" placeholder="숫자만 입력"><span></span>
                       </div>
                     </div>
                    </div>

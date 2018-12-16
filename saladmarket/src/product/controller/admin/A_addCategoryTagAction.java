@@ -16,7 +16,6 @@ public class A_addCategoryTagAction extends AbstractController {
 		
 		String ctname = req.getParameter("addCategoryName");
 		
-		System.out.println(ctname);
 		InterProductDAO pdao = new ProductDAO();
 		
 		int result = pdao.addCategoryTag(ctname);

@@ -12,13 +12,13 @@ public class A_DeliverChangeAction extends AbstractController {
 	@Override
 	public void execute(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		
-		String odrcode = req.getParameter("odrcode");
+		String odrdnum = req.getParameter("odrdnum");
 	
-		if(odrcode != null) {
+		if(odrdnum != null) {
 			InterProductDAO ipdao = new ProductDAO();
 			
 			// ****주문취소로 변경시켜주는 추상 메소드 **** //
-			int n = ipdao.changeDeliverChange(odrcode);
+			int n = ipdao.changeDeliverChange(odrdnum);
 			
 			if(n == 1) {
 				req.setAttribute("msg", "주문취소로 변경되었습니다!");

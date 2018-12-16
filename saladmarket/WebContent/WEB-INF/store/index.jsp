@@ -199,6 +199,7 @@
             
             <div class="row" id="displayResultNEW"></div>
             <!--  NEW 상품 더보기 버튼 -->
+            <c:if test="${totalNEWCount > 4}">
            	<div class="form-group">
 				  <div  align="center">
 				    <button type="button" id="btnMoreNEW" name="btnMoreName" class="btn btn-primary">더보기</button>
@@ -206,6 +207,7 @@
 						<span id="countNEW">0</span>
 				  </div>
 			</div>
+			</c:if>
 			<!--  NEW 상품 더보기 버튼끝 -->
         </div>
       </div>
@@ -221,6 +223,7 @@
             
             <div class="row" id="displayResultBEST"></div>
            <!--  BEST 상품 더보기 버튼 -->
+           <c:if test="${totalBESTCount > 4}">
            	<div class="form-group" >
 				  <div align="center">
 				    <button type="button" id="btnMoreBEST" name="btnMoreName" class="btn btn-primary">더보기</button>
@@ -228,6 +231,7 @@
 						<span id="countBEST">0</span>
 				  </div>
 			</div>
+			</c:if>
 			<!--  BEST 상품 더보기 버튼끝 -->
         </div>
       </div>

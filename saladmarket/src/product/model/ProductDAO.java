@@ -192,7 +192,6 @@ public class ProductDAO implements InterProductDAO {
 				}
 				String pqty = v_pqty;
 				
-				System.out.println(pqty);
 				
 				HashMap<String, String> map = new HashMap<String, String>();
 				map.put("ctnum", ctnum);
@@ -1230,7 +1229,7 @@ public class ProductDAO implements InterProductDAO {
 	}
 	
 	
-//	#상품 상세; 추가이미지 가져오기
+//	#admin; 상품 상세; 추가이미지 가져오기
 	@Override
 	public List<HashMap<String, String>> getAttachImgList(String pnum) throws SQLException{
 		List<HashMap<String, String>> imgList =null;
@@ -1588,7 +1587,7 @@ public class ProductDAO implements InterProductDAO {
 					"        ) v\n"+
 					"        where pacname like '%'|| ? ||'%'\n"+
 					"        group by pacnum, pacname, pacimage\n"+
-					"        order by pacnum\n"+
+					"        order by pacnum desc \n"+
 					"    ) T\n"+
 					") N\n"+
 					"where N.rno between ? and ?";
@@ -2108,7 +2107,7 @@ public class ProductDAO implements InterProductDAO {
 				 int price = rs.getInt("price");
 				 int plike = rs.getInt("plike");
 				 int saleprice = rs.getInt("saleprice");
-				 System.out.println(pacname); 
+				 
 				 ProductVO pvo = new ProductVO();
 				 pvo.setRnum(rnum);
 				 pvo.setPnum(pnum);
@@ -2521,7 +2520,7 @@ public class ProductDAO implements InterProductDAO {
 				map.put("titleimg", rs.getString("titleimg"));
 				map.put("pacname", rs.getString("pacname"));
 				
-				System.out.println(map.get("titleimg"));
+				
 				cartList.add(map);
 			}
 			
@@ -2542,17 +2541,18 @@ public class ProductDAO implements InterProductDAO {
 		try {
 			conn = ds.getConnection();
 			if(!"".equals(searchWord)) {
-				String sql = "select rno,odrdnum,odrcode,odrdate,fk_pnum,fk_userid,oqty,odrtotalprice,odrstatus,titleimg\n"+
+				String sql = "select rno,odrdnum,odrcode,odrdate,fk_pnum,fk_userid,oqty,odrtotalprice,odrstatus, invoice, titleimg\n"+
 						"from \n"+
 						"(\n"+
 						"    select row_number()over(order by B.odrdate desc)as rno,odrdnum,odrcode,B.odrdate as odrdate, fk_pnum, \n"+
-						"           fk_userid, oqty, odrtotalprice,C.titleimg as titleimg,  \n"+
+						"           fk_userid, oqty, odrtotalprice,C.titleimg as titleimg, invoice,  \n"+
 						"           case odrstatus \n"+
 						"           when 0 then '주문완료' \n"+
-						"           when 1 then '배송중' \n"+
-						"           when 2 then '배송완료' \n"+
-						"           when 3 then '주문취소' \n"+
-						"           else '교환환불' end odrstatus\n"+
+						"			when 1 then '결제완료' "+
+						"           when 2 then '배송중' \n"+
+						"           when 3 then '배송완료' \n"+
+						"           when 4 then '주문취소' \n"+
+						"           else '교환환불' end odrstatus \n"+
 						"    from product_order_detail A \n"+
 						"    join product_order B\n"+
 						"    on A.fk_odrcode = B.odrcode\n"+
@@ -2567,17 +2567,18 @@ public class ProductDAO implements InterProductDAO {
 				pstmt.setInt(3, (currentShowPage*sizePerPage));
 			}
 			else {
-				String sql = "select rno,odrdnum,odrcode,odrdate,fk_pnum,fk_userid,oqty,odrtotalprice,odrstatus,titleimg\n"+
+				String sql = "select rno,odrdnum,odrcode,odrdate,fk_pnum,fk_userid,oqty,odrtotalprice,odrstatus, invoice, titleimg\n"+
 						"from \n"+
 						"(\n"+
 						"    select row_number()over(order by B.odrdate desc)as rno,odrdnum,odrcode,B.odrdate as odrdate, fk_pnum, \n"+
-						"           fk_userid, oqty, odrtotalprice,C.titleimg as titleimg, \n"+
+						"           fk_userid, oqty, odrtotalprice,C.titleimg as titleimg, invoice,\n"+
 						"           case odrstatus \n"+
 						"           when 0 then '주문완료' \n"+
-						"           when 1 then '배송중' \n"+
-						"           when 2 then '배송완료' \n"+
-						"           when 3 then '주문취소' \n"+
-						"           else '교환환불' end odrstatus\n"+
+						"			when 1 then '결제완료' "+
+						"           when 2 then '배송중' \n"+
+						"           when 3 then '배송완료' \n"+
+						"           when 4 then '주문취소' \n"+
+						"           else '교환환불' end odrstatus  \n"+
 						"    from product_order_detail A \n"+
 						"    join product_order B\n"+
 						"    on A.fk_odrcode = B.odrcode"
@@ -2605,6 +2606,7 @@ public class ProductDAO implements InterProductDAO {
 				String oqty = rs.getString("oqty");
 				String odrtotalprice = rs.getString("odrtotalprice");
 				String odrstatus = rs.getString("odrstatus");
+				String invoice = rs.getString("invoice");
 				String titleimg = rs.getString("titleimg");
 				
 				HashMap<String, String> map = new HashMap<String, String>();
@@ -2616,6 +2618,7 @@ public class ProductDAO implements InterProductDAO {
 				map.put("oqty", oqty);
 				map.put("odrtotalprice", odrtotalprice);
 				map.put("odrstatus", odrstatus);
+				map.put("invoice", invoice);
 				map.put("titleimg", titleimg);
 				
 				
@@ -2663,17 +2666,37 @@ public class ProductDAO implements InterProductDAO {
 		return count;
 	}
 	
-	
-	// **** 배송준비로 변경시켜주는 추상 메소드 **** //
+	// **** 결제완료로 변경시켜주는 추상 메소드 **** //
 	@Override
-	public int changeDeliverStart(String odrcode) throws SQLException {
+	public int changePaymentComplete(String odrdnum) throws SQLException {
 		int n=0;
 		 try {
 			conn = ds.getConnection();
 			String sql = "update product_order_detail set ODRSTATUS = 1\n"+
-					"where fk_odrcode = ? ";
+					"where odrdnum = ? ";
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, odrcode);
+			pstmt.setString(1, odrdnum);
+			
+			n = pstmt.executeUpdate();
+			
+		} finally {
+			close();
+		}
+		return n;
+	}
+	
+	
+	// **** 배송시작으로 변경시켜주는 추상 메소드 **** //
+	@Override
+	public int changeDeliverStart(String odrdnum, String invoice) throws SQLException {
+		int n=0;
+		 try {
+			conn = ds.getConnection();
+			String sql = "update product_order_detail set ODRSTATUS = 2, deliverdate = sysdate, invoice = ?\n"+
+					"where odrdnum = ? ";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, invoice);
+			pstmt.setString(2, odrdnum);
 			
 			n = pstmt.executeUpdate();
 			
@@ -2686,14 +2709,14 @@ public class ProductDAO implements InterProductDAO {
 	
 	// **** 배송완료로 변경시켜주는 추상 메소드 **** //
 	@Override
-	public int changeDeliverEnd(String odrcode) throws SQLException {
+	public int changeDeliverEnd(String odrdnum) throws SQLException {
 		int n=0;
 		 try {
 			conn = ds.getConnection();
-			String sql = "update product_order_detail set ODRSTATUS = 2\n"+
-					"where fk_odrcode = ? ";
+			String sql = "update product_order_detail set ODRSTATUS = 3\n"+
+					"where odrdnum = ? ";
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, odrcode);
+			pstmt.setString(1, odrdnum);
 			
 			n = pstmt.executeUpdate();
 			
@@ -2705,15 +2728,15 @@ public class ProductDAO implements InterProductDAO {
 	
 	// ****주문취소로 변경시켜주는 추상 메소드 **** //
 	@Override
-	public int changeDeliverChange(String odrcode) throws SQLException {
+	public int changeDeliverChange(String odrdnum) throws SQLException {
 		
 		int n=0;
 		 try {
 			conn = ds.getConnection();
-			String sql = "update product_order_detail set ODRSTATUS = 3\n"+
-					"where fk_odrcode = ? ";
+			String sql = "update product_order_detail set ODRSTATUS = 4\n"+
+					"where odrdnum = ? ";
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, odrcode);
+			pstmt.setString(1, odrdnum);
 			
 			n = pstmt.executeUpdate();
 			
@@ -2722,6 +2745,1107 @@ public class ProductDAO implements InterProductDAO {
 		}
 		return n;
 	}
+	
+	
+	
+//	#store; mypage -- 주문 상세
+	@Override
+	public HashMap<String,String> getOneOrderDetail(String odrdnum) {
+		HashMap<String,String> map =null;
 		
+		try {  
+			
+			conn=ds.getConnection();
+			
+			
+			String sql = "    select odrdnum, odrcode, to_char(B.odrdate, 'yyyy-mm-dd hh24:mi:ss') as odrdate, fk_pnum,  \n"+
+							"           fk_userid, odrprice, oqty, odrtotalprice, c.pname, C.titleimg as titleimg, c.point, c.saleprice, c.price, \n"+
+							"           case odrstatus \n"+
+							"           when 0 then '주문완료' \n"+
+							"			when 1 then '결제완료' "+
+							"           when 2 then '배송중' \n"+
+							"           when 3 then '배송완료' \n"+
+							"           when 4 then '주문취소' \n"+
+							"           else '교환환불' end odrstatus\n"+
+							"    from product_order_detail A \n"+
+							"    join product_order B "+
+							"    on A.fk_odrcode = B.odrcode"
+							+ "  join product C " + 
+							"    on A.fk_pnum = C.pnum "
+							+ "	 where odrdnum = ? ";
+			   
+			
+			  pstmt=conn.prepareStatement(sql);
+			  pstmt.setString(1, odrdnum);
+			
+			  
+			  rs = pstmt.executeQuery();
+			  
+			  rs.next();
+			  	String v_odrdnum = rs.getString("odrdnum");
+			  	String odrprice = rs.getString("odrprice");
+				String odrcode = rs.getString("odrcode");
+				String odrdate = rs.getString("odrdate");
+				String fk_pnum = rs.getString("fk_pnum");
+				String fk_userid = rs.getString("fk_userid");
+				String oqty = rs.getString("oqty");
+				String odrtotalprice = rs.getString("odrtotalprice");
+				String odrstatus = rs.getString("odrstatus");
+				String titleimg = rs.getString("titleimg");
+				String pname = rs.getString("pname");
+				String price = rs.getString("price");
+				String saleprice = rs.getString("saleprice");
+				String point = rs.getString("point");
+				
+				map = new HashMap<String, String>();
+				map.put("odrdnum", v_odrdnum);
+				map.put("odrprice", odrprice);
+				map.put("odrcode", odrcode);
+				map.put("odrdate", odrdate);
+				map.put("fk_pnum", fk_pnum);
+				map.put("fk_userid", fk_userid);
+				map.put("oqty", oqty);
+				map.put("odrtotalprice", odrtotalprice);
+				map.put("odrstatus", odrstatus);
+				map.put("titleimg", titleimg);
+				map.put("oqty", oqty);
+				map.put("pname", pname);
+				map.put("price", price);
+				map.put("saleprice", saleprice);
+				map.put("point", point);
+			
+			
+		} catch (SQLException e) {
+				
+				e.printStackTrace();
+			
+		}finally {
+			close();
+		}
+		return map;
+	} //주문 상세 끝
 
+//	#store; mypage -- 주문 상세; totalprice 가져오는 메소드 
+	@Override
+	public int getTotalprice(String odrdnum) throws SQLException {
+		int totalprice = 0;
+		 
+		 try {
+			 
+			 conn=ds.getConnection();
+			 
+			 String sql = " select saleprice, oqty "+
+							 " from product join product_order_detail\n "+
+							 " on pnum = fk_pnum\n "+
+							 " where pnum = \n "+
+							 " (\n "+
+							 "    select fk_pnum\n "+
+							 "    from product_order_detail\n "+
+							 "    where odrdnum = ?\n "+
+							 "  ) ";
+			 
+			 pstmt=conn.prepareStatement(sql);
+			 pstmt.setString(1, odrdnum);
+			 
+			 rs=pstmt.executeQuery();
+			 
+			 boolean bool =rs.next();
+			 
+			 if(bool) {
+				 int saleprice=rs.getInt("saleprice");
+				 int oqty =rs.getInt("oqty");
+				 totalprice= saleprice* oqty;
+				 
+			 }
+		 }finally {
+			 close();
+		 }
+		 
+		return totalprice;
+	}
+
+
+/** #store; 회원 마이페이지 주문 내역
+ * 주문목록을 가져오는 메소드
+ * @param userid; 로그인한 유저 아이디
+ * @return orderList
+ * @throws SQLException
+ */
+	@Override
+	public List<HashMap<String, String>> getOrderListByUserid(String userid) throws SQLException {
+		List<HashMap<String, String>> orderList =null;
+		
+		try {
+			conn = ds.getConnection();
+			
+			String sql = "select rno,odrdnum,odrcode,odrdate, fk_pnum,fk_userid,oqty,odrtotalprice,odrstatus,titleimg, pname, titleimg, point, saleprice, price, invoice \n"+
+					"from \n"+
+					"(\n"+
+					"    select row_number()over(order by B.odrdate desc)as rno, odrdnum, odrcode, to_char(B.odrdate, 'yyyy-mm-dd hh24:mi:ss') as odrdate, fk_pnum,  \n"+
+					"           fk_userid, oqty, odrtotalprice, c.pname, C.titleimg as titleimg, c.point, c.saleprice, c.price, invoice, \n"+
+					"           case odrstatus \n"+
+					"           when 0 then '주문완료' \n"+
+					"			when 1 then '결제완료' "+
+					"           when 2 then '배송중' \n"+
+					"           when 3 then '배송완료' \n"+
+					"           when 4 then '주문취소' \n"+
+					"           else '교환환불' end odrstatus\n"+
+					"    from product_order_detail A \n"+
+					"    join product_order B\n"+
+					"    on A.fk_odrcode = B.odrcode"
+					+ "  join product C\r\n" + 
+					"    on A.fk_pnum = C.pnum "
+					+ "	where B.fk_userid = ? "+
+					")V\n";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, userid);
+
+			rs = pstmt.executeQuery();
+			int cnt = 0;
+			while(rs.next()) {
+				cnt++;
+				if(cnt==1) {
+					orderList = new ArrayList<HashMap<String, String>>();
+				}
+				
+				String odrdnum = rs.getString("odrdnum");
+				String odrcode = rs.getString("odrcode");
+				String odrdate = rs.getString("odrdate");
+				String fk_pnum = rs.getString("fk_pnum");
+				String fk_userid = rs.getString("fk_userid");
+				String oqty = rs.getString("oqty");
+				String odrtotalprice = rs.getString("odrtotalprice");
+				String odrstatus = rs.getString("odrstatus");
+				String titleimg = rs.getString("titleimg");
+				String pname = rs.getString("pname");
+				String price = rs.getString("price");
+				String saleprice = rs.getString("saleprice");
+				String point = rs.getString("point");
+				String invoice = rs.getString("invoice");
+				
+				HashMap<String, String> map = new HashMap<String, String>();
+				map.put("odrdnum", odrdnum);
+				map.put("odrcode", odrcode);
+				map.put("odrdate", odrdate);
+				map.put("fk_pnum", fk_pnum);
+				map.put("fk_userid", fk_userid);
+				map.put("oqty", oqty);
+				map.put("odrtotalprice", odrtotalprice);
+				map.put("odrstatus", odrstatus);
+				map.put("titleimg", titleimg);
+				map.put("oqty", oqty);
+				map.put("pname", pname);
+				map.put("price", price);
+				map.put("saleprice", saleprice);
+				map.put("point", point);
+				map.put("invoice", invoice);
+				
+				orderList.add(map);
+				 
+			}		
+		} finally {
+			close();
+		}
+		return orderList;
+	}
+
+//	#주문취소하기--> 주문테이블 상태 바꾸기
+	@Override
+	public int cancleOrderByOdrcode(String odrcode) throws SQLException {
+	
+		int result = 0;
+		try {
+			conn = ds.getConnection();
+			
+			conn.setAutoCommit(false);
+			
+			String sql = "update product_order_detail set odrstatus = 4 where fk_odrcode = ?";
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setString(1, odrcode);
+			
+			int n = pstmt.executeUpdate();
+			int m = 0;
+			if(n==1) {
+				sql = "insert into order_cancel(odrcnum, odrccontents, fk_odrcode) values(seq_order_cancel_odrcnum.nextval, '관리자 확인', ? )";
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setString(1, odrcode);
+				
+				m = pstmt.executeUpdate();
+			}
+			
+			if(n*m==1) {
+				conn.commit();
+				conn.setAutoCommit(true);
+				result = n*m;
+			}
+			else {
+				conn.rollback();
+				conn.setAutoCommit(true);
+			}
+		} finally {
+			close();
+		}
+		
+		return result;
+	}
+	
+	
+	
+//	#store; header 전체검색
+//	1) 검색결과 상품의 개수
+	@Override
+	public int getTotalSearchCount(String totalSearchWord) throws SQLException {
+		
+		int totalCount = 0;
+		
+		try {
+			conn = ds.getConnection();
+			// 객체 ds 를 통해 아파치톰캣이 제공하는 DBCP(DB Connection pool)에서 생성된 커넥션을 빌려온다.	
+			
+			String sql = " select count(*) as CNT\n"+
+						 " from view_productList "+
+						 " where lower(pname) like '%' || lower(?) || '%'";
+						
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, totalSearchWord);
+			
+			rs = pstmt.executeQuery();
+			
+			rs.next();
+			
+			totalCount = rs.getInt("CNT");
+			
+		} finally {
+			close();
+		}
+		
+		return totalCount;
+	}	
+
+//	2) 검색결과 상품 정보 리스트
+	@Override
+	public List<HashMap<String, Object>> getSearchProduct(int sizePerPage, int currentShowPageNo, String totalSearchWord, String sort) throws SQLException {
+
+		List<HashMap<String, Object>> productList = null;
+		
+		try {
+			conn = ds.getConnection();
+			
+			String sql = " select rno, pacnum, pacname, pnum, pacimage, price, saleprice, stname\n"+
+					 	 " from\n"+
+					 	 " (\n"+
+					 	 " select rownum as rno, pacnum, pacname, pnum, pacimage, price, saleprice, stname, pdate, plike\n"+
+					 	 " from\n"+
+					 	 "     (\n"+
+					 	 "     select pacnum, case pacname when '없음' then pname else pacname end as pacname, pnum, pacimage, price, saleprice, stname, pdate, plike\n"+
+					 	 "     from view_productList\n"+
+						 "	   order by "+sort+
+						 "     ) V\n"+
+						 " where lower(pacname) like '%' || lower(?) || '%'\n"+
+						 " ) T\n"+
+						 " where T.rno between ? and ?\n";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, totalSearchWord);
+			pstmt.setInt(2, (currentShowPageNo*sizePerPage) - (sizePerPage - 1) );
+			pstmt.setInt(3, (currentShowPageNo*sizePerPage) );
+			rs = pstmt.executeQuery();
+			
+			int cnt = 0;
+			
+			while(rs.next()) {
+				
+				cnt ++;
+				if(cnt == 1) {
+					
+					productList = new ArrayList<HashMap<String, Object>>();
+				}
+				
+				String pacname = rs.getString("pacname"); 
+				String pacnum = rs.getString("pacnum"); 
+			    String pnum = rs.getString("pnum"); 
+			    String pacimage = rs.getString("pacimage"); 
+			    int saleprice = rs.getInt("saleprice");
+			    int price = rs.getInt("price");
+			    String stname = rs.getString("stname");
+				
+				HashMap<String, Object> map = new HashMap<String, Object>();
+				
+				map.put("pacname", pacname);
+			    map.put("pacnum", pacnum);
+			    map.put("pnum", pnum);
+			    map.put("pimgfilename", pacimage);
+			    map.put("saleprice", saleprice);
+			    map.put("price", price);
+			    map.put("stname", stname);
+				
+				productList.add(map);
+			}
+			
+		}finally {
+			close();
+		}
+		
+		return productList;
+	}
+	
+	
+//	#store; 상품 디테일 ----------------------------------------------
+	// *** pnum을 기준으로 하나의 프로덕트 정보를 가져오는 메소드 *** //
+	@Override
+	public ProductVO getProductOneByPnum(int pnum) throws SQLException {
+		
+		ProductVO productvo = null;
+		
+		try {
+
+			conn = ds.getConnection();
+			
+			String sql = "select pnum, pname, price, saleprice, point, pqty, pcontents, pcompanyname, pexpiredate, allergy, weight, salecount, plike, to_char(pdate, 'yyyy-mm-dd') as pdate, pimgfilename\n"+
+					"from product A JOIN product_images B\n"+
+					"on A.pnum = B.fk_pnum\n"+
+					"where pnum = ?\n";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, pnum);
+			
+			rs = pstmt.executeQuery();
+			
+			boolean bool = rs.next();
+			
+			if(bool) {
+				
+				String v_pnum = rs.getString("pnum");
+				String pname = rs.getString("pname");
+				int price = rs.getInt("price");
+				int saleprice = rs.getInt("saleprice");
+				int pqty = rs.getInt("pqty");
+				int point = rs.getInt("point");
+				String pcontents = rs.getString("pcontents");
+				String pcompanyname = rs.getString("pcompanyname");
+				String pexpiredate = rs.getString("pexpiredate");
+				String allergy = rs.getString("allergy");
+				int weight = rs.getInt("weight");
+				int salecount = rs.getInt("salecount");
+				int plike = rs.getInt("plike");
+				String pdate = rs.getString("pdate");
+				
+				productvo = new ProductVO();
+				
+				productvo.setPnum(v_pnum);
+				productvo.setPname(pname);
+				productvo.setPqty(pqty);
+				productvo.setPrice(price); 
+				productvo.setSaleprice(saleprice);
+				productvo.setPoint(point);
+				productvo.setPcontents(pcontents);
+				productvo.setPcompanyname(pcompanyname);
+				productvo.setPexpiredate(pexpiredate);
+				productvo.setAllergy(allergy);
+				productvo.setWeight(weight);
+				productvo.setSalecount(salecount);
+				productvo.setPlike(plike);
+				productvo.setPdate(pdate);
+
+				sql = " select pimgfilename from product_images where fk_pnum = ? ";
+				
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setInt(1, pnum);
+				
+				rs = pstmt.executeQuery();
+				
+				List<String> pimgfilelist = null;
+				
+				int cnt = 0;
+				while(rs.next()) {
+					cnt++;
+					
+					if(cnt == 1) {
+						pimgfilelist = new ArrayList<String>();
+					}
+					
+					pimgfilelist.add(rs.getString("pimgfilename"));
+				}
+				
+				productvo.setPimgfileList(pimgfilelist);
+				
+			}// end of if(bool)
+			
+		} finally {
+			close();
+		}
+		
+		return productvo;
+	}
+
+	// *** pacnum을 기준으로 패키지에 포함된 프로덕트 정보를 가져오는 추상 메소드 *** //
+	@Override
+	public List<ProductVO> getProductListbyPacnum(String pacnum) throws SQLException {
+		
+		List<ProductVO> productList = null;
+
+		try {
+
+			conn = ds.getConnection();
+			
+			String sql = "select fk_pacname, pnum, pname, price, saleprice, point, pcontents, pcompanyname, pexpiredate, allergy, weight, plike, paccontents\n"+
+					"from product A JOIN product_package B\n"+
+					"on A.fk_pacname = B.pacname\n"+
+					"where A.fk_pacname = (select pacname from product_package where pacnum = ?)\n"+
+					"order by pnum";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, pacnum);
+			
+			rs = pstmt.executeQuery();
+			
+			String pnum = "";
+			
+			int cnt = 0;
+			while(rs.next()) {
+				cnt++;
+				
+				if(cnt == 1) {
+					productList = new ArrayList<ProductVO>();
+				}
+				
+				String fk_pacname = rs.getString("fk_pacname");
+				pnum = rs.getString("pnum");
+				String pname = rs.getString("pname");
+				int price = rs.getInt("price");
+				int saleprice = rs.getInt("saleprice");
+				int point = rs.getInt("point");
+				String pcontents = rs.getString("pcontents");
+				String pcompanyname = rs.getString("pcompanyname");
+				String pexpiredate = rs.getString("pexpiredate");
+				String allergy = rs.getString("allergy");
+				int weight = rs.getInt("weight");
+				int plike = rs.getInt("plike");
+				String paccontents = rs.getString("paccontents");
+				
+				ProductVO pvo = new ProductVO();
+				
+				pvo.setPnum(pnum);
+				pvo.setFk_pacname(fk_pacname);
+				pvo.setPname(pname);
+				pvo.setPrice(price);
+				pvo.setSaleprice(saleprice);
+				pvo.setPoint(point);
+				pvo.setPcontents(pcontents);
+				pvo.setPcompanyname(pcompanyname);
+				pvo.setPexpiredate(pexpiredate);
+				pvo.setAllergy(allergy);
+				pvo.setWeight(weight);
+				pvo.setPlike(plike);
+				pvo.setPaccontents(paccontents);
+
+				productList.add(pvo);
+				
+		   }// end of while()
+	
+
+		} finally {
+			close();
+		}
+		
+		return productList;
+	}
+	
+
+	// plike 가 제일 많은것부터 순서대로 4개씩을 가져오는 추천상품리스트 메소드  
+	@Override
+	public List<ProductVO> getRecommdProdlist() throws SQLException {
+
+		
+		List<ProductVO> productList = null;
+		
+		try {
+
+			conn = ds.getConnection();
+			
+			String sql = "select pacnum, pacname, pnum, pacimage, saleprice, plike, stname\n"+
+					"from \n"+
+					"(\n"+
+					"select pacnum, case pacname when '없음' then pname else pacname end as pacname, pnum, pacimage, saleprice, plike, stname\n"+
+					"from view_productList\n"+
+					"order by plike desc\n"+
+					") V\n"+
+					"where rownum between 1 and 4";
+			
+			pstmt = conn.prepareStatement(sql);
+			
+			rs = pstmt.executeQuery();
+			
+			int cnt = 0;
+			while(rs.next()) {
+				cnt++;
+				
+				if(cnt == 1) {
+					productList = new ArrayList<ProductVO>();
+				}
+				
+				String fk_pacname = rs.getString("pacname");
+				String pacnum = rs.getString("pacnum");
+				String pnum = rs.getString("pnum");
+				String pacimage = rs.getString("pacimage");
+				int saleprice = rs.getInt("saleprice");
+				String stname = rs.getString("stname");
+				
+				ProductVO productvo = new ProductVO();
+				
+				productvo.setFk_pacname(fk_pacname);
+				productvo.setPacnum(pacnum);
+				productvo.setPnum(pnum);
+				productvo.setPimgfilename(pacimage);
+				productvo.setSaleprice(saleprice);
+				productvo.setFk_stname(stname);
+				
+				productList.add(productvo);
+				
+			}// end of while()
+			
+		} finally {
+			close();
+		}
+		
+		return productList;
+	}
+
+	// pnum을 기준으로 이미지를 가져오는 메소드 
+	@Override
+	public List<String> getImagesByPnum(String pnum) throws SQLException {
+		
+		List<String> result = null;
+		
+		try {
+			
+			conn = ds.getConnection();
+			
+			String sql = " select pimgfilename from product_images where fk_pnum = ? ";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, pnum);
+			
+			rs = pstmt.executeQuery();
+			
+			int cnt = 0;
+			while(rs.next()) {
+				cnt++;
+				if(cnt == 1) {
+					result = new ArrayList<String>();
+				}
+				
+				String pimgfilename = rs.getString("pimgfilename");
+				
+				result.add(pimgfilename);
+				
+			}
+			
+		} finally {
+			close();
+		}
+		
+		return result;
+		
+	}
+
+	// pacnum을 기준으로 이미지를 가졍는 메소드 
+	@Override
+	public List<String> getImagesByPacnum(String pacnum) throws SQLException {
+		
+		List<String> result = null;
+		
+		try {
+			
+			conn = ds.getConnection();
+			
+			String sql = "select distinct pimgfilename, fk_pnum\n"+
+					"from product_images\n"+
+					"where fk_pnum in (select pnum from product where fk_pacname = (select pacname from product_package where pacnum = ?))"+
+					"order by fk_pnum";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, pacnum);
+			
+			rs = pstmt.executeQuery();
+			
+			int cnt = 0;
+			while(rs.next()) {
+				cnt++;
+				if(cnt == 1) {
+					result = new ArrayList<String>();
+				}
+				
+				String pimgfilename = rs.getString("pimgfilename");
+				
+				result.add(pimgfilename);
+				
+			}
+			
+		} finally {
+			close();
+		}
+		
+		return result;
+		
+	}
+
+
+	// 패키지상품의 단품골라담기에서 특정제품을 선택했을때 밑에 공간에 append 해주기 위한 가격과 이름을 불러오는 메소드 
+	@Override
+	public HashMap<String, Object> getProductpriceNname(String pnum) throws SQLException {
+	
+		HashMap<String, Object> map = null;
+	
+		try {
+			
+			conn = ds.getConnection();
+			
+			String sql = " select pname, saleprice from product where pnum = ? ";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, pnum);	
+			
+			rs = pstmt.executeQuery();
+			
+			rs.next();
+			
+			String pname = rs.getString("pname");
+			int saleprice = rs.getInt("saleprice");
+			
+			map = new HashMap<String, Object>();
+			
+			map.put("pname", pname);
+			map.put("saleprice", saleprice);
+			
+			
+			
+		} finally {
+			close();
+		}
+		
+		
+	
+		return map;
+		
+	}
+
+	
+	// 패키지에 딸려있는 상품의 갯수를 알려주는 메소드 (패키지 상품 좋아요에 씀)
+	@Override
+	public int getProductCountbyPacnum(String pacnum) throws SQLException {
+		int result = 0;
+		
+		try {
+			
+			conn = ds.getConnection();
+			
+			String sql = " select count(*) as cnt from product where fk_pacname = (select pacname from product_package where pacnum = ?)";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, pacnum);
+			rs = pstmt.executeQuery();
+			
+			rs.next();
+			
+			result = rs.getInt("cnt");
+			
+		} finally {
+			close();
+		}
+		
+		
+		return result;
+		
+	}
+
+
+	// 패키지 상품 좋아요 메소드 
+	@Override
+	public int insertLikebypacnum(String userid, String pacnum, String len) throws SQLException {
+
+		int result = 0;
+		
+		try {
+			
+			conn = ds.getConnection();
+
+			String sql = " update product set plike = plike + 1 where pnum in (select pnum "
+					+ "														   from product "
+					+ "														   where fk_pacname in (select pacname "
+					+ "																			    from product_package "
+					+ "																				where pacnum = ?)) ";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, pacnum);
+			int n = pstmt.executeUpdate();
+			
+			int num_len = Integer.parseInt(len);
+			
+			if(n == num_len) {
+
+				sql = 	" select pnum "
+				      + " from product "
+					  + " where fk_pacname in (select pacname "
+					  + "				       from product_package "
+					  + "				       where pacnum = ?)";
+							
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setString(1, pacnum);
+				rs = pstmt.executeQuery();
+				
+				List<String> pnumList = null;
+				
+				int cnt = 0;
+				while(rs.next()) {
+					
+					cnt++;
+					
+					if(cnt == 1) {
+						pnumList = new ArrayList<String>();
+					}
+					
+					pnumList.add(rs.getString("pnum"));
+				}
+				for(String pnum : pnumList) {
+					
+					sql =  " insert into pick(picknum, fk_userid, fk_pnum)\r\n" + 
+						   " values(seq_pick_picknum.nextval, ?, ?)";
+					
+					pstmt = conn.prepareStatement(sql);
+					pstmt.setString(1, userid);
+					pstmt.setString(2, pnum);
+					result = pstmt.executeUpdate();
+					
+				}
+			
+			}
+			else {
+				return result;
+			}
+			
+		} finally {
+			close();
+		}
+		
+		return result;
+	}
+
+	// 단품상품 좋아요 메소드 
+	@Override
+	public int insertLikebypnum(String userid, String pnum) throws SQLException {
+
+		int result = 0;
+		
+		try {
+
+			conn = ds.getConnection();
+			
+			String sql = " update product set plike = plike + 1 where pnum = ? ";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, pnum);
+			int n = pstmt.executeUpdate();
+			
+			if(n == 1) {
+
+				sql = " insert into pick(picknum, fk_userid, fk_pnum) " + 
+				      " values(seq_pick_picknum.nextval, ?, ?) ";
+				
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setString(1, userid);
+				pstmt.setString(2, pnum);
+				result = pstmt.executeUpdate();
+			
+			}
+			else {
+				return result;
+			}
+			
+		} finally {
+			close();
+		}
+		
+		return result;
+	}
+
+	
+	
+//	#store; 주문하기 --------------------------------------
+	 // *** 시퀀스 seq_jsp_order 값을 채번해오는 메소드 *** // 
+    @Override 
+    public int getSeq_jsp_order() throws SQLException { 
+
+        int seq = 0; 
+
+        try { 
+            conn = ds.getConnection(); 
+             
+            String sql = " select seq_product_order_odrcode.nextval AS seq " +  
+                         " from dual "; 
+            pstmt = conn.prepareStatement(sql); 
+
+            rs = pstmt.executeQuery(); 
+             
+            rs.next(); 
+             
+            seq = rs.getInt("seq"); 
+        } finally { 
+            close(); 
+        } // end of try~finally 
+         
+        return seq; 
+    } // end of public int getSeq_jsp_order() 
+
+    // 주문하기 메서드
+	@Override
+	public int addOrder(String odrcode, String userid, int odrstatus, int sumtotalprice, int sumtotalpoint
+				, String[] pnumArr, String[] oqtyArr, String[] salepriceArr, String[] cartnoArr, String couponNo) throws SQLException {
+		
+		int n1 = 0, n2 = 0, n3 = 0, n4 = 0, n5 = 0, n6 = 0, n7 = 0; 
+		
+		try {
+			conn = ds.getConnection();
+			
+			conn.setAutoCommit(false);
+			
+			// 1. 주문개요 테이블에 입력
+			String sql = " insert into product_order(odrcode, fk_userid, odrtotalprice, odrtotalpoint) "
+						+ " values(?, ?, ?, ?) ";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, odrcode);
+			pstmt.setString(2, userid);
+			pstmt.setInt(3, sumtotalprice);
+			pstmt.setInt(4, sumtotalpoint);
+			
+			n1 = pstmt.executeUpdate();
+			System.out.println("n1 : "+n1);
+			if(n1 != 1) {
+				conn.rollback();
+				conn.setAutoCommit(true);
+				return 0;
+			} // end of if
+			
+			// 2. 주문상세 테이블에 입력
+			if(n1 == 1) {
+				for(int i=0; i<pnumArr.length; i++) {
+					sql = " insert into product_order_detail(odrdnum, fk_odrcode, fk_pnum, oqty, odrprice, odrstatus) "
+						+ " values(seq_order_detail_odrdnum.nextval, ?, ?, ?, ?, ?) ";
+					pstmt = conn.prepareStatement(sql);
+					pstmt.setString(1, odrcode);
+					pstmt.setString(2, pnumArr[i]);
+					pstmt.setString(3, oqtyArr[i]);
+					pstmt.setString(4, salepriceArr[i]);
+					pstmt.setInt(5, odrstatus);
+					
+					n2 = pstmt.executeUpdate();
+					System.out.println("n2 : "+n2);
+					if(n2 != 1) {
+						conn.rollback();
+						conn.setAutoCommit(true);
+						return 0;
+					} // end of if
+				} // end of for
+			} // end of if
+			
+			
+			// 3. 구매자의 구매합계 올리기
+			if(n2 == 1) {
+				sql = "update member set summoney = summoney + ?, point = point + ? "
+					+ " where userid = ? ";
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setInt(1, sumtotalprice);
+				pstmt.setInt(2, sumtotalpoint);
+				pstmt.setString(3, userid);
+				
+				n3 = pstmt.executeUpdate();
+				System.out.println("n3 : "+n3);
+				if(n3 != 1) {
+					conn.rollback();
+					conn.setAutoCommit(true);
+					return 0;
+				} // end of if
+			} // end of if
+			
+			// 4. 구매자의 등급 올리기
+			if(n3 == 1) {
+				sql = " update member set fk_lvnum = case when summoney >= 100000 then 2 " + 
+						"                                  when summoney >= 300000 then 3 " + 
+						"                                  else 1 end " + 
+						" where userid = ? ";
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setString(1, userid);
+				//System.out.println("sql: "+sql);
+				n4 = pstmt.executeUpdate();
+				System.out.println("n4 : "+n4);
+				if(n4 != 1) {
+					conn.rollback();
+					conn.setAutoCommit(true);
+					return 0;
+				} // end of if
+			} // end of if
+			
+			// 5. 주문한 제품의 잔고량 감하기
+			if(n4 == 1) {
+				for(int i=0; i<pnumArr.length; i++) {
+					sql = " update product set pqty = pqty - ?"
+						 + " where pnum = ? ";
+					pstmt = conn.prepareStatement(sql);
+					pstmt.setString(1, oqtyArr[i]);
+					pstmt.setString(2, pnumArr[i]);
+					
+					n5 = pstmt.executeUpdate();
+					System.out.println("n5 : "+n5);
+					if(n5 != 1) {
+						conn.rollback();
+						conn.setAutoCommit(true);
+						return 0;
+					} // end of if
+				} // end of for
+			} // end of if
+
+			// 5. 사용한 쿠폰 status를 0으로 바꾸기
+			n6 = 1;
+			if( (couponNo != null || !"".equals(couponNo)) && n5 == 1) {
+				sql = " update my_coupon set cpstatus = 0 "
+					+ " where fk_userid = ? and fk_cpnum = ? ";
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setString(1, userid);
+				pstmt.setString(2, couponNo);
+				
+				n6 = pstmt.executeUpdate();
+				System.out.println("n6 : "+n6);
+				if(n6 != 1) {
+					conn.rollback();
+					conn.setAutoCommit(true);
+					return 0;
+				} // end of if
+			} // end of if
+			
+			// 장바구니에서 주문한 경우
+			if(cartnoArr != null && n6 == 1) {
+				for(int i=0; i<cartnoArr.length; i++) {
+					sql = " update product_cart set status = 0 "
+							+ " where cartno = ? ";
+					pstmt = conn.prepareStatement(sql);
+					pstmt.setString(1, cartnoArr[i]);
+					
+					n7 = pstmt.executeUpdate();
+					System.out.println("n7 : "+n7);
+					if(n7 != 1) {
+						conn.rollback();
+						conn.setAutoCommit(true);
+						return 0;
+					} // end of if
+				} // end of for
+			} // end of if
+			
+			// 바로주문인 경우 commit
+			if(cartnoArr == null && n1*n2*n3*n4*n5*n6 != 0) {
+				conn.commit();
+				conn.setAutoCommit(true);
+				return 1;
+			} // end fo if
+			
+			// 장바구니인 경우 commit
+			else if(cartnoArr != null && n1*n2*n3*n4*n5*n6*n7 != 0) {
+				conn.commit();
+				conn.setAutoCommit(true);
+				return 1;
+			} else {
+				conn.rollback();
+				conn.setAutoCommit(true);
+				return 0;
+			} // end of if~else
+		} finally {	
+			close();
+		} // end of try~finally
+		
+	} // end of 주문
+
+	// *** 주문 완료 결과 보여주기 *** //
+	@Override
+	public List<HashMap<String, String>> selectOneOrder(String odrcode) throws SQLException {
+		List<HashMap<String, String>> orderList = null;
+		
+		try {
+			conn = ds.getConnection();
+			
+			String sql = " select a.odrcode, c.pname, b.oqty, b.odrprice, a.odrtotalprice, a.odrtotalpoint, d.name, c.price" + 
+						 " from product_order a JOIN product_order_detail b " + 
+						 " ON a.odrcode = b.fk_odrcode " + 
+						 " JOIN product c " + 
+						 " ON b.fk_pnum = c.pnum " +
+						 " JOIN member d " + 
+						 " ON a.fk_userid = d.userid" + 
+						 " where odrcode = ? ";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, odrcode);
+			
+			rs = pstmt.executeQuery();
+			
+			int cnt = 0;
+			while(rs.next()) {
+				cnt++;
+				if(cnt == 1) {
+					orderList = new ArrayList<HashMap<String, String>>();
+				}
+				
+				HashMap<String, String> orderMap = new HashMap<String, String>();
+				orderMap.put("odrcode", rs.getString("odrcode"));
+				orderMap.put("pname", rs.getString("pname"));
+				orderMap.put("oqty", rs.getString("oqty"));
+				orderMap.put("odrprice", rs.getString("odrprice"));
+				orderMap.put("odrtotalprice", rs.getString("odrtotalprice"));
+				orderMap.put("odrtotalpoint", rs.getString("odrtotalpoint"));
+				orderMap.put("name", rs.getString("name"));
+				orderMap.put("price", rs.getString("price"));
+				
+				orderList.add(orderMap);
+			} // end of while
+		} finally {
+			close();
+		}
+		
+		return orderList;
+	} // end of public HashMap<String, String> selectOneOrder(String odrcode)
+
+	// *** 쿠폰 조회 하기 *** //
+	@Override
+	public HashMap<String, String> selectOneCoupon(String coupon, String userid) throws SQLException {
+		HashMap<String, String> couponMap = null;
+		
+		try {
+			conn = ds.getConnection();
+			
+			String sql = " select b.cpnum, a.cpstatus, b.cpname, b.discountper, b.cpusemoney, b.cpuselimit " + 
+						 " from my_coupon a JOIN coupon b " + 
+						 " ON a.fk_cpnum = b.cpnum " + 
+						 " where fk_userid = ? and cpnum = ? ";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, userid);
+			pstmt.setString(2, coupon);
+			
+			rs = pstmt.executeQuery();
+			
+			if(rs.next()) {
+				couponMap = new HashMap<String, String>();
+				
+				couponMap.put("cpnum", rs.getString("cpnum"));
+				couponMap.put("cpstatus", rs.getString("cpstatus"));
+				couponMap.put("cpname", rs.getString("cpname"));
+				couponMap.put("discountper", rs.getString("discountper"));
+				couponMap.put("cpusemoney", rs.getString("cpusemoney"));
+				couponMap.put("cpuselimit", rs.getString("cpuselimit"));
+			} // end of if
+		} finally {
+			close();
+		}
+		
+		return couponMap;
+	} // end of public HashMap<String, String> selectOneCoupon()
+	
+	
 }

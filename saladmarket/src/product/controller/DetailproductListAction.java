@@ -55,8 +55,7 @@ public class DetailproductListAction extends AbstractController {
 		}
 
 		String str_jsonArray = jarray.toString();
-		
-		//System.out.println(str_jsonArray);
+	
 		
 		req.setAttribute("str_jsonArray", str_jsonArray);
 		

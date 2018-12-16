@@ -36,7 +36,6 @@ public class CartAction extends AbstractController {
 		} else if(loginuser != null) {
 			String userid = loginuser.getUserid();
 			
-			System.out.println(userid);
 			
 			ProductDAO productdao = new ProductDAO();
 			

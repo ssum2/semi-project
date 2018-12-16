@@ -138,17 +138,7 @@ public class EventDAO implements InterEventDAO {
 					String fk_pacname = rs.getString("fk_pacname");
 					String pacimage = rs.getString("pacimage");
 
-/*					
-					sql = "select fk_stname \n"+
-							"from product A join spec_tag B \n"+
-							"on A.fk_stname = B.stname \n"+
-							"where fk_pacname = ? \n"+
-							"group by fk_stname ";	
-	
-					pstmt.setString(1, fk_pacname);
-					rs=pstmt.executeQuery();
-					String fk_stname = rs.getString("fk_stname");				
-					System.out.println("333");*/
+
 					HashMap<String, Object> map = new HashMap<String, Object>();
 
 					map.put("saleprice",saleprice);

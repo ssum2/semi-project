@@ -40,7 +40,7 @@ public class AdminDAO implements InterAdminDAO {
 		} catch (NamingException e) {
 			e.printStackTrace();
 		} catch (UnsupportedEncodingException e) {
-			System.out.println(">>> key값은 17자 이상이어야 합니다.");
+			
 			e.printStackTrace();
 		} 
 	} // end of default constructor

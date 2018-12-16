@@ -81,6 +81,38 @@ public class MyUtil {
 		return pageBar;
 	}
 
+	
+//	#헤더 검색시 사용하는 페이지바
+	public static String getSearchPageBar(String url, int currentShowPageNo
+			, int sizePerPage, int totalPage, int blockSize, String totalSearchWord) {
 
+		String pageBar = "";
+		
+		int pageNo = 1;
+		int loop = 1;
+		
+		pageNo = ( (currentShowPageNo - 1) /blockSize ) * blockSize +1;
+		
+		if(pageNo != 1) {
+		pageBar += "&nbsp;<a href='"+url+"?currentShowPageNo="+(pageNo-1)+"&totalSearchWord='"+"\\+escape("+totalSearchWord+")\\+"+"'&sizePerPage="+sizePerPage+"'>[이전]</a>";	
+		}
+		
+		while( !(pageNo > totalPage || loop > blockSize )) { // 전체페이지수를 넘으면 빠져나와 || 10개단위로 나눈다
+		if(pageNo == currentShowPageNo) {	
+		pageBar += "&nbsp;<span style='color: red; font-size: 13pt; font-weight: bold; text-decoration: underline;'>"+pageNo+"</span>&nbsp;";
+		}
+		else {
+		pageBar += "&nbsp;<a href='"+url+"?currentShowPageNo="+pageNo+"&totalSearchWord='"+"\\+escape("+totalSearchWord+")\\+"+"'&sizePerPage="+sizePerPage+"'>"+pageNo+"</a>";
+		}
+		pageNo++;
+		loop++;
+		} // end of while
+		
+		if( !(pageNo > totalPage)) {
+		pageBar += "&nbsp;<a href='"+url+"?currentShowPageNo="+pageNo+"&totalSearchWord="+totalSearchWord+"&sizePerPage="+sizePerPage+"'>[다음]</a>";
+		}
+		
+		return pageBar;
+	}
 
 }

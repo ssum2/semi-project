@@ -267,10 +267,11 @@ String sql = "insert into my_coupon(fk_userid, fk_cpnum, cpexpiredate) values(?,
 -- 쿠폰 사용상태 추가
 alter table my_coupon add(cpstatus number default 1 not null);
 
-
-insert into my_coupon(fk_userid, fk_cpnum, cpexpiredate, cpstatus) values('leess', 3, add_months(sysdate, 1), default);
-insert into my_coupon(fk_userid, fk_cpnum, cpexpiredate, cpstatus) values('leess', 4, add_months(sysdate, 1), default);
-insert into my_coupon(fk_userid, fk_cpnum, cpexpiredate, cpstatus) values('leess', 5, add_months(sysdate, 1), default);
+insert into my_coupon(fk_userid, fk_cpnum, cpexpiredate) values('lone', 1, add_months(sysdate, 1));
+insert into my_coupon(fk_userid, fk_cpnum, cpexpiredate) values('lone', 2, add_months(sysdate, 1));
+insert into my_coupon(fk_userid, fk_cpnum, cpexpiredate, cpstatus) values('lone', 3, add_months(sysdate, 1), default);
+insert into my_coupon(fk_userid, fk_cpnum, cpexpiredate, cpstatus) values('lone', 4, add_months(sysdate, 1), default);
+insert into my_coupon(fk_userid, fk_cpnum, cpexpiredate, cpstatus) values('lone', 5, add_months(sysdate, 1), default);
 
 commit;
 
@@ -279,13 +280,21 @@ String sql = "select cpnum, cpname, discountper, cpusemoney, cpuselimit, fk_user
 "on cpnum = fk_cpnum\n"+
 "where fk_userid='?'"; 
 
+delete from my_coupon where fk_userid = 'leess';
+commit;
 
 select *
 from my_coupon
 where fk_userid = 'leess';
 
+select fk_userid, fk_cpnum, to_char(cpexpiredate, 'yyyy-mm-dd hh24:mi:ss') as cpexpiredate, cpstatus
+from my_coupon where fk_userid='leess';
+
+
 select *
-from
+from member
+order by mnum asc;
+
 
 select mnum, userid, name, email, phone , to_char(birthday, 'yyyy-mm-dd') as birthday, postnum
 ,address1, address2, point, to_char(registerdate, 'yyyy-mm-dd') as  registerdate
@@ -1215,6 +1224,17 @@ nocache;
  nocycle
  nocache;
 
+select *
+from product_images;
+
+4 5 6 7
+update product_images set pimgfilename = 'HERTAGE_FLAKES.png' where pimgnum = 4;
+update product_images set pimgfilename = 'KOALA_CRISP.png' where pimgnum = 5;
+update product_images set pimgfilename = 'Blueberry_Cinnamon_Flax.png' where pimgnum = 6;
+update product_images set pimgfilename = 'Choco_Chimps.png' where pimgnum = 7;
+
+commit;
+
 
 -- 상품이미지(product_images) 테이블 생성 
 create table product_images 
@@ -1368,6 +1388,13 @@ nocycle
 nocache;
 
 
+select *
+from product_order_detail
+where odrdnum=8;
+
+update product_order_detail set invoice = '2076648472' where odrdnum = 31;
+
+commit;
 create table product_order_detail_temp
 as
 select *
@@ -2323,3 +2350,6 @@ where rno = 1;
  JOIN product_package C 
  on B.fk_pacname= C.pacname 
  where fk_userid = 'leess';
+ 
+ 
+ from 

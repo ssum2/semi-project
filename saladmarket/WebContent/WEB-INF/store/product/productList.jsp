@@ -158,7 +158,8 @@
 					                     	"<div class='desc'>"+
 					                        "<h3><a href='productDetail.do?pacnum="+entry.pacnum+"&pnum="+entry.pnum+"'>"+entry.pacname+
 					                        "</a></h3>"+
-					                        "<p class='price'><span>"+Number(entry.saleprice).toLocaleString()+"원</span></p>"+
+					                        "<p class='price' style='font-weight: bold;'><span>"+Number(entry.saleprice).toLocaleString()+"원</span>"+
+					                        "&nbsp; <span class='sale'>"+Number(entry.price).toLocaleString('en')+"원</span></p>"+
 					                     	"</div>"+
 					                  		"</div>"+
 					               			"</div>";

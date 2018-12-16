@@ -39,7 +39,7 @@ public class A_searchDeliverListAction extends AbstractController {
 		if(deleverList != null && deleverList.size()>0) {
 			for(HashMap<String,String> dmap:deleverList) {
 				JSONObject jsonobj = new JSONObject();
-				jsonobj.put("odrdnum", dmap.get("deleverList"));
+				jsonobj.put("odrdnum", dmap.get("odrdnum"));
 				jsonobj.put("odrcode", dmap.get("odrcode"));
 				jsonobj.put("odrdate", dmap.get("odrdate"));
 				jsonobj.put("fk_pnum", dmap.get("fk_pnum"));
@@ -47,6 +47,7 @@ public class A_searchDeliverListAction extends AbstractController {
 				jsonobj.put("oqty", dmap.get("oqty"));
 				jsonobj.put("odrtotalprice", dmap.get("odrtotalprice"));
 				jsonobj.put("odrstatus", dmap.get("odrstatus"));
+				jsonobj.put("invoice", dmap.get("invoice"));
 				jsonobj.put("titleimg", dmap.get("titleimg"));
 				
 				jsonarray.add(jsonobj);

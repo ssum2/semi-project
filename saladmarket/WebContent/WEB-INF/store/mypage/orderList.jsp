@@ -1,10 +1,55 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %> 
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %> 
+
 <%
 	String ctxPath=request.getContextPath();
 %>
     
 <jsp:include page="../header.jsp"/>
+
+<script type="text/javascript">
+$(document).ready(function(){
+
+
+});
+
+function goDel(odrcode){
+	var bool = confirm("주문을 취소하시겠습니까? 취소처리에는 영업일 기준 최대 7일이 소요됩니다.");
+	if(bool){
+		var form_data = {"odrcode":odrcode};
+			
+		$.ajax({
+			url: "orderCancleJSON.do",
+			type: "GET",
+			data: form_data,
+			dataType: "JSON",
+			success: function(json){
+				var result = json.result;
+		
+				if(result==1){
+					alert("취소 신청 완료");
+					window.location.reload();
+				}
+				else{
+					alert("취소 실패! 관리자에게 문의 바랍니다.");
+					window.location.reload();
+				}
+			},// end of success
+			error: function(request, status, error){
+				if(request.readyState == 0 || request.status == 0) return;
+				else alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			}
+		});// end of $.ajax
+	}
+	else{
+		return false;
+	}
+}
+
+</script>
+
 <aside id="colorlib-hero" class="breadcrumbs">
 	<div class="flexslider">
 		<ul class="slides">
@@ -32,34 +77,6 @@
   	</div>
 </aside>
 
-<div style="margin: 3%; border: 0px solid red;" align="center">
-	<div style="width: 80%;margin: 0 auto;" align="center">
-		<table style="width: 80%; border: 1px solid gray;">
-			<tr height="100px;" style="">
-				<td width="15%" style="font-size: 20pt; text-align: center; border: 1px solid gray;">
-					<span id="name" class="name">전가현</span>
-					<span style="font-size: 12pt">님</span><br>
-					<span id="level" class="level" style="font-size: 12pt; font-weight: bold;" >골드</span>
-				</td>
-				<td width="25%" style="padding: 0 10pt;" align="center">
-					<span style="font-weight: bold; font-size: 15pt;">배송상품</span>
-					<br>
-					<span style="font-size: 17pt">0</span><span style="font-size: 13pt">개</span>
-				</td>
-				<td width="25%" style="padding: 0 10pt;" align="center">
-					<span style="font-weight: bold; font-size: 15pt;">보유쿠폰</span>
-					<br>
-					<span style="font-size: 17pt">0</span><span style="font-size: 13pt">개</span>
-				</td>
-				<td width="25%" style="padding: 0 10pt;" align="center">
-					<span style="font-weight: bold; font-size: 15pt;">보유포인트</span>
-					<br>
-					<span style="font-size: 17pt">0</span><span style="font-size: 13pt">개</span>
-				</td>
-			</tr>
-		</table>
-	</div>
-</div>
 <div style="" align="center">
 	<div style="margin-top: 3%; margin-bottom: 1%;" align="center">
 		<span style="font-weight: bold; font-size: 18pt; ">주문내역보기</span>
@@ -70,8 +87,11 @@
                <div class="col-md-12">
                
                   <div class="product-name">
-                     <div class="one-forth text-center" style="width: calc(100% - 780px);">
-                        <span>결제상품목록</span>
+                  	<div class="one-eight text-center">
+                        <span>주문코드</span>
+                     </div>
+                     <div class="one-eight text-center">
+                        <span>주문상품</span>
                      </div>
                      <div class="one-eight text-center">
                         <span>가격</span>
@@ -93,227 +113,67 @@
                      </div>
                   </div>
                   
-                  <div class="product-cart">
-                     <div class="one-forth" style="width: calc(100% - 780px);">
-                        <div class="product-img" style="background-image: url(images/item-6.jpg);">
-                        </div>
+                  
+                  <c:if test="${orderList != null}">
+                  	<c:forEach var="map" items="${orderList}">
+                  	<div class="product-cart">
+                  	<div class="one-eight text-center">
                         <div class="display-tc">
-                           <h3>Product Name</h3>
-                        </div>
-                     </div>
-                     <div class="one-eight text-center">
-                        <div class="display-tc">
-                           <span class="price">$68.00</span>
+                           <a href="<%=ctxPath %>/orderDetail.do?odrdnum=${map.odrdnum}">${map.odrcode}</a>
                         </div>
                      </div>
                      <div class="one-eight text-center">
                         <div class="display-tc">
-                           <input type="text" id="quantity" name="quantity" class="form-control input-number text-center" value="1" min="1" max="100">
+                           <span style="font-weight: bold;">${map.pname}</span>
                         </div>
                      </div>
                      <div class="one-eight text-center">
                         <div class="display-tc">
-                           <span class="price">$120.00</span>
+                           <span class="price"><fmt:formatNumber value="${map.price}" pattern="###,###" /> 원</span>
+                        </div>
+                     </div>
+                     <div class="one-eight text-center">
+                        <div class="display-tc">
+                           <span style="font-weight: bold;">${map.oqty}</span>
+                        </div>
+                     </div>
+                     <div class="one-eight text-center">
+                       <c:set var="su" value="${map.oqty}" />
+				       <c:set var="danga" value="${map.saleprice}" />
+				       <c:set var="totalmoney" value="${su * danga}" />
+				     
+                        <div class="display-tc">
+                           <span class="price"><fmt:formatNumber value="${totalmoney}" pattern="###,###" /> 원</span>
                         </div>
                      </div>   
                      <div class="one-eight text-center">
                         <div class="display-tc">
-                           <span class="">2018.06.19</span>
+                           <span class="">${map.odrdate}</span>
                         </div>
                      </div>   
                      <div class="one-eight text-center">
                         <div class="display-tc">
-                           <span class="order">배송완료</span>
+                           <span class="order">${map.odrstatus}</span>
+                           <c:if test="${map.odrstatus=='배송중'}">
+                           <br/>(KH택배: ${map.invoice})
+                           </c:if>
                         </div>
                      </div>
                      <div class="one-eight text-center">
                         <div class="display-tc">
-                           <a href="#" class="">취소</a>/
-                           <a href="#" class="">환불</a>
+                           <a href="#" class="" onClick="goDel(${map.odrcode})">취소</a>/
+                           <a href="#" class="" onClick="goDel(${map.odrcode})">환불</a>
                         </div>
                      </div>
-                  </div>
+                    </div>
+                  	</c:forEach>
+                  </c:if> 
+                     
                   
                   
                   
-                  <div class="product-cart">
-                     <div class="one-forth" style="width: calc(100% - 780px);">
-                        <div class="product-img" style="background-image: url(images/item-7.jpg);">
-                        </div>
-                        <div class="display-tc">
-                           <h3>Product Name</h3>
-                        </div>
-                     </div>
-                     <div class="one-eight text-center">
-                        <div class="display-tc">
-                           <span class="price">$68.00</span>
-                        </div>
-                     </div>
-                     <div class="one-eight text-center">
-                        <div class="display-tc">
-                           <form action="#">
-                              <input type="text" name="quantity" class="form-control input-number text-center" value="1" min="1" max="100">
-                           </form>
-                        </div>
-                     </div>
-                     <div class="one-eight text-center">
-                        <div class="display-tc">
-                           <span class="price">$120.00</span>
-                        </div>
-                     </div>
-                     <div class="one-eight text-center">
-                        <div class="display-tc">
-                           <span class="">2018.01.10</span>
-                        </div>
-                     </div>   
-                     <div class="one-eight text-center">
-                        <div class="display-tc">
-                           <span class="order">배송완료</span>
-                        </div>
-                     </div>
-                     <div class="one-eight text-center">
-                        <div class="display-tc">
-                           <a href="#" class="">취소</a>/
-                           <a href="#" class="">환불</a>
-                        </div>
-                     </div>
-                  </div>
+               </div>
                   
-                  
-                  <div class="product-cart">
-                     <div class="one-forth" style="width: calc(100% - 780px);">
-                        <div class="product-img" style="background-image: url(images/item-8.jpg);">
-                        </div>
-                        <div class="display-tc">
-                           <h3>Product Name</h3>
-                        </div>
-                     </div>
-                     <div class="one-eight text-center">
-                        <div class="display-tc">
-                           <span class="price">$68.00</span>
-                        </div>
-                     </div>
-                     <div class="one-eight text-center">
-                        <div class="display-tc">
-                           <input type="text" id="quantity" name="quantity" class="form-control input-number text-center" value="1" min="1" max="100">
-                        </div>
-                     </div>
-                     <div class="one-eight text-center">
-                        <div class="display-tc">
-                           <span class="price">$120.00</span>
-                        </div>
-                     </div>   
-                     <div class="one-eight text-center">
-                        <div class="display-tc">
-                           <span class="">2018.03.23</span>
-                        </div>
-                     </div>   
-                     <div class="one-eight text-center">
-                        <div class="display-tc">
-                           <span class="order">배송완료</span>
-                        </div>
-                     </div>
-                     <div class="one-eight text-center">
-                        <div class="display-tc">
-                           <a href="#" class="">취소</a>/
-                           <a href="#" class="">환불</a>
-                        </div>
-                     </div>
-                  </div>
-                  
-               </div>
-            </div>
-            
-            
-            
-         </div>
-      </div>
-
-      <div class="colorlib-shop">
-         <div class="container">
-            <div class="row">
-               <div class="col-md-6 col-md-offset-3 text-center colorlib-heading">
-                  <h2><span>Recommended Products</span></h2>
-                  <p>We love to tell our successful far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
-               </div>
-            </div>
-            <div class="row">
-               <div class="col-md-3 text-center">
-                  <div class="product-entry">
-                     <div class="product-img" style="background-image: url(images/item-5.jpg);">
-                        <p class="tag"><span class="new">New</span></p>
-                        <div class="cart">
-                           <p>
-                              <span class="addtocart"><a href="#"><i class="icon-shopping-cart"></i></a></span> 
-                              <span><a href="product-detail.html"><i class="icon-eye"></i></a></span> 
-                              <span><a href="#"><i class="icon-heart3"></i></a></span>
-                              <span><a href="add-to-wishlist.html"><i class="icon-bar-chart"></i></a></span>
-                           </p>
-                        </div>
-                     </div>
-                     <div class="desc">
-                        <h3><a href="shop.html">Floral Dress</a></h3>
-                        <p class="price"><span>$300.00</span></p>
-                     </div>
-                  </div>
-               </div>
-               <div class="col-md-3 text-center">
-                  <div class="product-entry">
-                     <div class="product-img" style="background-image: url(images/item-6.jpg);">
-                        <p class="tag"><span class="new">New</span></p>
-                        <div class="cart">
-                           <p>
-                              <span class="addtocart"><a href="#"><i class="icon-shopping-cart"></i></a></span> 
-                              <span><a href="product-detail.html"><i class="icon-eye"></i></a></span> 
-                              <span><a href="#"><i class="icon-heart3"></i></a></span>
-                              <span><a href="add-to-wishlist.html"><i class="icon-bar-chart"></i></a></span>
-                           </p>
-                        </div>
-                     </div>
-                     <div class="desc">
-                        <h3><a href="shop.html">Floral Dress</a></h3>
-                        <p class="price"><span>$300.00</span></p>
-                     </div>
-                  </div>
-               </div>
-               <div class="col-md-3 text-center">
-                  <div class="product-entry">
-                     <div class="product-img" style="background-image: url(images/item-7.jpg);">
-                        <p class="tag"><span class="new">New</span></p>
-                        <div class="cart">
-                           <p>
-                              <span class="addtocart"><a href="#"><i class="icon-shopping-cart"></i></a></span> 
-                              <span><a href="product-detail.html"><i class="icon-eye"></i></a></span> 
-                              <span><a href="#"><i class="icon-heart3"></i></a></span>
-                              <span><a href="add-to-wishlist.html"><i class="icon-bar-chart"></i></a></span>
-                           </p>
-                        </div>
-                     </div>
-                     <div class="desc">
-                        <h3><a href="shop.html">Floral Dress</a></h3>
-                        <p class="price"><span>$300.00</span></p>
-                     </div>
-                  </div>
-               </div>
-               <div class="col-md-3 text-center">
-                  <div class="product-entry">
-                     <div class="product-img" style="background-image: url(images/item-8.jpg);">
-                        <p class="tag"><span class="new">New</span></p>
-                        <div class="cart">
-                           <p>
-                              <span class="addtocart"><a href="#"><i class="icon-shopping-cart"></i></a></span> 
-                              <span><a href="product-detail.html"><i class="icon-eye"></i></a></span> 
-                              <span><a href="#"><i class="icon-heart3"></i></a></span>
-                              <span><a href="add-to-wishlist.html"><i class="icon-bar-chart"></i></a></span>
-                           </p>
-                        </div>
-                     </div>
-                     <div class="desc">
-                        <h3><a href="shop.html">Floral Dress</a></h3>
-                        <p class="price"><span>$300.00</span></p>
-                     </div>
-                  </div>
-               </div>
             </div>
          </div>
       </div>

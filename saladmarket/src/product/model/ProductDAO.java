@@ -2489,7 +2489,7 @@ public class ProductDAO implements InterProductDAO {
 		try {
 			conn = ds.getConnection();
 			
-			String sql = " select cartno, fk_userid, fk_pnum, oqty, status, B.pname, B.price, B.saleprice, B.titleimg, C.pacname "
+			String sql = " select cartno, fk_userid, fk_pnum, oqty, status, B.pname, B.price, B.saleprice, B.point, B.titleimg, C.pacname "
 					   + " from product_cart A JOIN product B "
 					   + " on A.fk_pnum=B.pnum "
 					   + " JOIN product_package C " 
@@ -2517,6 +2517,7 @@ public class ProductDAO implements InterProductDAO {
 				map.put("pname", rs.getString("pname"));
 				map.put("price", rs.getString("price"));
 				map.put("saleprice", rs.getString("saleprice"));
+				map.put("point", rs.getString("point"));
 				map.put("titleimg", rs.getString("titleimg"));
 				map.put("pacname", rs.getString("pacname"));
 				
@@ -3171,13 +3172,14 @@ public class ProductDAO implements InterProductDAO {
 				
 				productvo.setPimgfileList(pimgfilelist);
 				
-			}// end of if(bool)
+			}// end of if(bool)-------------------------------------------
 			
 		} finally {
 			close();
 		}
 		
 		return productvo;
+		
 	}
 
 	// *** pacnum을 기준으로 패키지에 포함된 프로덕트 정보를 가져오는 추상 메소드 *** //
@@ -3243,7 +3245,7 @@ public class ProductDAO implements InterProductDAO {
 
 				productList.add(pvo);
 				
-		   }// end of while()
+		   }// end of while()-------------------------------------------
 	
 
 		} finally {
@@ -3251,7 +3253,9 @@ public class ProductDAO implements InterProductDAO {
 		}
 		
 		return productList;
+		
 	}
+	
 	
 
 	// plike 가 제일 많은것부터 순서대로 4개씩을 가져오는 추천상품리스트 메소드  
@@ -3304,14 +3308,17 @@ public class ProductDAO implements InterProductDAO {
 				
 				productList.add(productvo);
 				
-			}// end of while()
+			}// end of while()-------------------------------------------
 			
 		} finally {
 			close();
 		}
 		
 		return productList;
+		
+		
 	}
+
 
 	// pnum을 기준으로 이미지를 가져오는 메소드 
 	@Override
@@ -3394,6 +3401,7 @@ public class ProductDAO implements InterProductDAO {
 
 
 	// 패키지상품의 단품골라담기에서 특정제품을 선택했을때 밑에 공간에 append 해주기 위한 가격과 이름을 불러오는 메소드 
+
 	@Override
 	public HashMap<String, Object> getProductpriceNname(String pnum) throws SQLException {
 	
@@ -3403,7 +3411,7 @@ public class ProductDAO implements InterProductDAO {
 			
 			conn = ds.getConnection();
 			
-			String sql = " select pname, saleprice from product where pnum = ? ";
+			String sql = " select pname, saleprice, point from product where pnum = ? ";
 			
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, pnum);	
@@ -3414,12 +3422,13 @@ public class ProductDAO implements InterProductDAO {
 			
 			String pname = rs.getString("pname");
 			int saleprice = rs.getInt("saleprice");
+			int point = rs.getInt("point");
 			
 			map = new HashMap<String, Object>();
 			
 			map.put("pname", pname);
 			map.put("saleprice", saleprice);
-			
+			map.put("point", point);
 			
 			
 		} finally {
@@ -3508,7 +3517,10 @@ public class ProductDAO implements InterProductDAO {
 					}
 					
 					pnumList.add(rs.getString("pnum"));
+					
 				}
+				
+				
 				for(String pnum : pnumList) {
 					
 					sql =  " insert into pick(picknum, fk_userid, fk_pnum)\r\n" + 
@@ -3525,12 +3537,16 @@ public class ProductDAO implements InterProductDAO {
 			else {
 				return result;
 			}
+				
+			
 			
 		} finally {
 			close();
 		}
 		
 		return result;
+		
+
 	}
 
 	// 단품상품 좋아요 메소드 
@@ -3569,7 +3585,7 @@ public class ProductDAO implements InterProductDAO {
 		}
 		
 		return result;
-	}
+	}	
 
 	
 	
@@ -3848,4 +3864,42 @@ public class ProductDAO implements InterProductDAO {
 	} // end of public HashMap<String, String> selectOneCoupon()
 	
 	
+//	#store; 장바구니 -------------------------------------------------
+	// *** product_cart 테이블에서 oqty가 0보다 크면 update, 0이면 delete 장바구니변경 
+		@Override
+		public int updateDeleteCart(String cartno, String oqty) throws SQLException {
+			
+			int result = 0;
+			
+			try {
+				conn = ds.getConnection();
+			
+				int v_oqty = Integer.parseInt(oqty);
+				
+				if(v_oqty==0) { // 장바구니 삭제
+					String sql = " delete from product_cart "
+							   + " where cartno = ? ";
+					
+					pstmt = conn.prepareStatement(sql);
+					pstmt.setString(1, cartno);
+					result = pstmt.executeUpdate();
+				}
+				else { // 장바구니 수량 변경
+					String sql = " update product_cart set oqty = ? "
+							   + " where cartno = ? ";
+					
+					pstmt = conn.prepareStatement(sql);
+					pstmt.setInt(1, v_oqty);
+					pstmt.setString(2, cartno);
+					result = pstmt.executeUpdate();
+				}
+				
+			} finally {
+				close();
+			}
+			
+			return result;
+			
+		} // int updateDeleteCart(String cartno, String oqty) -----------------------------------------
+
 }

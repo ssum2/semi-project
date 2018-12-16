@@ -48,29 +48,27 @@ $(document).ready(function(){
 					$("#btnMoreEvent").css("cursor", "not-allowed") 
 				}else{
 					$.each(json,function(entryIndex,entry){						
-				      html += "<div class='col-md-3 text-center'>"+									
-							  	"<div class='product-entry'>"+
-							  		"<div class='product-img' style='background-image: url(/saladmarket/img/"+entry.pacimage+");'>"+  
-							  	
-							 			"<p class='tag'><span class='new'>"+entry.stname+"</span></p>"+										
-						    			"<div class='cart'>"+
-								 			"<p>"+
-								 				"<span class='addtocart'><a href='cart.do'><i class='icon-shopping-cart'></i></a></span>"+
-								  				"<span><a href='product-detail.do'><i class='icon-eye'></i></a></span>"+
-												"<span><a href='#'><i class='icon-heart3'></i></a></span>"+										 
-												"<span><a href='add-to-wishlist.do'><i class='icon-bar-chart'></i></a></span>"+
-									 		"</p>"+
-										"</div>"+ 
-									"</div>"+
-									
-									"<div class='desc'>"+												 
-										"<h3>"+entry.pacname+"</h3>"+
-										"<input type='hidden' id='productPnum' value='"+entry.pacname+"' />"+
-			 							"<p class='price'><span>"+entry.saleprice+" 원</span></p>"+
-									"</div> "+
-								
-							  "</div>"+
-							"</div>";
+				      html += "<div class='col-md-3 text-center'>"+
+                		"<div class='product-entry'>"+
+              			"<div class='product-img' style='background-image: url(/saladmarket/img/"+entry.pacimage+");'>"+
+              				"<p class='tag'><span class='sale'>"+entry.stname+"</span></p>"+
+              				"<div class='cart'>"+
+                  				"<p>"+
+		                  		"<span class='addtocart'><a href='jumun.do'><i class='icon-shopping-cart'></i></a></span>"+
+		                  		"<span><a href='productDetail.do?pacnum="+entry.pacnum+"&pnum="+entry.pnum+"&img="+entry.pacimage+"'><i class='icon-eye'></i></a></span>"+ 
+		                        "<span><a href='#'><i class='icon-heart3'></i></a></span>"+
+		                        "<span><a href='like.do'><i class='icon-bar-chart'></i></a></span>"+
+                        		"</p>"+
+                    		"</div>"+
+                    	"</div>"+
+                 	"<div class='desc'>"+
+                    "<h3><a href='productDetail.do?pacnum="+entry.pacnum+"&pnum="+entry.pnum+"'>"+entry.pacname+
+                    "</a></h3>"+
+                    "<p class='price' style='font-weight: bold;'><span>"+Number(entry.saleprice).toLocaleString()+"원</span>"+
+                    "&nbsp; <span class='sale'>"+Number(entry.price).toLocaleString()+"원</span></p>"+
+                 	"</div>"+
+              		"</div>"+
+           			"</div>";
 							});// end of each
 					html += "<div style=\"clear: both;\">&nbsp;</div>";
 					

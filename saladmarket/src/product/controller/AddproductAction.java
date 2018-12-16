@@ -41,6 +41,7 @@ public class AddproductAction extends AbstractController {
 
 			job.put("price", productDetail.get("saleprice")  );
 			job.put("name", productDetail.get("pname")  );
+			job.put("point", productDetail.get("point"));
 			
 			String str_job = job.toString();
 			

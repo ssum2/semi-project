@@ -96,6 +96,7 @@
 						
 						var price = json.price;
 						var name = json.name;
+						var point = json.point;
 						
 						html +=		"<div class='form-group'>"+
 									"<div class='col-md-5' style='margin-top:20px;'>"+
@@ -103,22 +104,27 @@
 						            "			<span name='pname' id='pname' value='"+json.name+"' style='font-size: 10px;'>"+json.name+"</span>"+
 						            "    	</div>"+
 									"</div>"+
-									"<div class='col-md-4' style='margin-top:20px;'>"+
-						            "	 <input type='hidden' class='currentprice' id='currentprice' name='currentprice' value='"+json.price+"'/> "+
-									"	 <input type='number' value='0' min='0' max='99' class='pqty'id='oqty'  name='oqty' style='width: 50px; height:30px;' />"+
-									"	 <input type='hidden' name='pnum' id='pnum' value='"+pnum+"'/>"+
+									"<div class='col-md-3' style='margin-top:20px;'>"+
+									"	 <input type='hidden' class='orderpname' id='orderpname' name='orderpname' value='"+json.name+"'/>"+
+									"	 <input type='hidden' class='ordercurrentprice' id='ordercurrentprice' name='ordercurrentprice' value='"+json.price+"'/>"+
+						            "	 <input type='hidden' class='point' id='point' name='point' value='"+json.point+"'/> "+
+						            "	 <input type='hidden' class='currentprice' id='currentprice' value='"+json.price+"'/> "+
+									"	 <input type='number' value='0' min='0' max='99' class='orderoqty' id='orderoqty' name='orderoqty' style='width: 50px; height:30px;' />"+
+									"	 <input type='hidden' name='orderpnum' id='orderpnum' value='"+pnum+"'/>"+
+									"	 <input type='hidden' class='sumtotalprice' id='sumtotalprice' name='sumtotalprice' value=''/> "+
+									"	 <input type='hidden' class='sumtotalpoint' id='sumtotalpoint' name='sumtotalpoint' value=''/> "+
 									"</div>"+
-									"<div class='col-md-2' style='margin-top:20px;'>"+
+									"<div class='col-md-4' style='margin-top:20px;'>"+
 						            "   <div class='selectSaleprice'>"+
+						            " 			<span name='point' id='point'>"+json.point+"</span>&nbsp;&nbsp;&nbsp;&nbsp;"+
 						            "			<span name='price' id='price'>"+json.price.toLocaleString()+"</span>원"+
 						            " 	</div>"+
-									"</div>"
-									"<div class='col-md-1' style='margin-top:20px;'>"+
-									"	<img src='/saladmarket/store/images/xicon.png' style='vertical-align:middle;width:13px;'>test"+
 									"</div>"+
 									"</div>";
 						
+						
 						$(".chooseprod").append(html);
+					
 						
 					}
 				
@@ -126,16 +132,21 @@
 			error: function(request, status, error){
 				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 			}
-		
+			
+			
 		});
+		
+		
+		
 	}
 
 	
-	 $(document).on("propertychange change keyup paste input", "input[class='pqty']", function(){
-		 	
+	 $(document).on("propertychange change keyup paste input", "input[class='orderoqty']", function(){
+		   
+		 
 		   var queryString = $("form[name=purchaseFrm]").serialize(); // 폼 안의 모든 데이터를 전송
 	       // console.log(queryString);
-	    	
+	    
 		   $.ajax({
 			   url:"getTotalPrice.do",
 			   type:"GET",
@@ -144,54 +155,69 @@
 			   success: function(json){
 					
 				   sum = json.totalprice;
+				   pointsum = json.totalpoint;
+				   
+				   $(".sumtotalprice").val(sum);
+				   $(".sumtotalpoint").val(pointsum);
 				   
 				   var str_sum = sum.toLocaleString();
 				   
 				   $("#totalprice").empty().html(str_sum);
-				   
+				   $("#totalpoint").empty().html(pointsum);
 			   },
 			   error: function(request, status, error){
 					alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 			   }
 				 
 		   });
+		   
 	}); 
 	
 	
 	$(document).on("propertychange change keyup paste input", "input[class='singlePqty']", function(){
 		
+	   var point = $(this).prev().val();
        var currentPqty = $(this).val();
        var saleprice = $(this).next().val();
    
-       var totalprice = $("#totalprice").val();
+       // var totalprice = $("#totalprice").val();
        var html = currentPqty*saleprice;
+       var point_html = currentPqty*point;
        
        var str_html = html.toLocaleString();
        $("#totalprice").empty().html(str_html);
+       $("#totalpoint").empty().html(point_html);
    
 	}); 
 	
 	
 	function goOrderForPac() {
 	    event.preventDefault();
-
+  
 		var queryString_pac = $("form[name=purchaseFrm]").serialize(); // 폼 안의 모든 데이터를 전송
-	    console.log(queryString_pac);
+	    var queryString_pac = decodeURIComponent((queryString_pac + '').replace(/\+/g, '%20'));
+    
+		console.log(queryString_pac);
 		
 		var frm = document.purchaseFrm;
 		frm.method="POST";
 		frm.action="order.do";
 		frm.submit();
-
 	}
-		
-		
+
 	
-	function goCartForPac() {
+	function goCartForPac() {	
 		event.preventDefault();
-		
+
 		var queryString_pac = $("form[name=purchaseFrm]").serialize(); // 폼 안의 모든 데이터를 전송
-	    console.log(queryString_pac);
+	    var queryString_pac = decodeURIComponent((queryString_pac + '').replace(/\+/g, '%20'));
+	    
+	 	console.log(queryString_pac);
+	 	
+	 	var frm = document.purchaseFrm;
+		frm.method="POST";
+		frm.action="cart.do";
+		frm.submit();
 	}
 	
 	function goLikeForPac() {
@@ -218,52 +244,60 @@
 			   }
 			   
 		   });
+		  		
 	}
 	
+
+	
 	function goOrderForSingle() {
-
 	    event.preventDefault();
-
+		
 		var singlePqty = $(".singlePqty").val();
 		
 		var singleFrm = document.OrderFrm;
+		var price = singleFrm.ordercurrentprice.value;
+		var point = $(".singlePqty").prev().val();
 		
-		singleFrm.orderPqty.value = singlePqty;
+		singleFrm.orderoqty.value = singlePqty;
 		singleFrm.sumtotalprice.value = price*singlePqty; 
-		
-		var queryString_p = $("form[name=OrderFrm]").serialize();
-		console.log(queryString_p);
+		singleFrm.sumtotalpoint.value = point*singlePqty;
+
 		singleFrm.method="POST";
 		singleFrm.action="order.do";
 		singleFrm.submit();
 		
-	}
+		var queryString_p = $("form[name=OrderFrm]").serialize();
+	    var queryString_p = decodeURIComponent((queryString_p + '').replace(/\+/g, '%20'));
+		console.log(queryString_p);
 		
+			   
+	}
 		
 	
 	function goCartForSingle() {
-		
 		event.preventDefault();
-		
-		
-		
 		var singlePqty = $(".singlePqty").val();
 		
 		var singleFrm = document.OrderFrm;
+		var price = singleFrm.ordercurrentprice.value;
+		var point = $(".singlePqty").prev().val();
 		
-		singleFrm.orderPqty.value = singlePqty;
+		singleFrm.orderoqty.value = singlePqty;
 		singleFrm.sumtotalprice.value = price*singlePqty; 
+		singleFrm.sumtotalpoint.value = point*singlePqty;
 		
 		var queryString_p = $("form[name=OrderFrm]").serialize();
+	    var queryString_p = decodeURIComponent((queryString_p + '').replace(/\+/g, '%20'));
 		console.log(queryString_p);
+		
+		singleFrm.method="POST";
+		singleFrm.action="cart.do";
+		singleFrm.submit();
 		
 	}
 	
 	function goLikeForSingle() {
-
 		event.preventDefault();
-		
-
 		var form_data = {"userid": "${ sessionScope.loginUser.userid }",
 				   		 "pnum": "${pnum}"};
 		   
@@ -282,11 +316,13 @@
 			   }
 			   
 		   });
+	
 	}
 	
+	
+	 
+	 
 </script>	
-	
-	
 	
 	<aside id="colorlib-hero" class="breadcrumbs">
 			<div class="flexslider">
@@ -355,6 +391,20 @@
 											     </c:if>
 											   </td>
 											   </tr>
+											   
+											   <c:if test="${ pvo eq null }"> 
+												 <tr>
+													 <th style="width: 100px; height:50px;">포인트 </th>
+													 <td><span id="point">${ pvoList.get(0).point }</span></td>
+												 </tr>
+												 </c:if>
+												 <c:if test="${ pvoList eq null }"> 
+												 <tr>
+													 <th style="width: 100px; height:50px;">포인트</th>
+													 <td><span id="point">${ pvo.point }</span></td>
+												 </tr>
+												</c:if>
+											   
 												<tr>
 												<th style="width: 100px; height:50px;">중량/용량</th>
 												<td>
@@ -399,6 +449,7 @@
 												<tr>
 												<th style="width: 100px; height:50px;"> 구매 수량 </th>
 												<td> 
+													<input type="hidden" value="${ pvo.point }"	/>
 													<input type="number" class="singlePqty" value="1" min="1" max="100" style="width: 80px; height: 32px;"/>
 													<input type="hidden" value="${ pvo.saleprice }" />
 												</td>
@@ -430,7 +481,21 @@
 											 <td><span id="totalprice"><fmt:formatNumber value="${ pvo.saleprice }" pattern="#,###"></fmt:formatNumber></span>원</td>
 										 </tr>
 										 </c:if>
-										 
+										
+											
+										 <c:if test="${ pvo eq null }"> 
+										 <tr>
+											 <th style="width: 100px; height:50px;">총 포인트 </th>
+											 <td><span id="totalpoint">0</span></td>
+										 </tr>
+										 </c:if>
+										 <c:if test="${ pvoList eq null }"> 
+										 <tr>
+											 <th style="width: 100px; height:50px;">총 포인트</th>
+											 <td><span id="totalpoint"></span></td>
+										 </tr>
+										 </c:if>
+										  
 										</tbody>
 									</table>
 										
@@ -618,14 +683,18 @@
 			</div>
 		</div>
 
-	<form name="OrderFrm">
+	<form id="OrderFrm" name="OrderFrm">
 		<c:if test="${ pvoList eq null }">				
-				<input type="hidden" name="orderPnum" value="${ pvo.pnum }" />
-				<input type="hidden" name="orderPqty" />
-				<input type="hidden" name="saleprice" value="${ pvo.saleprice }" />
+				<input type="hidden" name="orderpnum" value="${ pvo.pnum }" />
+				<input type="hidden" name="orderoqty" />
+				<input type="hidden" name="ordercurrentprice" value="${ pvo.saleprice }" />
+				<input type="hidden" name="orderpname" value="${ pvo.pname }"/>
 				<input type="hidden" name="sumtotalprice" /> <%-- 바로주문하기에 사용됨 --%>
+				<input type="hidden" name="sumtotalpoint" /> <%-- 바로주문하기에 사용됨 --%>
 		</c:if>
 	</form>
+	
+	
 
 	<div class="gototop js-top">
 		<a href="#" class="js-gotop"><i class="icon-arrow-up2"></i></a>

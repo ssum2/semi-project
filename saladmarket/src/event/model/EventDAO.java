@@ -235,6 +235,10 @@ public class EventDAO implements InterEventDAO {
 					 
 					String stname = rs.getString("stname");
 					int saleprice =  rs.getInt("saleprice");
+					int price = rs.getInt("price");
+					String pacnum = rs.getString("pacnum");
+					String pnum=rs.getString("pnum");
+					
 					String pacname = rs.getString("pacname");
 					String pacimage = rs.getString("pacimage");
 					String v_etname = rs.getString("etname");
@@ -242,6 +246,10 @@ public class EventDAO implements InterEventDAO {
 					HashMap<String, Object> map = new HashMap<String, Object>();
 					map.put("etname", v_etname);
 					map.put("saleprice",saleprice);
+					map.put("price", price);
+					map.put("pacnum",pacnum);
+					map.put("pnum",pnum);
+					
 					map.put("pacname",pacname);
 					map.put("pacimage",pacimage);
 					map.put("stname",stname);

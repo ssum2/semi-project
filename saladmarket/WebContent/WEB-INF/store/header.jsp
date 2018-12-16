@@ -176,7 +176,7 @@
 									</ul></li>
 								<li><a href="event.do">EVENT</a></li>
 								<li><a href="cart.do"><i class="icon-shopping-cart"></i>
-										Cart [0]</a></li>
+										Cart</a></li>
 							</ul>
 						</div>
 						<%-- menu --%>

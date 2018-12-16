@@ -24,8 +24,9 @@ public class OrderAction extends AbstractController {
 		if (loginUser == null) return;
 
 		String method = request.getMethod();
-
-		if (!"POST".equals(method)) {
+		
+		
+		if (!"POST".equalsIgnoreCase(method)) {
 			// GET 방식이라면 
 			String msg = "비정상적인 경로로 들어왔습니다.";
 			String loc = "javascript:history.back();";
@@ -48,7 +49,17 @@ public class OrderAction extends AbstractController {
 			int sumtotalprice = Integer.parseInt(request.getParameter("sumtotalprice"));
 			int sumtotalpoint = Integer.parseInt(request.getParameter("sumtotalpoint"));
 			
-			if(pnumArr == null || salepriceArr == null || oqtyArr == null || cartnoArr == null) {
+			System.out.println("pnumArr "+pnumArr);
+			System.out.println("salepriceArr "+salepriceArr);
+			System.out.println("oqtyArr "+oqtyArr);
+			System.out.println("cartnoArr "+cartnoArr);
+			System.out.println("pnameArr "+pnameArr);
+			System.out.println("coupon "+coupon);
+			System.out.println("sumtotalprice "+sumtotalprice);
+			System.out.println("sumtotalpoint "+sumtotalpoint);
+			
+			
+			if(pnumArr == null || salepriceArr == null || oqtyArr == null) {
 				String msg = "비정상적인 경로로 들어왔습니다.";
 				String loc = "javascript:history.back();";
 

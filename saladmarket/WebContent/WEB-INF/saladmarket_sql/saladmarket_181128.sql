@@ -607,6 +607,19 @@ group by etnum, etname, etimagefilename
 order by etnum;
 
 
+
+select titleimg
+from product
+where pnum in (4, 5, 6, 7);
+
+update product set titleimg = 'HERTAGE_FLAKES.png' where pnum = 4;
+update product set titleimg = 'KOALA_CRISP.png' where pnum = 5;
+update product set titleimg = 'Blueberry_Cinnamon_Flax.png' where pnum = 6;
+update product set titleimg = 'Choco_Chimps.png' where pnum = 7;
+
+commit;
+
+
 -- 상품(product) 테이블 생성
 create table product 
 (pnum          number  not null                -- 상품번호 

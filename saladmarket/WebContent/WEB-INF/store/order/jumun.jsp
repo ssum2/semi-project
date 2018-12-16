@@ -167,8 +167,10 @@
 										<input type="hidden" name="pnum" value="${pnumArr[status.index]}">
 										<input type="hidden" name="saleprice" value="${salepriceArr[status.index]}">
 										<input type="hidden" name="oqty" value="${oqtyArr[status.index]}">
-										<input type="hidden" name="cartno" value="${cartno}">
-										<input type="hidden" name="pname" value="${pnameArr[status.index]}">
+										<c:if test="${cartnoArr != null }">
+										<input type="hidden" name="cartno" value="${cartnoArr[status.index]}">
+										</c:if> 
+										<input type="hidden" name="pname" value="${pnameArr[status.index]}"> 
 										<span>${oqtyArr[status.index]*salepriceArr[status.index] }</span>
 									</li>
 									

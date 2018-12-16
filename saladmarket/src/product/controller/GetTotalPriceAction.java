@@ -12,21 +12,24 @@ public class GetTotalPriceAction extends AbstractController {
 	@Override
 	public void execute(HttpServletRequest req, HttpServletResponse res) throws Exception {
 
-		String[] priceArr = req.getParameterValues("currentprice");
+
+		String[] priceArr = req.getParameterValues("ordercurrentprice");
+		String[] pointArr = req.getParameterValues("point");
 		// String[] pnumArr = req.getParameterValues("pnum");
-		String[] oqtyArr = req.getParameterValues("oqty");
+		String[] pqtyArr = req.getParameterValues("orderoqty");
 		
-		int totalprice = 0;
+		int totalprice = 0, totalpoint = 0;
 		
 		try {
 
 			for(int i=0; i<priceArr.length; i++) {
 				
 				int pricenum = Integer.parseInt(priceArr[i]);
-				int oqtynum = Integer.parseInt(oqtyArr[i]);
+				int pointnum = Integer.parseInt(pointArr[i]);
+				int pqtynum = Integer.parseInt(pqtyArr[i]);
 				
-				totalprice += pricenum*oqtynum;
-				
+				totalprice += pricenum*pqtynum;
+				totalpoint += pointnum*pqtynum;
 			}
 				
 		} catch (NumberFormatException e) {
@@ -36,6 +39,7 @@ public class GetTotalPriceAction extends AbstractController {
 		JSONObject job = new JSONObject();
 		
 		job.put("totalprice", totalprice);
+		job.put("totalpoint", totalpoint);
 		
 		String str_job = job.toString();
 		

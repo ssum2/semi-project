@@ -20,22 +20,16 @@ public class EventDetailAction extends AbstractController {
 		
 		String etnum = req.getParameter("etnum");
 		String etname = req.getParameter("etname");
-		 
-		
-		//List<HashMap<String,Object>> eventProductList = dao.getEventList2(etname);
-		
-		//req.setAttribute("eventProductList", eventProductList);
+
+		List<HashMap<String,Object>> productList = dao.getProImgPnameFile(etname);
+		//더보기버튼 totalCount 가져오는 메소드
+		int totalEventCount = dao.getEventTotalCount(etname);
+	
 		req.setAttribute("etname", etname);
-/*  		
-  		String str_pnum = req.getParameter("productPnum");
-		int pnum = Integer.parseInt(str_pnum);*/
-		
-		//List<HashMap<String, Object>> productDetailList = pdao.getProductDetail(pnum);
-		//req.setAttribute("productDetailList", productDetailList);
-			
+		req.setAttribute("productList", productList);
+		req.setAttribute("totalEventCount", totalEventCount);
 		super.setRedirect(false);
 		super.setViewPage("/WEB-INF/store/event/eventDetail.jsp");
-
 	}
 
 }

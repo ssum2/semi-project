@@ -128,7 +128,7 @@ $(document).ready(function(){
 					      		    <div class="cart">
 					      		    <p>
 						      			<span class="addtocart"><a href="jumun.do"><i class='icon-shopping-cart'></i></a></span>
-					      		        <span><a href="productDetail.do?pacnum='${map.pacnum}'&pnum='${map.pnum}'&img='${map.pimgfilename}'"><i class="icon-eye"></i></a></span>
+					      		        <span><a href="productDetail.do?pacnum=${map.pacnum}&pnum=${map.pnum}&img=${map.pimgfilename}"><i class="icon-eye"></i></a></span>
 					      		        <span><a href="like.do"><i class="icon-heart3"></i></a></span>
 					      	            </p>
 					      	        </div>

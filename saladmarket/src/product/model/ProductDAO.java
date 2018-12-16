@@ -1937,13 +1937,13 @@ public class ProductDAO implements InterProductDAO {
 		try {
 			conn = ds.getConnection();
 			
-			String sql = "select rno, pacnum, pacname, pnum, pacimage, saleprice, stname\n"+
+			String sql = "select rno, pacnum, pacname, pnum, pacimage, saleprice, stname, price\n"+
 						"from\n"+
 						"(\n"+
-						"select rownum as rno, pacnum, pacname, pnum, pacimage, saleprice, stname, pdate, plike\n"+
+						"select rownum as rno, pacnum, pacname, pnum, pacimage, saleprice, stname, pdate, plike, price\n"+
 						"from\n"+
 						"    (\n"+
-						"    select pacnum, case pacname when '없음' then pname else pacname end as pacname, pnum, pacimage, saleprice, stname, pdate, plike\n"+
+						"    select pacnum, case pacname when '없음' then pname else pacname end as pacname, pnum, pacimage, saleprice, stname, pdate, plike, price\n"+
 						"    from view_productList\n"+
 						"    where sdname in (select sdname from small_detail where fk_ldname = ?)\n"+
 						"	 order by "+orderby+
@@ -1973,6 +1973,7 @@ public class ProductDAO implements InterProductDAO {
 			    String pacimage = rs.getString("pacimage"); 
 			    int saleprice = rs.getInt("saleprice");
 			    String stname = rs.getString("stname");
+			    int price = rs.getInt("price");
 			    
 			    HashMap<String, Object> map = new HashMap<String, Object>();
 			    map.put("pacname", pacname);
@@ -1981,6 +1982,7 @@ public class ProductDAO implements InterProductDAO {
 			    map.put("pimgfilename", pacimage);
 			    map.put("saleprice", saleprice);
 			    map.put("stname", stname);
+			    map.put("price", price);
 			      
 			    mapList.add(map);  
 			    
@@ -2001,13 +2003,13 @@ public class ProductDAO implements InterProductDAO {
 		try {
 			conn = ds.getConnection();
 			
-			String sql = "select rno, pacnum, pacname, pnum, pacimage, saleprice, stname\n"+
+			String sql = "select rno, pacnum, pacname, pnum, pacimage, saleprice, stname, price \n"+
 						"from\n"+
 						"(\n"+
-						"select rownum as rno, pacnum, pacname, pnum, pacimage, saleprice, stname, pdate, plike\n"+
+						"select rownum as rno, pacnum, pacname, pnum, pacimage, saleprice, stname, pdate, plike, price\n"+
 						"from\n"+
 						"    (\n"+
-						"    select pacnum, case pacname when '없음' then pname else pacname end as pacname, pnum, pacimage, saleprice, stname, pdate, plike\n"+
+						"    select pacnum, case pacname when '없음' then pname else pacname end as pacname, pnum, pacimage, saleprice, stname, pdate, plike, price \n"+
 						"    from view_productList\n"+
 						"    where sdname = ?\n"+
 						"    order by "+orderby+
@@ -2035,17 +2037,19 @@ public class ProductDAO implements InterProductDAO {
 				String pacname = rs.getString("pacname"); 
 				String pacnum = rs.getString("pacnum"); 
 			    String pnum = rs.getString("pnum"); 
-			    String pimgfilename = rs.getString("pacimage"); 
+			    String pacimage = rs.getString("pacimage"); 
 			    int saleprice = rs.getInt("saleprice");
 			    String stname = rs.getString("stname");
+			    int price = rs.getInt("price");
 			    
 			    HashMap<String, Object> map = new HashMap<String, Object>();
 			    map.put("pacname", pacname);
 			    map.put("pacnum", pacnum);
 			    map.put("pnum", pnum);
-			    map.put("pimgfilename", pimgfilename);
+			    map.put("pimgfilename", pacimage);
 			    map.put("saleprice", saleprice);
 			    map.put("stname", stname);
+			    map.put("price", price);
 			      
 			    mapList.add(map);  
 			    
@@ -2056,6 +2060,8 @@ public class ProductDAO implements InterProductDAO {
 		return mapList;
 	
 	}
+	
+	
 	
 	
 // 이벤트
@@ -2130,7 +2136,6 @@ public class ProductDAO implements InterProductDAO {
 		
 		return productList;	
 	}
-	
 	
 //	장바구니
 	// *** product, small_detai, product_images, product_package 테이블에서 상품리스트 정보
@@ -2494,7 +2499,7 @@ public class ProductDAO implements InterProductDAO {
 					   + " on A.fk_pnum=B.pnum "
 					   + " JOIN product_package C " 
 					   + " on B.fk_pacname= C.pacname "
-					   + " where fk_userid = ? ";
+					   + " where A.status=1 and fk_userid = ? ";
 					
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, userid);
@@ -3324,37 +3329,45 @@ public class ProductDAO implements InterProductDAO {
 	@Override
 	public List<String> getImagesByPnum(String pnum) throws SQLException {
 		
-		List<String> result = null;
-		
-		try {
-			
-			conn = ds.getConnection();
-			
-			String sql = " select pimgfilename from product_images where fk_pnum = ? ";
-			
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, pnum);
-			
-			rs = pstmt.executeQuery();
-			
-			int cnt = 0;
-			while(rs.next()) {
-				cnt++;
-				if(cnt == 1) {
-					result = new ArrayList<String>();
-				}
-				
-				String pimgfilename = rs.getString("pimgfilename");
-				
-				result.add(pimgfilename);
-				
-			}
-			
-		} finally {
-			close();
-		}
-		
-		return result;
+	  List<String> result = null;
+      
+      try {
+         
+         conn = ds.getConnection();
+
+         String sql = "select distinct pimgfilename\n"+
+        		 "from\n"+
+        		 "(\n"+
+        		 "select distinct pimgfilename from product_images where fk_pnum = ? \n"+
+        		 "union all\n"+
+        		 "select distinct titleimg from product where pnum = ?\n"+
+        		 ")";
+         
+         pstmt = conn.prepareStatement(sql);
+         pstmt.setString(1, pnum);
+         pstmt.setString(2, pnum);
+         
+         rs = pstmt.executeQuery();
+         
+         int cnt = 0;
+         while(rs.next()) {
+            cnt++;
+            if(cnt == 1) {
+               result = new ArrayList<String>();
+            }
+            
+            String pimgfilename = rs.getString("pimgfilename");
+            
+            result.add(pimgfilename);
+            
+         }
+         
+      } finally {
+         close();
+      }
+      
+      return result;
+
 		
 	}
 
@@ -3362,40 +3375,46 @@ public class ProductDAO implements InterProductDAO {
 	@Override
 	public List<String> getImagesByPacnum(String pacnum) throws SQLException {
 		
-		List<String> result = null;
-		
-		try {
-			
-			conn = ds.getConnection();
-			
-			String sql = "select distinct pimgfilename, fk_pnum\n"+
-					"from product_images\n"+
-					"where fk_pnum in (select pnum from product where fk_pacname = (select pacname from product_package where pacnum = ?))"+
-					"order by fk_pnum";
-			
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, pacnum);
-			
-			rs = pstmt.executeQuery();
-			
-			int cnt = 0;
-			while(rs.next()) {
-				cnt++;
-				if(cnt == 1) {
-					result = new ArrayList<String>();
-				}
-				
-				String pimgfilename = rs.getString("pimgfilename");
-				
-				result.add(pimgfilename);
-				
-			}
-			
-		} finally {
-			close();
-		}
-		
-		return result;
+	   List<String> result = null;
+	      
+	      try {
+	         
+	         conn = ds.getConnection();
+	         
+	         String sql = "select distinct pimgfilename, fk_pnum\n"+
+	               "from product_images\n"+
+	               "where fk_pnum in (select pnum from product where fk_pacname = (select pacname from product_package where pacnum = ?))\n"+
+	               "union all\n"+
+	               "select distinct titleimg, pnum\n"+
+	               "from product\n"+
+	               "where fk_pacname = (select pacname from product_package where pacnum = ?)\n"+
+	               "order by fk_pnum";
+	         
+	         pstmt = conn.prepareStatement(sql);
+	         pstmt.setString(1, pacnum);
+	         pstmt.setString(2, pacnum);
+	         
+	         rs = pstmt.executeQuery();
+	         
+	         int cnt = 0;
+	         while(rs.next()) {
+	            cnt++;
+	            if(cnt == 1) {
+	               result = new ArrayList<String>();
+	            }
+	            
+	            String pimgfilename = rs.getString("pimgfilename");
+	            
+	            result.add(pimgfilename);
+	            
+	         }
+	         
+	      } finally {
+	         close();
+	      }
+	      
+	      return result;
+
 		
 	}
 
@@ -3687,10 +3706,10 @@ public class ProductDAO implements InterProductDAO {
 			
 			// 4. 구매자의 등급 올리기
 			if(n3 == 1) {
-				sql = " update member set fk_lvnum = case when summoney >= 100000 then 2 " + 
-						"                                  when summoney >= 300000 then 3 " + 
-						"                                  else 1 end " + 
-						" where userid = ? ";
+	            sql = " update member set fk_lvnum = case when summoney >= 300000 then 3 " + 
+	                    "                                  when summoney >= 100000 then 2 " + 
+	                    "                                  else 1 end " + 
+	                    " where userid = ? ";
 				pstmt = conn.prepareStatement(sql);
 				pstmt.setString(1, userid);
 				//System.out.println("sql: "+sql);
@@ -3724,7 +3743,7 @@ public class ProductDAO implements InterProductDAO {
 
 			// 5. 사용한 쿠폰 status를 0으로 바꾸기
 			n6 = 1;
-			if( (couponNo != null || !"".equals(couponNo)) && n5 == 1) {
+			if( (couponNo != null && !"".equals(couponNo)) && n5 == 1) {
 				sql = " update my_coupon set cpstatus = 0 "
 					+ " where fk_userid = ? and fk_cpnum = ? ";
 				pstmt = conn.prepareStatement(sql);
@@ -3739,7 +3758,7 @@ public class ProductDAO implements InterProductDAO {
 					return 0;
 				} // end of if
 			} // end of if
-			
+
 			// 장바구니에서 주문한 경우
 			if(cartnoArr != null && n6 == 1) {
 				for(int i=0; i<cartnoArr.length; i++) {
@@ -3901,5 +3920,105 @@ public class ProductDAO implements InterProductDAO {
 			return result;
 			
 		} // int updateDeleteCart(String cartno, String oqty) -----------------------------------------
-
+/**
+ * pnum에 해당하는 제품이 cart테이블에 없는 경우 insert, 있는 경우 oqty를 update
+ * @param: userid; 로그인한 유저 아이디, pnum; 선택한 제품번호, oqty; 수량
+ * @return insert 또는 update가 성공했을 경우 1, 실패한 경우 0 리턴 
+ */
+	@Override
+	public int addCart(String userid, int pnum, int oqty) throws SQLException {
+		int result = 0;
+		
+		try {
+			conn = ds.getConnection();
+		
+			String sql = " select cartno "
+						+ " from product_cart"
+						+ " where status = 1 and fk_userid = ? and fk_pnum = ? ";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, userid);
+			pstmt.setInt(2, pnum);
+			
+			rs = pstmt.executeQuery();
+			if(rs.next()) {
+				int cartno = rs.getInt("cartno");
+				sql = " update product_cart set oqty= oqty+? "
+						+ "where cartno = ? ";
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setInt(1, oqty);
+				pstmt.setInt(2, cartno);
+				
+				result = pstmt.executeUpdate();
+			}
+			else {
+				sql = " insert into product_cart(cartno, fk_userid, fk_pnum, oqty, status) "
+						+ " values(seq_product_cart_cartno.nextval, ?, ?, ?, default)";
+				
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setString(1, userid);
+				pstmt.setInt(2, pnum);
+				pstmt.setInt(3, oqty);
+				
+				result = pstmt.executeUpdate();
+			}
+					
+		} finally {
+			close();
+		}
+		return result;
+	}
+	
+/**
+ * pnum에 해당하는 제품이 cart테이블에 없는 경우 insert, 있는 경우 oqty를 update
+ * @param: userid; 로그인한 유저 아이디, pnum; 선택한 제품번호, oqty; 수량
+ * @return insert 또는 update가 성공했을 경우 1, 실패한 경우 0 리턴 
+ */
+	@Override
+	public int addCart(String userid, String[] pnumArr, String[] oqtyArr) throws SQLException {
+		int result = 0;
+		
+		try {
+			conn = ds.getConnection();
+			
+			for(int i=0; i<pnumArr.length; i++) {
+				String sql = " select cartno "
+						+ " from product_cart"
+						+ " where status = 1 and fk_userid = ? and fk_pnum = ? ";
+			
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setString(1, userid);
+				pstmt.setInt(2, Integer.parseInt(pnumArr[i]));
+				
+				rs = pstmt.executeQuery();
+				if(rs.next()) {
+					int cartno = rs.getInt("cartno");
+					sql = " update product_cart set oqty= oqty+? "
+							+ "where cartno = ? ";
+					pstmt = conn.prepareStatement(sql);
+					pstmt.setInt(1, Integer.parseInt(oqtyArr[i]));
+					pstmt.setInt(2, cartno);
+					
+					result = pstmt.executeUpdate();
+				}
+				else {
+					sql = " insert into product_cart(cartno, fk_userid, fk_pnum, oqty, status) "
+							+ " values(seq_product_cart_cartno.nextval, ?, ?, ?, default)";
+					
+					pstmt = conn.prepareStatement(sql);
+					pstmt.setString(1, userid);
+					pstmt.setInt(2, Integer.parseInt(pnumArr[i]));
+					pstmt.setInt(3, Integer.parseInt(oqtyArr[i]));
+					
+					result = pstmt.executeUpdate();
+				}
+			}
+			
+					
+		} finally {
+			close();
+		}
+		return result;
+	}
+	
 }

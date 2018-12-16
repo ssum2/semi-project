@@ -23,7 +23,8 @@ public class EventDetailJSONAction extends AbstractController{
 		String start = req.getParameter("start"); 
 		String len = req.getParameter("len"); // 8개씩 "더보기.." 클릭에 보여줄 상품의 갯수 단위크기   
 		String etname = req.getParameter("etname");
-
+		
+	
 		
 		if(start==null || start.trim().isEmpty()) start = "1";
 		if(len==null || len.trim().isEmpty()) len = "4";
@@ -46,18 +47,18 @@ public class EventDetailJSONAction extends AbstractController{
 		
 		if(eventProductList != null && eventProductList.size() > 0) {
 			for(HashMap<String, Object> evo : eventProductList) {
+				System.out.println("indexBestJSONAction2");		
 				JSONObject jsonObj = new JSONObject();
 				// JSONObject 는 JSON형태(키:값)의 데이터를 관리해주는 클래스이다. 
 				jsonObj.put("stname", evo.get("stname"));
 				jsonObj.put("saleprice", evo.get("saleprice"));
 				jsonObj.put("price", evo.get("price"));
-				jsonObj.put("pacnum", evo.get("pacnum"));	
-				jsonObj.put("pnum", evo.get("pnum"));
-				
 				jsonObj.put("pacname", evo.get("pacname"));				
 				jsonObj.put("pacimage", evo.get("pacimage"));	
 				jsonObj.put("etname", evo.get("etname"));
-				
+				jsonObj.put("pname", evo.get("pname"));
+				jsonObj.put("pimgfilename", evo.get("pimgfilename"));
+				jsonObj.put("pacnum", evo.get("pacnum"));
 				jsonArray.add(jsonObj);
 				
 			}// end of for--------------------
@@ -68,7 +69,7 @@ public class EventDetailJSONAction extends AbstractController{
 
 		
 		super.setRedirect(false);
-		super.setViewPage("/WEB-INF/store/event/eventDetailJSON.jsp");  
+		super.setViewPage("/WEB-INF/store/JSON/eventDetailJSON.jsp"); 
 	}
 
 }

@@ -73,15 +73,12 @@
 					                        "<p class='tag'><span class='new'>Best</span></p>"+
 					                        "<div class='cart'>"+
 					                          " <p>"+
-					                              "<span class='addtocart'><a href='cart.do'><i class='icon-shopping-cart'></i></a></span>"+ 
-					                              "<span><a href='product-detail.do?pacnum="+entry.pacnum+"'><i class='icon-eye'></i></a></span>"+ 
-					                              "<span><a href='#'><i class='icon-heart3'></i></a></span>"+
-					                              "<span><a href='add-to-wishlist.html'><i class='icon-bar-chart'></i></a></span>"+
+					                              
 					                           "</p>"+
 					                        "</div>"+
 					                     "</div>"+
 					                     "<div class='desc'>"+
-					                     	"<h3>"+entry.pacname+"</h3><a href='product-detail.do?pacnum="+entry.pacnum+"></a>"+
+					                     "<h3>"+entry.pacname+"</h3><a href='#'></a>"+
 					                        "<p class='price'><span>"+entry.saleprice+"</span></p>"+
 					                     "</div>"+			                     
 					                  "</div>"+            
@@ -133,15 +130,11 @@
 			                        "<p class='tag'><span class='new'>NEW</span></p>"+
 			                        "<div class='cart'>"+
 			                          " <p>"+
-			                              "<span class='addtocart'><a href='cart.do'><i class='icon-shopping-cart'></i></a></span>"+ 
-			                              "<span><a href='product-detail.do?pacnum="+entry.pacnum+"'><i class='icon-eye'></i></a></span>"+ 
-			                              "<span><a href='#'><i class='icon-heart3'></i></a></span>"+
-			                              "<span><a href='add-to-wishlist.html'><i class='icon-bar-chart'></i></a></span>"+
 			                           "</p>"+
 			                        "</div>"+
 			                     "</div>"+
 			                     "<div class='desc'>"+
-			                     	"<h3>"+entry.pacname+"</h3><a href='product-detail.do?pacnum="+entry.pacnum+"></a>"+
+			                     	"<h3>"+entry.pacname+"</h3><a href='#'></a>"+
 			                        "<p class='price'><span>"+entry.saleprice+"</span></p>"+
 			                     "</div>"+			                     
 			                  "</div>"+            

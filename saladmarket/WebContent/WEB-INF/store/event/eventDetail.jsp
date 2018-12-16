@@ -54,7 +54,7 @@ $(document).ready(function(){
               				"<p class='tag'><span class='sale'>"+entry.stname+"</span></p>"+
               				"<div class='cart'>"+
                   				"<p>"+
-		                  		"<span class='addtocart'><a href='jumun.do'><i class='icon-shopping-cart'></i></a></span>"+
+		                  		"<span class='addtocart'><a href='cartAdd.do?orderpnum="+entry.pnum+"&orderoqty=1'><i class='icon-shopping-cart'></i></a></span>"+
 		                  		"<span><a href='productDetail.do?pacnum="+entry.pacnum+"&pnum="+entry.pnum+"&img="+entry.pacimage+"'><i class='icon-eye'></i></a></span>"+ 
 		                        "<span><a href='#'><i class='icon-heart3'></i></a></span>"+
 		                        "<span><a href='like.do'><i class='icon-bar-chart'></i></a></span>"+
@@ -102,8 +102,8 @@ $(document).ready(function(){
 			   			<div class="row">
 				   			<div class="col-md-6 col-md-offset-3 col-sm-12 col-xs-12 slider-text">
 				   				<div class="slider-text-inner text-center">
-				   					<h1>Event Detail</h1>
-				   					<h2 class="bread"><span><a href="index.do">Home</a></span></h2>
+				   					<h1>이벤트 상세</h1>
+				   					<h2 class="bread"><span><a href="<%= CtxPath %>/index.do">Home</a></span></h2>
 				   				</div>
 				   			</div>
 				   		</div>

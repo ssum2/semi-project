@@ -5,51 +5,17 @@
 <% String CtxPath = request.getContextPath(); %>
 <jsp:include page="../header.jsp"/>
 
-
-	<div class="colorlib-loader"></div>
-
-	<div id="page">
-		<nav class="colorlib-nav" role="navigation">
-			<div class="top-menu">
-				<div class="container">
-					<div class="row">
-						<div class="col-xs-2">
-							<div id="colorlib-logo"><a href="index.html">Store</a></div>
-						</div>
-						<div class="col-xs-10 text-right menu-1">
-							<ul>
-								<li><a href="index.html">Home</a></li>
-								<li class="has-dropdown active">
-									<a href="shop.html">Shop</a>
-									<ul class="dropdown">
-										<li><a href="product-detail.html">Product Detail</a></li>
-										<li><a href="cart.html">Shipping Cart</a></li>
-										<li><a href="checkout.html">Checkout</a></li>
-										<li><a href="order-complete.html">Order Complete</a></li>
-										<li><a href="add-to-wishlist.html">Wishlist</a></li>
-									</ul>
-								</li>
-								<li><a href="blog.html">Blog</a></li>
-								<li><a href="about.html">About</a></li>
-								<li><a href="contact.html">Contact</a></li>
-								<li><a href="cart.html"><i class="icon-shopping-cart"></i> Cart [0]</a></li>
-							</ul>
-						</div>
-					</div>
-				</div>
-			</div>
-		</nav>
 		<aside id="colorlib-hero" class="breadcrumbs">
 			<div class="flexslider">
 				<ul class="slides">
-			   	<li style="background-image: url(<%=CtxPath%>/store/images/cover-img-1.jpg);">
+			   	<li style="background-image: url(<%=CtxPath%>/store/images/PFPI-WEBSITE-SLIDERS-1.png);">
 			   		<div class="overlay"></div>
 			   		<div class="container-fluid">
 			   			<div class="row">
 				   			<div class="col-md-6 col-md-offset-3 col-sm-12 col-xs-12 slider-text">
 				   				<div class="slider-text-inner text-center">
 				   					<h1>Order Complete</h1>
-				   					<h2 class="bread"><span><a href="index.html">Home</a></span> <span><a href="cart.html">Shopping Cart</a></span> <span>Checkout</span></h2>
+				   					<h2 class="bread"><span><a href="<%= CtxPath %>/index.do">Home</a></span> <span><a href="<%= CtxPath %>/cart.do">Shopping Cart</a></span> <span>Checkout</span></h2>
 				   				</div>
 				   			</div>
 				   		</div>
@@ -84,13 +50,13 @@
 							<h4 align="center">배송을 아래의 계좌로 입금하셔야 배송을 시작합니다.</h4>
 							<h5 align="center">국민은행 123456-78-912345</h5>
 							
-							<h4 align="center">${sessionScope.loginUser.name }님의 결제내용은 다음과 같습니다.</h4>
+							<h4 align="center">${sessionScope.loginuser.name }님의 결제내용은 다음과 같습니다.</h4>
 							<form action="#">
 								<table class="table" style="margin-top:50px; border: 1px solid #cfd2d6;">
 								    <tbody>
 										<tr>
 											<th width="40%" style="padding-left: 50px;"> 주문자명 </th>
-											<td width="*">${sessionScope.loginUser.name }님 </td>
+											<td width="*">${sessionScope.loginuser.name }님 </td>
 										</tr>
 										<tr>
 											<th style="padding-left: 50px;"> 주문번호 </th>

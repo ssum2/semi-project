@@ -169,8 +169,8 @@
                 <button class="btn btn-primary" style="margin-left: 2%; font-size: 10pt;" OnClick="goLogin();">로그인</button>
              <div class="panel-body" style="margin-left: 5%;">
                 
-                <a id="kakao-login-btn"></a>
-                <a href="http://developers.kakao.com/logout"></a>
+               <%--  <a id="kakao-login-btn"></a>
+                <a href="http://developers.kakao.com/logout"></a> --%>
              </div>
              </div>
           </div>

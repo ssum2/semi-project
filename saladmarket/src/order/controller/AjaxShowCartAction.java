@@ -56,8 +56,8 @@ public class AjaxShowCartAction extends AbstractController {
 	               jsonObj.put("saleprice", map.get("saleprice"));
 	               jsonObj.put("titleimg", map.get("titleimg"));
 	               jsonObj.put("pacname", map.get("pacname"));
-	               jsonObj.put("sumtotalprice", Integer.parseInt(map.get("saleprice"))* Integer.parseInt(map.get("oqty")) );
-	               jsonObj.put("sumtotalpoint", Integer.parseInt(map.get("point"))* Integer.parseInt(map.get("oqty")) );
+	               jsonObj.put("totalPrice", Integer.parseInt(map.get("saleprice"))* Integer.parseInt(map.get("oqty")) );
+	               jsonObj.put("totalPoint", Integer.parseInt(map.get("point"))* Integer.parseInt(map.get("oqty")) );
 	               jsonArr.add(jsonObj);
 	            }
 	         }

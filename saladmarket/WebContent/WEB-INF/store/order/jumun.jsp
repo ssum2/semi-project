@@ -24,14 +24,14 @@
 			return;
 		} 
 		
-		if($("input:radio[name=optradio]").attr("value") == "계좌이체") {
+		if($("input[type=radio][name=optradio]:checked").val() == "카드결제") {
 			
-			var url = "orderPaymentGateway.do?userid=${sessionScope.loginUser.userid}&paymoney=${sumtotalprice}"; 
+			var url = "orderPaymentGateway.do?userid=${sessionScope.loginuser.userid}&paymoney=${sumtotalprice}"; 
 	        window.open(url, "paymentGateway", "left=350px, top=100px, width=820px, height=600px");
 			
 			//frm.submit();
 		} else {
-			goOrderCheck("${sessionScope.loginUser.userid}");
+			goOrderCheck("${sessionScope.loginuser.userid}");
 		}
 	} // end of function goOrder()
 	
@@ -49,7 +49,7 @@
 	<div class="flexslider">
 		<ul class="slides">
 			<li
-				style="background-image: url(<%=ctxPath %>/store/images/cover-img-1.jpg);">
+				style="background-image: url(<%=ctxPath %>/store/images/PFPI-WEBSITE-SLIDERS-1.png);">
 				<div class="overlay"></div>
 				<div class="container-fluid">
 					<div class="row">
@@ -60,7 +60,7 @@
 								<h2 class="bread">
 									<span>
 									<a href="<%=ctxPath %>/index.do">Home</a></span>
-									<span><a href="<%=ctxPath %>/cart.do">Shopping Cart</a></span> <span>Checkout</span>
+									<span><a href="<%=ctxPath %>/cart.do">장바구니</a></span> <span>Checkout</span>
 								</h2>
 							</div>
 						</div>
@@ -127,7 +127,7 @@
 							<div class="form-group">
 								<div class="col-md-6" style="padding: 0;">
 									<label for="fname">우편번호</label>
-									<input type="text" id="zippostalcode" value="${mvo.post }" class="form-control" placeholder="123-456" readonly="readonly">
+									<input type="text" id="zippostalcode" value="${mvo.postnum }" class="form-control" placeholder="123-456" readonly="readonly">
 								</div>
 							</div>
 							<div class="form-group">
@@ -161,14 +161,14 @@
 							<li><span>SubtotalPrice</span> <span>${sumtotalprice}</span>
 							<li><span>SubtotalPoint</span> <span>${sumtotalpoint}</span>
 								<ul>
-								<c:forEach var="cartno" items="${cartnoArr }" varStatus="status">
+								<c:forEach var="pnum" items="${pnumArr}" varStatus="status">
 									<li>
 										<span>${oqtyArr[status.index]} x ${pnameArr[status.index]}</span>
-										<input type="hidden" name="pnum" value="${pnumArr[status.index]}">
+										<input type="hidden" name="pnum" value="${pnum}">
 										<input type="hidden" name="saleprice" value="${salepriceArr[status.index]}">
 										<input type="hidden" name="oqty" value="${oqtyArr[status.index]}">
 										<c:if test="${cartnoArr != null }">
-										<input type="hidden" name="cartno" value="${cartnoArr[status.index]}">
+											<input type="hidden" name="cartno" value="${cartnoArr[status.index]}">
 										</c:if> 
 										<input type="hidden" name="pname" value="${pnameArr[status.index]}"> 
 										<span>${oqtyArr[status.index]*salepriceArr[status.index] }</span>
@@ -227,7 +227,7 @@
 						<div class="form-group">
 							<div class="col-md-12">
 								<div class="radio">
-									<label><input type="radio" name="optradio" value="카드결제">카드결제</label>
+									<label><input type="radio" name="optradio" id="card" value="카드결제">카드결제</label>
 								</div>
 							</div>
 						</div>
@@ -235,7 +235,7 @@
 						<div class="form-group">
 							<div class="col-md-12">
 								<div class="radio">
-									<label><input type="radio" name="optradio" value="무통장입금">무통장 입금</label>
+									<label><input type="radio" name="optradio" id="account" value="무통장입금">무통장입금</label>
 								</div>
 							</div>
 						</div>

@@ -2365,4 +2365,34 @@ where rno = 1;
  where fk_userid = 'leess';
  
  
- from 
+select pnum, fk_pacname, fk_sdname, fk_ctname, fk_stname, fk_etname, pname, 
+       price, saleprice, point, pqty, pcontents, pcompanyname, pexpiredate, allergy, weight, salecount, plike, pdate, titleimg, 
+	   pacnum, pacname, paccontents, pacimage,
+	   pimgfilename, fk_pnum
+from
+( select *
+from view_product_by_package union all select * from view_product_non_package )
+where fk_etname like '%'||'연초'||'%';
+
+select *
+from event_tag join product
+on etname = fk_etname
+where fk_etname like '%'||'연초'||'%';
+
+
+select *
+from product
+where pnum = 8;
+
+update product set titleimg ='shirimp_soup.png' where pnum = 8;
+
+select *
+from product_images
+where fk_pnum = 8;
+
+update product_images set pimgfilename = 'shirimp_soup.png' where fk_pnum = 8;
+
+update product set titleimg ='hobakjook.png' where pnum = 9;
+update product_images set pimgfilename = 'hobakjook.png' where fk_pnum = 9;
+
+commit;

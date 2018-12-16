@@ -70,7 +70,7 @@ public class CouponDAO implements InterCouponDAO{
 			String sql = " select cpnum, cpname, discountper, cpusemoney, cpuselimit, fk_userid, fk_cpnum, to_char(cpexpiredate, 'yyyymmdd') as cpexpiredate, b.cpstatus "+
 						 " from coupon a join my_coupon b "+
 						 " on cpnum = fk_cpnum "+
-						 " where fk_userid=? and cpexpiredate>sysdate "; 
+						 " where b.cpstatus=1 and fk_userid=? and cpexpiredate>sysdate "; 
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, userid);
 			

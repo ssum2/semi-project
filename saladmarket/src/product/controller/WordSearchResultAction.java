@@ -61,7 +61,7 @@ public class WordSearchResultAction extends AbstractController {
 				job.put("pimgfilename", map.get("pimgfilename"));
 				job.put("saleprice", map.get("saleprice"));
 				job.put("stname", map.get("stname"));
-				
+				job.put("price", map.get("price"));
 			    jsonArray.add(job);
 			}
 		}

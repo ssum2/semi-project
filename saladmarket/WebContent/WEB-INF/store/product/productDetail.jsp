@@ -198,11 +198,24 @@
 	    var queryString_pac = decodeURIComponent((queryString_pac + '').replace(/\+/g, '%20'));
     
 		console.log(queryString_pac);
+		var flag = false;
+		$('input[name=orderoqty]').each(function(){
+			if($(this).val() >0){
+				flag = true;
+				return false;
+			}
+		});
+		if(flag){
+			var frm = document.purchaseFrm;
+			frm.method="POST";
+			frm.action="order.do";
+			frm.submit();
+		}
+		else {
+			alert("수량이 입력되지 않았습니다.");
+			return false;
+		}
 		
-		var frm = document.purchaseFrm;
-		frm.method="POST";
-		frm.action="order.do";
-		frm.submit();
 	}
 
 	
@@ -213,18 +226,30 @@
 	    var queryString_pac = decodeURIComponent((queryString_pac + '').replace(/\+/g, '%20'));
 	    
 	 	console.log(queryString_pac);
-	 	
-	 	var frm = document.purchaseFrm;
-		frm.method="POST";
-		frm.action="cart.do";
-		frm.submit();
+	 	var flag = false;
+		$('input[name=orderoqty]').each(function(){
+			if($(this).val() >0){
+				flag = true;
+				return false;
+			}
+		});
+		if(flag){
+		 	var frm = document.purchaseFrm;
+			frm.method="POST";
+			frm.action="cartAdd.do";
+			frm.submit();
+		}
+		else {
+			alert("수량이 입력되지 않았습니다.");
+			return false;
+		}
 	}
 	
 	function goLikeForPac() {
 
 		event.preventDefault();
 
-		var form_data = {"userid": "${ sessionScope.loginUser.userid }",
+		var form_data = {"userid": "${sessionScope.loginuser.userid }",
 				   		 "pacnum": "${pacnum}",
 				   		 "len": "${len}"}
 		   
@@ -291,14 +316,14 @@
 		console.log(queryString_p);
 		
 		singleFrm.method="POST";
-		singleFrm.action="cart.do";
+		singleFrm.action="cartAdd.do";
 		singleFrm.submit();
 		
 	}
 	
 	function goLikeForSingle() {
 		event.preventDefault();
-		var form_data = {"userid": "${ sessionScope.loginUser.userid }",
+		var form_data = {"userid": "${sessionScope.loginuser.userid }",
 				   		 "pnum": "${pnum}"};
 		   
 		   $.ajax({
@@ -327,14 +352,14 @@
 	<aside id="colorlib-hero" class="breadcrumbs">
 			<div class="flexslider">
 				<ul class="slides">
-			   	<li style="background-image: url(<%=ctxPath %>/store/images/cover-img-1.jpg);">
+			   	<li style="background-image: url(<%=ctxPath %>/store/images/PFPI-WEBSITE-SLIDERS-1.png);">
 			   		<div class="overlay"></div>
 			   		<div class="container-fluid">
 			   			<div class="row">
 				   			<div class="col-md-6 col-md-offset-3 col-sm-12 col-xs-12 slider-text">
 				   				<div class="slider-text-inner text-center">
 				   					<h1>Product Detail</h1>
-				   					<h2 class="bread"><span><a href="index.html">Home</a></span> <span><a href="shop.html">Product</a></span> <span>Product Detail</span></h2>
+				   					<h2 class="bread"><span><a href="<%= ctxPath %>/index.do">Home</a></span><span>상품 상세</span></h2>
 				   				</div>
 				   			</div>
 				   		</div>

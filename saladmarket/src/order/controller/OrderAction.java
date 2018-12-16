@@ -39,25 +39,25 @@ public class OrderAction extends AbstractController {
 
 			return;
 		} else {
-			String[] pnumArr = request.getParameterValues("pnum"); 
-			String[] salepriceArr = request.getParameterValues("currentprice");
-			String[] oqtyArr = request.getParameterValues("oqty");
-			String[] cartnoArr = request.getParameterValues("cartno");
-			String[] pnameArr = request.getParameterValues("pname");
+			String[] pnumArr = request.getParameterValues("orderpnum"); 
+			String[] salepriceArr = request.getParameterValues("ordercurrentprice");
+			String[] oqtyArr = request.getParameterValues("orderoqty");
+			String[] cartnoArr = request.getParameterValues("ordercartno");
+			String[] pnameArr = request.getParameterValues("orderpname");
 			
 			String coupon = request.getParameter("coupon");
 			int sumtotalprice = Integer.parseInt(request.getParameter("sumtotalprice"));
 			int sumtotalpoint = Integer.parseInt(request.getParameter("sumtotalpoint"));
 			
-			System.out.println("pnumArr "+pnumArr);
-			System.out.println("salepriceArr "+salepriceArr);
-			System.out.println("oqtyArr "+oqtyArr);
-			System.out.println("cartnoArr "+cartnoArr);
-			System.out.println("pnameArr "+pnameArr);
-			System.out.println("coupon "+coupon);
-			System.out.println("sumtotalprice "+sumtotalprice);
-			System.out.println("sumtotalpoint "+sumtotalpoint);
-			
+			for(int i=0; i<pnumArr.length; i++) {
+				System.out.println("제품번호 : "+pnumArr[i]); 
+	            System.out.println("실제 판매 단가 : "+salepriceArr[i]); 
+	            System.out.println("주문 갯수 : "+oqtyArr[i]);
+	            //System.out.println("카트 번호 : "+cartnoArr[i]);
+			}
+			System.out.println("주문총액 : "+sumtotalprice); 
+	        System.out.println("주문총포인트 : "+sumtotalpoint);
+			System.out.println("coupon : "+coupon); // 쿠폰 널처리!!
 			
 			if(pnumArr == null || salepriceArr == null || oqtyArr == null) {
 				String msg = "비정상적인 경로로 들어왔습니다.";
@@ -89,7 +89,7 @@ public class OrderAction extends AbstractController {
 			request.setAttribute("sumtotalpoint", sumtotalpoint);
 			
 			HashMap<String, String> couponMap = null;
-			if(coupon != null || !"".equals(coupon)) {
+			if(coupon != null && !"".equals(coupon)) {
 				InterProductDAO pdao = new ProductDAO();
 				couponMap = pdao.selectOneCoupon(coupon, loginUser.getUserid());
 				
@@ -134,5 +134,5 @@ public class OrderAction extends AbstractController {
 
         return "s"+today+"-"+seq; 
 
-    } // end of private String getOdrcode() 
+    } // end of private String getOdrcode()  
 }

@@ -16,13 +16,14 @@ public class EventAction extends AbstractController {
 	public void execute(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		
 		InterEventDAO edao = new EventDAO();
+		String etname = req.getParameter("etname");
 		
 		List<EventVO> eventList = edao.getEventList();
-	
-		req.setAttribute("eventList", eventList);
-		
+
+		req.setAttribute("eventList", eventList);		
 		super.setRedirect(false);
 		super.setViewPage("/WEB-INF/store/event/event.jsp");
+
 
 	}
 

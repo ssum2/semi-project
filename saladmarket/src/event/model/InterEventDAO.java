@@ -16,4 +16,7 @@ public interface InterEventDAO {
 	List<HashMap<String,Object>> getEventList2(String etname,int startRno,int endRno) throws SQLException;
 	// == 쿠폰 페이지에서 나의 쿠폰 내역 불러오기 
 	List<HashMap<String,String>> getCouponList(String userid) throws SQLException;
+	int getNoPacEventTotalCount(String etname) throws SQLException;
+	int getEventTotalCount(String etname) throws SQLException;
+	List<HashMap<String, Object>> getProImgPnameFile(String etname) throws SQLException;
 }

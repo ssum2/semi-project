@@ -142,7 +142,7 @@
 											<li><a href="<%=ctxPath %>/memberInfoMain.do">회원정보</a></li>
 											<%-- memberModify.jsp 비번 확인후 이곳으로 이동 --%>
 											<li><a href="<%=ctxPath %>/couponList.do">할인쿠폰</a></li>
-											<li><a href="<%=ctxPath %>/refundChange.do">환불교환</a></li>
+											<%-- <li><a href="<%=ctxPath %>/refundChange.do">환불교환</a></li> --%>
 											<li><a href="<%=ctxPath %>/orderList.do">주문내역</a></li>
 											<li><a href="<%=ctxPath %>/cart.do">장바구니</a></li>
 											<%--<li><a href="<%=ctxPath %>/myPickList.do">찜</a></li> --%>

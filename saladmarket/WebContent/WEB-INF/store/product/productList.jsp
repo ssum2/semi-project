@@ -148,7 +148,7 @@
 					                  				"<p class='tag'><span class='sale'>"+entry.stname+"</span></p>"+
 					                  				"<div class='cart'>"+
 						                  				"<p>"+
-								                  		"<span class='addtocart'><a href='jumun.do'><i class='icon-shopping-cart'></i></a></span>"+
+								                  		"<span class='addtocart'><a href='cartAdd.do?orderpnum="+entry.pnum+"&orderoqty=1'><i class='icon-shopping-cart'></i></a></span>"+
 								                  		"<span><a href='productDetail.do?pacnum="+entry.pacnum+"&pnum="+entry.pnum+"&img="+entry.pimgfilename+"'><i class='icon-eye'></i></a></span>"+ 
 								                        "<span><a href='#'><i class='icon-heart3'></i></a></span>"+
 								                        "<span><a href='like.do'><i class='icon-bar-chart'></i></a></span>"+
@@ -205,7 +205,7 @@
 	                  		"<p class='tag'><span class='sale'>"+entry.stname+"</span></p>"+
 	                  		"<div class='cart'>"+
 	                  		"<p>"+
-	                  		"<span class='addtocart'><a href='jumun.do'><i class='icon-shopping-cart'></i></a></span>"+
+	                  		"<span class='addtocart'><a href='cartAdd.do?orderpnum="+entry.pnum+"&orderoqty=1'><i class='icon-shopping-cart'></i></a></span>"+
 	                  		"<span><a href='productDetail.do?pacnum="+entry.pacnum+"&pnum="+entry.pnum+"&img="+entry.pimgfilename+"'><i class='icon-eye'></i></a></span>"+ 
 	                        "<span><a href='#'><i class='icon-heart3'></i></a></span>"+
 	                        "<span><a href='like.do'><i class='icon-bar-chart'></i></a></span>"+
@@ -228,7 +228,7 @@
 	                  		"<p class='tag'><span class='sale'>"+entry.stname+"</span></p>"+
 	                  		"<div class='cart'>"+
 	                  		"<p>"+
-	                  		"<span class='addtocart'><a href='jumun.do'><i class='icon-shopping-cart'></i></a></span>"+
+	                  		"<span class='addtocart'><a href='cartAdd.do?orderpnum="+entry.pnum+"&orderoqty=1'><i class='icon-shopping-cart'></i></a></span>"+
 	                  		"<span><a href='productDetail.do?pacnum="+entry.pacnum+"&pnum="+entry.pnum+"&img="+entry.pimgfilename+"'><i class='icon-eye'></i></a></span>"+ 
 	                        "<span><a href='#'><i class='icon-heart3'></i></a></span>"+
 	                        "<span><a href='like.do'><i class='icon-bar-chart'></i></a></span>"+
@@ -251,7 +251,7 @@
 	                  		"<p class='tag'><span class='sale'>"+entry.stname+"</span></p>"+
 	                  		"<div class='cart'>"+
 	                  		"<p>"+
-	                  		"<span class='addtocart'><a href='jumun.do'><i class='icon-shopping-cart'></i></a></span>"+
+	                  		"<span class='addtocart'><a href='cartAdd.do?orderpnum="+entry.pnum+"&orderoqty=1'><i class='icon-shopping-cart'></i></a></span>"+
 	                  		"<span><a href='productDetail.do?pacnum="+entry.pacnum+"&pnum="+entry.pnum+"&img="+entry.pimgfilename+"'><i class='icon-eye'></i></a></span>"+ 
 	                        "<span><a href='#'><i class='icon-heart3'></i></a></span>"+
 	                        "<span><a href='like.do'><i class='icon-bar-chart'></i></a></span>"+

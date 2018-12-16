@@ -231,5 +231,9 @@ public interface InterProductDAO {
 	// *** product_cart 테이블에서 oqty가 0보다 크면 update, 0이면 delete 장바구니변경 
 	int updateDeleteCart(String cartno, String oqty) throws SQLException;
 
+//	#장바구니 물품 추가
+	int addCart(String userid, int pnum, int oqty) throws SQLException;
+	int addCart(String userid, String[] pnumArr, String[] oqtyArr) throws SQLException;
+
 	
 }

@@ -24,7 +24,6 @@ public class MemberVO {
 	private int fk_lvnum;	// 회원 등급 넘버
 	
 	
-	
 	public MemberVO() { }
 	
 	public MemberVO(int mnum, String userid, String name, String pwd, String email, String phone, String postnum,

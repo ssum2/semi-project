@@ -16,8 +16,6 @@ public class A_modifyCategoryTagAction extends AbstractController {
 		String ctnum = req.getParameter("ctnum");
 		String ctname = req.getParameter("ctname");
 		
-		System.out.println("ctname: "+ctname);
-		
 		InterProductDAO pdao = new ProductDAO();
 				
 		int result = pdao.updateCtname(ctnum, ctname);

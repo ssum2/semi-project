@@ -3,8 +3,7 @@
 <jsp:include page="admin_header.jsp"/>   
 	<div class="row">
 		<div class="col-md-12" style="border: 0px solid gray; height: 150px; padding: 20px;">
-			admin main
-			${msg}
+			
 		</div>
 	</div>
 <jsp:include page="admin_footer.jsp"/>  

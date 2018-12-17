@@ -111,6 +111,9 @@ public class A_ProductRegisterAction extends AbstractController {
 			int n = pdao.productInsert(pvo);
 			int m = 0;
 			
+			String msg = "";
+			String loc = "";
+			
 //			4) 제품정보에 추가 이미지파일 정보를 insert
 			String str_attachCount = mtreq.getParameter("attachCount"); // hidden input태그 안에 있는 값(파일 개수)
 			if(!"".equals(str_attachCount)) {
@@ -123,11 +126,9 @@ public class A_ProductRegisterAction extends AbstractController {
 				
 			} // end of if
 			
-			String msg = "";
-			String loc = "";
-			if(n*m==1) {
+			if(n==1 || n*m==1) {
 				msg = "제품 등록 성공!";
-				loc = req.getContextPath()+"a_productList.do";
+				loc = req.getContextPath()+"/a_productList.do";
 			}
 			else {
 				msg = "제품 등록 실패!";

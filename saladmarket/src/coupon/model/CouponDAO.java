@@ -53,6 +53,8 @@ public class CouponDAO implements InterCouponDAO{
 		}
 	}
 	
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
 	/**
 	 * 특정 회원의 보유 쿠폰 리스트를 가져오는 메소드
 	 * @param userid
@@ -65,10 +67,10 @@ public class CouponDAO implements InterCouponDAO{
 		try {
 			conn = ds.getConnection();
 			
-			String sql = "select cpnum, cpname, discountper, cpusemoney, cpuselimit, fk_userid, fk_cpnum, to_char(cpexpiredate, 'yyyymmdd') as cpexpiredate, b.cpstatus\n"+
-					"from coupon a join my_coupon b\n"+
-					"on cpnum = fk_cpnum\n"+
-					"where fk_userid=? and cpexpiredate>sysdate"; 
+			String sql = " select cpnum, cpname, discountper, cpusemoney, cpuselimit, fk_userid, fk_cpnum, to_char(cpexpiredate, 'yyyymmdd') as cpexpiredate, b.cpstatus "+
+						 " from coupon a join my_coupon b "+
+						 " on cpnum = fk_cpnum "+
+						 " where b.cpstatus=1 and fk_userid=? and cpexpiredate>sysdate "; 
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, userid);
 			
@@ -77,6 +79,7 @@ public class CouponDAO implements InterCouponDAO{
 			int cnt=0;
 			while(rs.next()) {
 				cnt++;
+				
 				if(cnt==1) {
 					myCouponList = new ArrayList<CouponVO>();
 				}
@@ -108,7 +111,7 @@ public class CouponDAO implements InterCouponDAO{
 		}
 		
 		return myCouponList;
-	}
+	} // List<CouponVO> getMyCouponList(String userid) ---------------------------------------
 	
 	
 	

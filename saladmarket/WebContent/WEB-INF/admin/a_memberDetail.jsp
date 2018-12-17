@@ -159,6 +159,12 @@
                         <input type="text" class="form-control" name="lvname" value="${mvo.lvnameByLvnum}">
                       </div>
                     </div>
+                    <div class="col-md-3 pl-md-1">
+                      <div class="form-group">
+                        <label>회원상태</label>
+                        <input type="text" class="form-control" name="status" value="${mvo.statusByStatus}">
+                      </div>
+                    </div>
                   </div>
                 
                  

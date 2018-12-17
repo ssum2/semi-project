@@ -138,17 +138,7 @@ public class EventDAO implements InterEventDAO {
 					String fk_pacname = rs.getString("fk_pacname");
 					String pacimage = rs.getString("pacimage");
 
-/*					
-					sql = "select fk_stname \n"+
-							"from product A join spec_tag B \n"+
-							"on A.fk_stname = B.stname \n"+
-							"where fk_pacname = ? \n"+
-							"group by fk_stname ";	
-	
-					pstmt.setString(1, fk_pacname);
-					rs=pstmt.executeQuery();
-					String fk_stname = rs.getString("fk_stname");				
-					System.out.println("333");*/
+
 					HashMap<String, Object> map = new HashMap<String, Object>();
 
 					map.put("saleprice",saleprice);
@@ -171,8 +161,7 @@ public class EventDAO implements InterEventDAO {
 		conn = ds.getConnection();
 		List<EventVO> eventList = null;
 		
-		try {
-			System.out.println("EventAcion DAO 1");			
+		try {	
 			
 			String sql = " select etnum,etname,etimagefilename \n"+
 						 " from event_tag ";
@@ -180,7 +169,6 @@ public class EventDAO implements InterEventDAO {
 			pstmt = conn.prepareStatement(sql);
 			rs = pstmt.executeQuery();
 			
-			System.out.println("EventAcion DAO 2");
 			int cnt = 0;		
 			while(rs.next()) {
 				cnt++;
@@ -211,67 +199,6 @@ public class EventDAO implements InterEventDAO {
 		List<HashMap<String,Object>> pvoList = null;
 		try {
 				conn = ds.getConnection();	 			
-		/*		String sql = "select etname,rnum, pacnum, pacname, paccontents, pacimage, pnum\n"+
-						"        , sdname, ctname, stname, etname, pname, price\n"+
-						"        , saleprice, point, pqty, pcontents\n"+
-						"        , pcompanyname, pexpiredate, allergy, weight, salecount, plike, pdate\n"+
-						"from\n"+
-						"(\n"+
-						"    select rownum as rnum,pacnum, pacname, paccontents, pacimage, pnum\n"+
-						"            , sdname, ctname, stname, etname, pname, price\n"+
-						"            , saleprice, point, pqty, pcontents\n"+
-						"            , pcompanyname, pexpiredate, allergy, weight, salecount, plike, pdate\n"+
-						"    from \n"+
-						"    (\n"+
-						"        select pacnum, pacname, paccontents, pacimage, pnum\n"+
-						"                , sdname, ctname, stname, etname, pname, price\n"+
-						"                , saleprice, point, pqty, pcontents\n"+
-						"                , pcompanyname, pexpiredate, allergy, weight, salecount, plike, pdate\n"+
-						"        from\n"+
-						"        (\n"+
-						"            select pacnum, pacname, paccontents, pacimage, pnum\n"+
-						"                    , sdname, ctname, stname, etname, pname, price\n"+
-						"                    , saleprice, point, pqty, pcontents\n"+
-						"                    , pcompanyname, pexpiredate, allergy, weight, salecount, plike, pdate\n"+
-						"            from\n"+
-						"            (\n"+
-						"                select row_number() over(partition by pacnum order by saleprice) as rno\n"+
-						"                    , b.pacnum, b.pacname, b.paccontents, b.pacimage, a.pnum\n"+
-						"                    , fk_sdname as sdname, a.fk_ctname as ctname, a.fk_stname as stname, a.fk_etname as etname\n"+
-						"                    , a.pname, a.price, a.saleprice, a.point, a.pqty, a.pcontents\n"+
-						"                    , a.pcompanyname, a.pexpiredate, allergy, a.weight, a.salecount, a.plike, a.pdate\n"+
-						"                from product a JOIN product_package b\n"+
-						"                ON a.fk_pacname = b.pacname\n"+
-						"            ) V\n"+
-						"            where rno = 1 and pacnum != 1\n"+
-						"            union all\n"+
-						"            select pacnum, pacname, paccontents, pimgfilename, pnum\n"+
-						"                    , sdname, ctname, stname, etname, pname\n"+
-						"                    , price, saleprice, point, pqty, pcontents\n"+
-						"                    , pcompanyname, pexpiredate, allergy, weight, salecount\n"+
-						"                    , plike, pdate\n"+
-						"            from\n"+
-						"            (\n"+
-						"                select row_number() over(partition by pname order by saleprice) as rno\n"+
-						"                        , b.pacnum, b.pacname, b.paccontents, b.pacimage, pnum\n"+
-						"                        , fk_sdname AS sdname, a.fk_ctname AS ctname, a.fk_stname AS stname, a.fk_etname AS etname, a.pname\n"+
-						"                        , a.price, a.saleprice, a.point, a.pqty, a.pcontents\n"+
-						"                        , a.pcompanyname, a.pexpiredate, allergy, a.weight, a.salecount\n"+
-						"                        , a.plike, a.pdate, c.pimgfilename\n"+
-						"                from product a JOIN product_package b\n"+
-						"                ON a.fk_pacname = b.pacname\n"+
-						"                JOIN product_images c\n"+
-						"                ON a.pnum = c.fk_pnum\n"+
-						"                where pacnum = 1\n"+
-						"            ) V\n"+
-						"            where rno = 1\n"+
-						"        )T\n"+
-						"       \n"+
-						"        where etname = ? \n"+
-						"        order by pdate desc, pname asc\n"+
-						"    ) E\n"+
-						") F\n"+
-						"where 1=1";*/
 				String sql = "select etname,rnum, pacnum, pacname, paccontents, pacimage, pnum\n"+
 						"        , sdname, ctname, stname, etname, pname, price\n"+
 						"        , saleprice, point, pqty, pcontents\n"+
@@ -288,7 +215,7 @@ public class EventDAO implements InterEventDAO {
 						"                , sdname, ctname, stname, etname, pname, price\n"+
 						"                , saleprice, point, pqty, pcontents\n"+
 						"                , pcompanyname, pexpiredate, allergy, weight, salecount, plike, pdate\n"+
-						"        from view_Product       \n"+
+						"        from view_event_product    \n"+
 						"        where etname = ? \n"+
 						"        order by pdate desc, pname asc\n"+
 						"    )E\n"+
@@ -308,16 +235,21 @@ public class EventDAO implements InterEventDAO {
 					 
 					String stname = rs.getString("stname");
 					int saleprice =  rs.getInt("saleprice");
+					int price = rs.getInt("price");
+					String pacnum = rs.getString("pacnum");
+					String pnum=rs.getString("pnum");
+					
 					String pacname = rs.getString("pacname");
 					String pacimage = rs.getString("pacimage");
 					String v_etname = rs.getString("etname");
-					System.out.println("Event NAME"+etname);
-			
-			
 					
 					HashMap<String, Object> map = new HashMap<String, Object>();
 					map.put("etname", v_etname);
 					map.put("saleprice",saleprice);
+					map.put("price", price);
+					map.put("pacnum",pacnum);
+					map.put("pnum",pnum);
+					
 					map.put("pacname",pacname);
 					map.put("pacimage",pacimage);
 					map.put("stname",stname);
@@ -329,7 +261,107 @@ public class EventDAO implements InterEventDAO {
 			}
 			return pvoList;
 	}
-	
+	// == 이벤트 패키지 총갯수 \==
+	   @Override
+	   public int getEventTotalCount(String etname) throws SQLException {
+	      int totalCount = 0;
+	      try{
+	         conn = ds.getConnection();
+	         
+	      String sql = "select count(*) AS cnt\n"+
+	            "from\n"+
+	            "(\n"+
+	            "    select rownum as rnum,pacnum, pacname, paccontents, pacimage, pnum\n"+
+	            "            , sdname, ctname, stname, etname, pname, price\n"+
+	            "            , saleprice, point, pqty, pcontents\n"+
+	            "            , pcompanyname, pexpiredate, allergy, weight, salecount, plike, pdate\n"+
+	            "    from \n"+
+	            "    (\n"+
+	            "        select pacnum, pacname, paccontents, pacimage, pnum\n"+
+	            "                , sdname, ctname, stname, etname, pname, price\n"+
+	            "                , saleprice, point, pqty, pcontents\n"+
+	            "                , pcompanyname, pexpiredate, allergy, weight, salecount, plike, pdate \n"+
+	            "        from\n"+
+	            "        (\n"+
+	            "            select pacnum, pacname, paccontents, pacimage, pnum \n"+
+	            "                    , sdname, ctname, stname, etname, pname, price \n"+
+	            "                    , saleprice, point, pqty, pcontents \n"+
+	            "                    , pcompanyname, pexpiredate, allergy, weight, salecount, plike, pdate \n"+
+	            "            from\n"+
+	            "            (\n"+
+	            "                select row_number() over(partition by pacnum order by saleprice) as rno \n"+
+	            "                    , b.pacnum, b.pacname, b.paccontents, b.pacimage, a.pnum \n"+
+	            "                    , fk_sdname as sdname, a.fk_ctname as ctname, a.fk_stname as stname, a.fk_etname as etname \n"+
+	            "                    , a.pname, a.price, a.saleprice, a.point, a.pqty, a.pcontents \n"+
+	            "                    , a.pcompanyname, a.pexpiredate, allergy, a.weight, a.salecount, a.plike, a.pdate \n"+
+	            "                from product a JOIN product_package b \n"+
+	            "                ON a.fk_pacname = b.pacname \n"+
+	            "            ) V\n"+
+	            "            where rno = 1 and pacnum != 1 \n"+
+	            "            union all\n"+
+	            "            select pacnum, pacname, paccontents, pimgfilename, pnum \n"+
+	            "                    , sdname, ctname, stname, etname, pname \n"+
+	            "                    , price, saleprice, point, pqty, pcontents \n"+
+	            "                    , pcompanyname, pexpiredate, allergy, weight, salecount \n"+
+	            "                    , plike, pdate\n"+
+	            "            from\n"+
+	            "            (\n"+
+	            "                select row_number() over(partition by pname order by saleprice) as rno \n"+
+	            "                        , b.pacnum, b.pacname, b.paccontents, b.pacimage, pnum \n"+
+	            "                        , fk_sdname AS sdname, a.fk_ctname AS ctname, a.fk_stname AS stname, a.fk_etname AS etname, a.pname \n"+
+	            "                        , a.price, a.saleprice, a.point, a.pqty, a.pcontents \n"+
+	            "                        , a.pcompanyname, a.pexpiredate, allergy, a.weight, a.salecount \n"+
+	            "                        , a.plike, a.pdate, c.pimgfilename\n"+
+	            "                from product a JOIN product_package b \n"+
+	            "                ON a.fk_pacname = b.pacname \n"+
+	            "                JOIN product_images c \n"+
+	            "                ON a.pnum = c.fk_pnum \n"+
+	            "                where pacnum = 1 \n"+
+	            "            ) V\n"+
+	            "            where rno = 1 \n"+
+	            "        )T\n"+
+	            "       \n"+
+	            "        order by pdate desc, pname asc\n"+
+	            "    ) E \n"+
+	            ") F \n"+
+	            " where etname = ? ";
+
+	      pstmt = conn.prepareStatement(sql);
+	      pstmt.setString(1, etname);      
+	      rs = pstmt.executeQuery();
+	      rs.next();      
+	      totalCount = rs.getInt("CNT");   
+	    } finally{
+	      close();
+	    }
+	   
+	   return totalCount;      
+	   
+	   }
+	   
+	   // == 패키지 없는 이벤트  갯수 == 
+	   @Override
+	   public int getNoPacEventTotalCount(String etname) throws SQLException {
+	      int totalCount = 0;
+	      try{
+	         conn = ds.getConnection();
+	         
+	      String sql = "select count(*) AS cnt\n"+
+	            "from product"+
+	            " where fk_pacname = '없음' and fk_etname = ? ";
+
+	      pstmt = conn.prepareStatement(sql);
+	      pstmt.setString(1, etname);      
+	      rs = pstmt.executeQuery();
+	      rs.next();      
+	      totalCount = rs.getInt("CNT");   
+	    } finally{
+	      close();
+	    }
+	   
+	   return totalCount;      
+	   }
+	   
 	// == 쿠폰 페이지에서 나의 쿠폰 내역 불러오기 
 	@Override
 	public List<HashMap<String,String>> getCouponList(String userid) throws SQLException{
@@ -380,6 +412,63 @@ public class EventDAO implements InterEventDAO {
 		}		
 		return couponList;
 	}
+	
+	@Override
+	public List<HashMap<String,Object>> getProImgPnameFile(String etname) throws SQLException{
+	      List<HashMap<String,Object>> productList = null;
+	      try {         
+	         conn = ds.getConnection();         
+	      
+	         String sql = " select pnum,fk_pacname AS pacname,fk_sdname AS sdname,fk_etname AS etname\n"+
+	               "        ,pname,price,saleprice,point,pqty,pimgfilename,pacnum,pacimage\n"+
+	               "    from product A join product_images B\n"+
+	               "    on A.pnum = B.fk_pnum\n"+
+	               "join product_package B\n"+
+	               "on A.fk_pacname = B.pacname\n"+
+	               "where fk_etname = ?";
+	         
+	          
+	             pstmt = conn.prepareStatement(sql);
+	             pstmt.setString(1, etname);
+	             rs = pstmt.executeQuery();
+	             int cnt = 0;
+	             while(rs.next()) {
+	                cnt++;
+	                if(cnt ==1)  productList = new ArrayList<HashMap<String,Object>>();
+	                
+	                int pnum = rs.getInt("pnum");
+	                String pacname = rs.getString("pacname");
+	                String sdname = rs.getString("sdname");
+	                String v_etname = rs.getString("etname");
+	                String pname = rs.getString("pname");
+	                int price = rs.getInt("price");
+	                int saleprice = rs.getInt("saleprice");
+	                int point = rs.getInt("point");
+	                int pqty = rs.getInt("pqty");
+	                int pacnum= rs.getInt("pacnum");
+	                String pacimage = rs.getString("pacimage");             
+	                   
+	                HashMap<String,Object> map = new HashMap<String,Object>();
+	                
+	                map.put("pnum", pnum);
+	                map.put("pacname", pacname);
+	                map.put("sdname", sdname);
+	                map.put("etname", etname);
+	                map.put("pname", pname);
+	                map.put("price", price);
+	                map.put("saleprice", saleprice);
+	                map.put("point", point);
+	                map.put("pqty", pqty);
+	                map.put("pacnum", pacnum);
+	                map.put("pacimage", pacimage);
+	                
+	                productList.add(map);                          
+	             }                
+	      } finally {
+	         close();
+	      }
+	      return productList;
+	   }
 	
 }// end of DAO
 

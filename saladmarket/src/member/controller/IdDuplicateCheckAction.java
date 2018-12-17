@@ -15,15 +15,13 @@ public class IdDuplicateCheckAction extends AbstractController {
 	@Override
 	public void execute(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		String method = req.getMethod();
-		System.out.println("IdDuplicateCheckAction success 1/4; method: "+method);
+		
 		if("POST".equalsIgnoreCase(method)) {
 			MemberDAO memberdao = new MemberDAO();
 			String userid = req.getParameter("userid");
 			userid = userid.trim();
-			System.out.println("IdDuplicateCheckAction success 2/4 userid: "+userid);
-			int isUseUserid = memberdao.idDuplicateCheck(userid);
 			
-			System.out.println("IdDuplicateCheckAction success 3/4 isUseUserid: "+isUseUserid);
+			int isUseUserid = memberdao.idDuplicateCheck(userid);
 			
 			JSONObject jsonObj = new JSONObject();
 			jsonObj.put("isUseUserid", isUseUserid);
@@ -41,7 +39,7 @@ public class IdDuplicateCheckAction extends AbstractController {
 			super.setRedirect(false);
 			super.setViewPage("/WEB-INF/store/member/join.jsp");
 		*/
-			System.out.println("IdDuplicateCheckAction success 4/4");
+
 		}
 		else {
 			req.setAttribute("msg", "비정상적인 경로로 들어왔습니다.");

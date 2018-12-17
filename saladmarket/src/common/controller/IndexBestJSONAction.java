@@ -28,7 +28,7 @@ public class IndexBestJSONAction extends AbstractController {
 		
 		int endRno = startRno+Integer.parseInt(len)-1;
 		// 공식!!!   끝행번호       4(=> 1+4-1)  8(=> 8+4-1)   24(=> 17+8-1) 
-		System.out.println("indexBestJSONAction");
+		
 		InterProductDAO pdao = new ProductDAO();
 		List<ProductVO> productList = pdao.getProductsByStnameAppend(stname, startRno, endRno); 
 		
@@ -36,7 +36,7 @@ public class IndexBestJSONAction extends AbstractController {
 		
 		if(productList != null && productList.size() > 0) {
 			for(ProductVO pvo : productList) {
-				System.out.println("indexBestJSONAction2");		
+					
 				JSONObject jsonObj = new JSONObject();
 				// JSONObject 는 JSON형태(키:값)의 데이터를 관리해주는 클래스이다. 
 				jsonObj.put("rnum", pvo.getRnum());
@@ -59,7 +59,7 @@ public class IndexBestJSONAction extends AbstractController {
 		req.setAttribute("str_jsonArray", str_jsonArray);
 		
 		super.setRedirect(false);
-		super.setViewPage("/WEB-INF/store/indexBestJSON.jsp");  
+		super.setViewPage("/WEB-INF/store/JSON/indexBestJSON.jsp");  
 	}
 
 }

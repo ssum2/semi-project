@@ -143,25 +143,26 @@
 						 $.each(data, function(entryIndex, entry){
 							
 							 resultHTML += "<div class='col-md-3 text-center'>"+
-		                  		"<div class='product-entry'>"+
-		                  		"<div class='product-img' style='background-image: url(/saladmarket/img/"+entry.pimgfilename+");'>"+
-		                  		"<p class='tag'><span class='sale'>"+entry.stname+"</span></p>"+
-		                  		"<div class='cart'>"+
-		                  		"<p>"+
-		                  		"<span class='addtocart'><a href='jumun.do'><i class='icon-shopping-cart'></i></a></span>"+
-		                  		"<span><a href='productDetail.do?pacnum="+entry.pacnum+"&pnum="+entry.pnum+"&img="+entry.pimgfilename+"'><i class='icon-eye'></i></a></span>"+ 
-		                        "<span><a href='#'><i class='icon-heart3'></i></a></span>"+
-		                        "<span><a href='like.do'><i class='icon-bar-chart'></i></a></span>"+
-		                        "</p>"+
-		                        "</div>"+
-		                        "</div>"+
-		                     	"<div class='desc'>"+
-		                        "<h3><a href='productDetail.do?pacnum="+entry.pacnum+"&pnum="+entry.pnum+"'>"+entry.pacname+
-		                        "</a></h3>"+
-		                        "<p class='price'><span>"+Number(entry.saleprice).toLocaleString()+"원</span></p>"+
-		                     	"</div>"+
-		                  		"</div>"+
-		               			"</div>";
+					                  		"<div class='product-entry'>"+
+					                  			"<div class='product-img' style='background-image: url(/saladmarket/img/"+entry.pimgfilename+");'>"+
+					                  				"<p class='tag'><span class='sale'>"+entry.stname+"</span></p>"+
+					                  				"<div class='cart'>"+
+						                  				"<p>"+
+								                  		"<span class='addtocart'><a href='cartAdd.do?orderpnum="+entry.pnum+"&orderoqty=1'><i class='icon-shopping-cart'></i></a></span>"+
+								                  		"<span><a href='productDetail.do?pacnum="+entry.pacnum+"&pnum="+entry.pnum+"&img="+entry.pimgfilename+"'><i class='icon-eye'></i></a></span>"+ 
+								                        "<span><a href='#'><i class='icon-heart3'></i></a></span>"+
+								                        "<span><a href='like.do'><i class='icon-bar-chart'></i></a></span>"+
+						                        		"</p>"+
+					                        		"</div>"+
+					                        	"</div>"+
+					                     	"<div class='desc'>"+
+					                        "<h3><a href='productDetail.do?pacnum="+entry.pacnum+"&pnum="+entry.pnum+"'>"+entry.pacname+
+					                        "</a></h3>"+
+					                        "<p class='price' style='font-weight: bold;'><span>"+Number(entry.saleprice).toLocaleString()+"원</span>"+
+					                        "&nbsp; <span class='sale'>"+Number(entry.price).toLocaleString('en')+"원</span></p>"+
+					                     	"</div>"+
+					                  		"</div>"+
+					               			"</div>";
 		               			
 						 });// end of $.each(data, function(entryIndex, entry){ })-------------------
 						 	
@@ -204,7 +205,7 @@
 	                  		"<p class='tag'><span class='sale'>"+entry.stname+"</span></p>"+
 	                  		"<div class='cart'>"+
 	                  		"<p>"+
-	                  		"<span class='addtocart'><a href='jumun.do'><i class='icon-shopping-cart'></i></a></span>"+
+	                  		"<span class='addtocart'><a href='cartAdd.do?orderpnum="+entry.pnum+"&orderoqty=1'><i class='icon-shopping-cart'></i></a></span>"+
 	                  		"<span><a href='productDetail.do?pacnum="+entry.pacnum+"&pnum="+entry.pnum+"&img="+entry.pimgfilename+"'><i class='icon-eye'></i></a></span>"+ 
 	                        "<span><a href='#'><i class='icon-heart3'></i></a></span>"+
 	                        "<span><a href='like.do'><i class='icon-bar-chart'></i></a></span>"+
@@ -227,7 +228,7 @@
 	                  		"<p class='tag'><span class='sale'>"+entry.stname+"</span></p>"+
 	                  		"<div class='cart'>"+
 	                  		"<p>"+
-	                  		"<span class='addtocart'><a href='jumun.do'><i class='icon-shopping-cart'></i></a></span>"+
+	                  		"<span class='addtocart'><a href='cartAdd.do?orderpnum="+entry.pnum+"&orderoqty=1'><i class='icon-shopping-cart'></i></a></span>"+
 	                  		"<span><a href='productDetail.do?pacnum="+entry.pacnum+"&pnum="+entry.pnum+"&img="+entry.pimgfilename+"'><i class='icon-eye'></i></a></span>"+ 
 	                        "<span><a href='#'><i class='icon-heart3'></i></a></span>"+
 	                        "<span><a href='like.do'><i class='icon-bar-chart'></i></a></span>"+
@@ -250,7 +251,7 @@
 	                  		"<p class='tag'><span class='sale'>"+entry.stname+"</span></p>"+
 	                  		"<div class='cart'>"+
 	                  		"<p>"+
-	                  		"<span class='addtocart'><a href='jumun.do'><i class='icon-shopping-cart'></i></a></span>"+
+	                  		"<span class='addtocart'><a href='cartAdd.do?orderpnum="+entry.pnum+"&orderoqty=1'><i class='icon-shopping-cart'></i></a></span>"+
 	                  		"<span><a href='productDetail.do?pacnum="+entry.pacnum+"&pnum="+entry.pnum+"&img="+entry.pimgfilename+"'><i class='icon-eye'></i></a></span>"+ 
 	                        "<span><a href='#'><i class='icon-heart3'></i></a></span>"+
 	                        "<span><a href='like.do'><i class='icon-bar-chart'></i></a></span>"+
@@ -437,7 +438,7 @@
 <aside id="colorlib-hero" class="breadcrumbs">
    <div class="flexslider">
       <ul class="slides">
-         <li style="background-image: url(<%=CtxPath %>/store/images/cover-img-1.jpg);">
+         <li style="background-image: url(<%=CtxPath %>/store/images/PFPI-WEBSITE-SLIDERS-1.png);">
             <div class="overlay"></div>
             <div class="container-fluid">
                <div class="row">

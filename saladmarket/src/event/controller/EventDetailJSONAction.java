@@ -52,10 +52,13 @@ public class EventDetailJSONAction extends AbstractController{
 				// JSONObject 는 JSON형태(키:값)의 데이터를 관리해주는 클래스이다. 
 				jsonObj.put("stname", evo.get("stname"));
 				jsonObj.put("saleprice", evo.get("saleprice"));
+				jsonObj.put("price", evo.get("price"));
 				jsonObj.put("pacname", evo.get("pacname"));				
 				jsonObj.put("pacimage", evo.get("pacimage"));	
 				jsonObj.put("etname", evo.get("etname"));
-				
+				jsonObj.put("pname", evo.get("pname"));
+				jsonObj.put("pimgfilename", evo.get("pimgfilename"));
+				jsonObj.put("pacnum", evo.get("pacnum"));
 				jsonArray.add(jsonObj);
 				
 			}// end of for--------------------
@@ -66,7 +69,7 @@ public class EventDetailJSONAction extends AbstractController{
 
 		
 		super.setRedirect(false);
-		super.setViewPage("/WEB-INF/store/event/eventDetailJSON.jsp");  
+		super.setViewPage("/WEB-INF/store/JSON/eventDetailJSON.jsp"); 
 	}
 
 }
